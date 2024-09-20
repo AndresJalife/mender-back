@@ -1,6 +1,4 @@
 from firebase_admin import auth
-from sqlalchemy import not_
-from starlette.responses import JSONResponse
 from fastapi import HTTPException
 
 from src.enums.UserTypes import UserTypes
@@ -25,11 +23,8 @@ class UserService:
                 display_name=request.name
             )
             user_id = self._create_db_user(request, user)
-            auth.set_custom_user_claims(user.uid, {'admin': request.type == UserTypes.ADMIN,
-                                                   'prod': request.prod,
-                                                   'userId': user_id})
+            auth.set_custom_user_claims(user.uid, {'admin': request.admin, 'userId': user_id})
             logger.info(f"User {request.email} created")
-            return JSONResponse(content={'message': f'Successfully created user', 'user_id': user_id}, status_code=201)
         except Exception as e:
             logger.error(f"Error creating user {request.email}: {e}")
             raise HTTPException(detail={'message': f'{e}'}, status_code=400)
@@ -59,7 +54,7 @@ class UserService:
 
     def _create_db_user(self, request, user):
         db_user = User(uid=user.uid, email=request.email, name=request.name,
-                       admin=request.type == UserTypes.ADMIN, prod=request.prod)
+                       admin=request.admin)
         self.db.add(db_user)
         self.db.commit()
         return db_user.user_id

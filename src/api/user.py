@@ -16,13 +16,13 @@ def get_user_service(db: Database = Depends(get_db)) -> UserService:
     return UserService(db)
 
 
-# @user_router.post("", description="Creates a user. Needs to be admin",
-#                   response_model=requests.CreatedUserResponse,
-#                   status_code=201)
-# async def create_user(request: requests.SignupRequest,
-#                       admin_uuid: str = Depends(app_auth.get_current_admin_uid),
-#                       user_service: UserService = Depends(get_user_service)):
-#     return user_service.create_user(request)
+@user_router.post("", description="Creates a user. Needs to be admin",
+                  response_model=None,
+                  status_code=201)
+async def create_user(request: dto.User,
+                      admin_uuid: str = Depends(app_auth.get_current_admin_uid),
+                      user_service: UserService = Depends(get_user_service)):
+    user_service.create_user(request)
 
 
 @user_router.get("", description="Get all users. Needs to be admin", response_model=List[dto.User])
