@@ -1,7 +1,7 @@
 from typing import Optional
 
 from pydantic import BaseModel, ConfigDict
-from ..enums.UserTypes import UserTypes
+from src.enums.user.UserTypes import UserTypes
 
 class SignupRequest(BaseModel):
     email: str

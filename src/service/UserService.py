@@ -1,7 +1,6 @@
 from firebase_admin import auth
 from fastapi import HTTPException
 
-from src.enums.UserTypes import UserTypes
 from src.model import dto
 from src.models import User
 from src.service.Logger import logger
