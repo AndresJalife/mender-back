@@ -10,7 +10,6 @@ def get_current_uid(req: Request, res: Response, credentials: HTTPAuthorizationC
         decoded_token = auth.verify_id_token(id_token)
         uid = decoded_token['uid']
         validator.validate_user_active(uid)
-        # validator.validate_user_views(decoded_token['views'], req.url.path, decoded_token)
     except Exception as err:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

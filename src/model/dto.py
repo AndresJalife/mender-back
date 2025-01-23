@@ -8,7 +8,11 @@ class User(BaseModel):
     email: Optional[str] = None
     password: Optional[str] = None
     name: Optional[str] = None
-    admin: Optional[bool] = None
-    enabled: Optional[bool] = None
+    lastname: Optional[str] = None
+    username: Optional[str] = None
+    country: Optional[str] = None
+    new: Optional[bool] = None
+    sex: Optional[str] = None
     created_date: Optional[str] = None
+    uid = Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
