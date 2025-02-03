@@ -1,15 +1,10 @@
-from fastapi import APIRouter, HTTPException, Depends
-from requests import HTTPError
-from starlette.responses import JSONResponse
+from fastapi import APIRouter, Depends
 
 from ..config.database import Database, get_db
-from ..config.firebase import pb
-from ..model import requests, dto
+from ..model import dto
 from ..models import User
 from ..service.ChatService import ChatService
-from ..service.Logger import logger
-from firebase_admin import auth as fauth
-from ..service.auth import get_current_uid
+from ..service.auth import authenticate_and_get_user
 
 chat_router = APIRouter(
     prefix="/chat",
@@ -19,7 +14,19 @@ chat_router = APIRouter(
 def get_chat_service(db: Database = Depends(get_db)) -> ChatService:
     return ChatService(db)
 
-@chat_router.get("/", description="", response_model=dto.Post)
-async def get_chats(user_uuid: str = Depends(get_current_uid),
+# @chat_router.get("/list", description="Gets the list of chats", response_model=dto.ChatList)
+# async def get_chats(user: User = Depends(authenticate_and_get_user),
+#                     chat_service: ChatService = Depends(get_chat_service)):
+#     return chat_service.get_chats(user)
+
+@chat_router.get("/{chat_id}", description="Gets the bot chat", response_model=dto.Chat)
+async def get_chat(chat_id: str, user: User = Depends(authenticate_and_get_user),
                    chat_service: ChatService = Depends(get_chat_service)):
-    return chat_service.get_chats()
+    return chat_service.get_chat(chat_id)
+
+@chat_router.post("/{chat_id}/message", description="Sends a message to the chat", response_model=dto.Chat)
+async def send_message(chat_id: str, message: dto.Message, user: User = Depends(authenticate_and_get_user),
+                          chat_service: ChatService = Depends(get_chat_service)):
+     return chat_service.send_message(chat_id, user, message)
+
+

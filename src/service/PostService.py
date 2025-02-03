@@ -16,3 +16,21 @@ class PostService:
 
     def __init__(self, db: Database):
         self.db = db
+
+    def get_posts(self, user):
+        pass
+
+    def get_post(self, post_id):
+        pass
+
+    def like_post(self, post_id, user):
+        pass
+
+    def comment_post(self, post_id, user):
+        pass
+
+    def rate_post(self, post_id, user):
+        pass
+
+    def see_post(self, post_id, user):
+        pass

@@ -5,6 +5,7 @@ from src.model import dto
 from src.models import User
 from src.service.Logger import logger
 
+
 class UserService:
     def __init__(self, db):
         self.db = db
@@ -13,9 +14,9 @@ class UserService:
         logger.info(f"Creating user {request.email} with request: {request.dict(exclude={'password'})}")
         try:
             user = auth.create_user(
-                email=request.email,
-                password=request.password,
-                display_name=request.name
+                    email=request.email,
+                    password=request.password,
+                    display_name=request.name
             )
             request.uid = user.uid
             user_id = self._create_db_user(request)
@@ -51,4 +52,9 @@ class UserService:
     def get_user(self, user_id):
         logger.info(f"Getting user {user_id}")
         user = self.db.query(User).filter(User.user_id == user_id).one()
+        return user
+
+    def get_user_by_uuid(self, user_uuid):
+        logger.info(f"Getting user by uuid {user_uuid}")
+        user = self.db.query(User).filter(User.uid == user_uuid).one()
         return user

@@ -12,8 +12,6 @@ from ..models import User
 from ..service.Logger import logger
 from firebase_admin import auth as fauth
 
-from ..service.auth import get_current_uid
-
 user_router = APIRouter(
         prefix="/user",
         tags=["User"],
@@ -28,21 +26,21 @@ def get_user_service(db: Database = Depends(get_db)) -> UserService:
                   response_model=None,
                   status_code=201)
 async def create_user(request: dto.User,
-                      user_uuid: str = Depends(app_auth.get_current_uid),
+                      user: User = Depends(app_auth.authenticate_and_get_user),
                       user_service: UserService = Depends(get_user_service)):
     user_service.create_user(request)
 
 
 @user_router.get("/{user_id}", description="Gets a user by id", response_model=dto.User)
 async def get_user(user_id: int,
-                   user_uuid: str = Depends(app_auth.get_current_uid),
+                   user: User = Depends(app_auth.authenticate_and_get_user),
                    user_service: UserService = Depends(get_user_service)):
     return user_service.get_user(user_id)
 
 
 @user_router.put("/{user_id}", description="Updates a user (admin or not). Needs to be admin", response_model=None)
 async def update_user(user: dto.User,
-                      admin_uuid: str = Depends(app_auth.get_current_uid),
+                      admin_uuid: str = Depends(app_auth.authenticate_and_get_user),
                       user_service: UserService = Depends(get_user_service),
                       user_id: int = None):
     user_service.update_user(user, user_id)
@@ -50,7 +48,7 @@ async def update_user(user: dto.User,
 
 @user_router.delete("/{user_id}", description="Deletes a client and everything related to it", response_model=None)
 async def delete_user(user_id: int,
-                      user_uuid: str = Depends(app_auth.get_current_uid),
+                      user: User = Depends(app_auth.authenticate_and_get_user),
                       user_service: UserService = Depends(get_user_service)):
     return user_service.delete_user(user_id)
 
@@ -73,15 +71,15 @@ async def reset_password(recovery_info: requests.ResetPasswordRequest):
                  description="Changes the password of a user. Returns an exception if the email is not found.",
                  status_code=200)
 async def change_password(request: requests.ChangePasswordRequest,
-                          user_uuid: str = Depends(get_current_uid),
+                          user: User = Depends(get_user),
                           db: Database = Depends(get_db)):
     try:
-        user = db.query(User).filter(User.uid == user_uuid).one_or_none()
+        user = db.query(User).filter(User.uid == user.uid).one_or_none()
         if not user:
             raise HTTPException(detail={'message': f'User not found'}, status_code=400)
         if user.email != request.email:
             raise HTTPException(detail={'message': f'User wrong email'}, status_code=400)
-        fauth.update_user(user_uuid, password=request.password)
+        fauth.update_user(user.uid, password=request.password)
         logger.info(f'Password changed for user {request.email}')
         return JSONResponse(content={'message': 'Password changed'}, status_code=200)
     except Exception as a:

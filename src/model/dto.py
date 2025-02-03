@@ -18,3 +18,15 @@ class User(BaseModel):
     created_date: Optional[str] = None
     uid: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
+
+
+class Post:
+    pass
+
+
+class Playlist:
+    pass
+
+
+class PostSeen:
+    pass

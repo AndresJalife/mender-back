@@ -1,15 +1,8 @@
-from fastapi import APIRouter, HTTPException, Depends
-from requests import HTTPError
-from starlette.responses import JSONResponse
+from fastapi import APIRouter, Depends
 
 from ..config.database import Database, get_db
-from ..config.firebase import pb
 from ..model import requests, dto
-from ..models import User
 from ..service.GeneralService import GeneralService
-from ..service.Logger import logger
-from firebase_admin import auth as fauth
-from ..service.auth import get_current_uid
 
 genera_router = APIRouter(
     prefix="/general",
