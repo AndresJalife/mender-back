@@ -1,5 +1,6 @@
 from firebase_admin import auth
 from fastapi import HTTPException
+from firebase_admin import auth as fauth
 
 from src.model import dto
 from src.models import User
@@ -25,6 +26,21 @@ class UserService:
         except Exception as e:
             logger.error(f"Error creating user {request.email}: {e}")
             raise HTTPException(detail={'message': f'{e}'}, status_code=400)
+
+
+    def change_password(self, user, request):
+        try:
+            user = self.db.query(User).filter(User.uid == user.uid).one_or_none()
+            if not user:
+                raise HTTPException(detail={'message': f'User not found'}, status_code=400)
+            if user.email != request.email:
+                raise HTTPException(detail={'message': f'User wrong email'}, status_code=400)
+            fauth.update_user(user.uid, password=request.password)
+            logger.info(f'Password changed for user {request.email}')
+            return "Password changed"
+        except Exception as a:
+            logger.error(f'Error changing password: {a}')
+            raise HTTPException(detail={'message': f'There was an error changing the password. {a}'}, status_code=400)
 
     def update_user(self, user, user_id):
         logger.info(f"Updating user {user_id} with attrs {user.dict()}")
