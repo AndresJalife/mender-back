@@ -17,6 +17,7 @@ firebase-admin = "^6.5.0"
 pyrebase4 = "^4.8.0"
 cryptography = "^42.0.7"
 apscheduler = "^3.10.4"
+setuptools = "^75.8.0"
 
 
 [build-system]
