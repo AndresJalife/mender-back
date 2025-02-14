@@ -2,7 +2,7 @@ from src.model import dto
 from ..service import auth as app_auth
 from ..service.UserService import UserService
 
-from fastapi import APIRouter, HTTPException, Depends
+from fastapi import APIRouter, HTTPException, Depends, BackgroundTasks
 from starlette.responses import JSONResponse
 
 from ..config.database import Database, get_db
@@ -17,8 +17,8 @@ user_router = APIRouter(
 )
 
 
-def get_user_service(db: Database = Depends(get_db)) -> UserService:
-    return UserService(db)
+def get_user_service(background_tasks: BackgroundTasks, db: Database = Depends(get_db)) -> UserService:
+    return UserService(db, background_tasks)
 
 
 @user_router.post("", description="Creates a user",

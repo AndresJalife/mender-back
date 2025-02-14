@@ -14,9 +14,10 @@ from src.service.UserService import UserService
 
 class GeneralService:
 
-    def __init__(self, db: Database):
+    def __init__(self, db: Database, background_tasks):
         self.db = db
-        self.user_service = UserService(db)
+        self.user_service = UserService(db, background_tasks)
+        self.background_tasks = background_tasks
 
     def create_user(self, user_dto):
         try:

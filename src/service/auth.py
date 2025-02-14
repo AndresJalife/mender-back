@@ -1,12 +1,12 @@
 from firebase_admin import auth
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
-from fastapi import Depends, Response, status, HTTPException, Request
+from fastapi import Depends, Response, status, HTTPException, Request, BackgroundTasks
 from src.config.database import Database, get_db
 from src.service.UserService import UserService
 
 
-def get_user_service(db: Database = Depends(get_db)) -> UserService:
-    return UserService(db)
+def get_user_service(background_tasks: BackgroundTasks, db: Database = Depends(get_db)) -> UserService:
+    return UserService(db, background_tasks)
 
 
 def authenticate_and_get_user(req: Request, res: Response,

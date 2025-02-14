@@ -51,7 +51,7 @@ class Post(Base):
     comments = Column(Integer, default=0)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
-    comments = relationship("Comments", back_populates="post")
+    comments_entity = relationship("Comments", back_populates="post", cascade="all, delete-orphan")
     user_post_info = relationship("UserPostInfo", back_populates="post")
     playlist_item = relationship("PlaylistItem", back_populates="post")
 
@@ -59,8 +59,8 @@ class Post(Base):
 class Comments(Base):
     __tablename__ = 'comments'
 
-    post_id = Column(Integer, ForeignKey('post.post_id'), nullable=False, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False, primary_key=True)
+    post_id = Column(Integer, ForeignKey('post.post_id', ondelete="CASCADE"), nullable=False, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.user_id', ondelete="CASCADE"), nullable=False, primary_key=True)
     comment = Column(String, nullable=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
@@ -71,8 +71,8 @@ class Comments(Base):
 class UserPostInfo(Base):
     __tablename__ = 'user_post_info'
 
-    user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False, primary_key=True)
-    post_id = Column(Integer, ForeignKey('post.post_id'), nullable=False, primary_key=True)
+    user_id = Column(Integer, ForeignKey('user.user_id', ondelete="CASCADE"), nullable=False, primary_key=True)
+    post_id = Column(Integer, ForeignKey('post.post_id', ondelete="CASCADE"), nullable=False, primary_key=True)
     liked = Column(Boolean, default=False)
     user_rating = Column(Float, default=0)
     seen = Column(Boolean, default=False)
@@ -87,7 +87,7 @@ class Playlist(Base):
     __tablename__ = 'playlist'
 
     playlist_id = Column(Integer, primary_key=True, name="playlist_id", autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.user_id', ondelete="CASCADE"), nullable=False)
     name = Column(String, nullable=False)
     description = Column(String)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
@@ -101,7 +101,7 @@ class PlaylistItem(Base):
     __tablename__ = 'playlist_item'
 
     playlist_item_id = Column(Integer, primary_key=True, name="playlist_item_id", autoincrement=True)
-    playlist_id = Column(Integer, ForeignKey('playlist.playlist_id'), nullable=False)
+    playlist_id = Column(Integer, ForeignKey('playlist.playlist_id', ondelete="CASCADE"), nullable=False)
     post_id = Column(Integer, ForeignKey('post.post_id'), nullable=False)
     order = Column(Integer, nullable=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
@@ -114,8 +114,8 @@ class ImplicitData(Base):
     __tablename__ = 'implicit_data'
 
     implicit_data_id = Column(Integer, primary_key=True, name="implicit_data_id", autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
-    post_id = Column(Integer, ForeignKey('post.post_id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.user_id', ondelete="CASCADE"), nullable=False)
+    post_id = Column(Integer, ForeignKey('post.post_id', ondelete="CASCADE"), nullable=False)
     clicked = Column(Boolean, default=False)
     miliseconds_seen = Column(BigInteger, default=0)
     comments = Column(Integer, default=0)
@@ -129,8 +129,8 @@ class SavedPlaylist(Base):
     __tablename__ = 'saved_playlist'
 
     saved_playlist_id = Column(Integer, primary_key=True, name="saved_playlist_id", autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
-    playlist_id = Column(Integer, ForeignKey('playlist.playlist_id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.user_id', ondelete="CASCADE"), nullable=False)
+    playlist_id = Column(Integer, ForeignKey('playlist.playlist_id', ondelete="CASCADE"), nullable=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
     user = relationship("User", back_populates="saved_playlist")
@@ -141,7 +141,7 @@ class ChatHistory(Base):
     __tablename__ = 'chat_history'
 
     message_id = Column(Integer, primary_key=True, name="message_id", autoincrement=True)
-    user_id = Column(Integer, ForeignKey('user.user_id'), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.user_id', ondelete="CASCADE"), nullable=False)
     bot_made = Column(Boolean, default=False)
     order = Column(Integer, nullable=False)
     message = Column(String, nullable=False)

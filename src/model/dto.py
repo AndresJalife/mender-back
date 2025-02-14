@@ -20,13 +20,27 @@ class User(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
-class Post:
+class Post(BaseModel):
+    post_id: Optional[int] = None
+    entity_id: Optional[int] = None
+    entity_type: Optional[str] = None
+    likes: Optional[int] = None
+    comments: Optional[int] = None
+    created_date: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+
+class Playlist(BaseModel):
     pass
 
 
-class Playlist:
-    pass
+class PostSeen(BaseModel):
+    time_seen: int
 
 
-class PostSeen:
-    pass
+class Comment(BaseModel):
+    comment: str
+
+
+class Rate(BaseModel):
+    rating: float
