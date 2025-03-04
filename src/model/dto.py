@@ -44,3 +44,10 @@ class Comment(BaseModel):
 
 class Rate(BaseModel):
     rating: float
+
+
+class Message:
+    bot_made: bool
+    order: int
+    message: str
+    model_config = ConfigDict(from_attributes=True)

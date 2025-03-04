@@ -149,16 +149,3 @@ class ChatHistory(Base):
 
     user = relationship("User", back_populates="chat_history")
 
-
-# class Movie(Base):
-#     __tablename__ = 'movie'
-#
-#     movie_id = Column(Integer, primary_key=True, name="movie_id", autoincrement=True)
-#     title = Column(String, nullable=False)
-#     description = Column(String)
-#     year = Column(Integer)
-#     rating = Column(Float)
-#     created_date = Column(FormattedDate, name="created_date", default=date.today())
-#
-#     movie_genre = relationship("MovieGenre", back_populates="movie")
-#     movie_actor = relationship("MovieActor", back_populates="movie")
