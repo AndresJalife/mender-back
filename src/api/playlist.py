@@ -53,4 +53,4 @@ async def remove_post_from_playlist(playlist_id: str, post_id: str, user: User =
 @playlist_router.post("/{playlist_id}/saved", description="", response_model=dto.Playlist)
 async def save_playlist(playlist_id: str, user: User = Depends(authenticate_and_get_user),
                         playlist_service: PlaylistService = Depends(get_playlist_service)):
-        return playlist_service.save_playlist(playlist_id)
+        return playlist_service.save_playlist(user, playlist_id)

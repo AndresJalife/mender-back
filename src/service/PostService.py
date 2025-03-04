@@ -1,7 +1,6 @@
 from fastapi import HTTPException, BackgroundTasks
 
 from src.config.database import Database
-from src.model.dto import Comment
 from src.models import Post, UserPostInfo, Comments
 from src.service.Logger import Logger
 
@@ -44,7 +43,8 @@ class PostService:
         self.background_tasks.add_task(self._rate_user_post, post_id, user, rate.rating)
 
     def see_post(self, post_id, user):
-        pass
+        self.logger.info(f"Seeing post: {post_id} for user: {user.id}")
+        self.background_tasks.add_task(self._see_user_post, post_id, user)
 
     def _sum_to_post_likes(self, post_id):
         post = self.db.query(Post).filter(Post.post_id == post_id).first()
@@ -82,4 +82,9 @@ class PostService:
     def _rate_user_post(self, post_id, user, rating):
         user_post_info = self.get_or_create_post_info(post_id, user)
         user_post_info.user_rating = rating
+        self.db.commit()
+
+    def _see_user_post(self, post_id, user):
+        user_post_info = self.get_or_create_post_info(post_id, user)
+        user_post_info.seen = True
         self.db.commit()
