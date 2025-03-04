@@ -2,7 +2,7 @@ from fastapi import HTTPException, BackgroundTasks
 
 from src.config.database import Database
 from src.models import Post, UserPostInfo, Comments
-from src.service.Logger import Logger
+from src.service.Logger import logger
 
 from src.service.UserService import UserService
 from src.service.recommendation.RecommendationService import RecommendationService
@@ -12,38 +12,37 @@ class PostService:
 
     def __init__(self, db: Database, background_tasks: BackgroundTasks):
         self.db = db
-        self.logger = Logger()
         self.user_service = UserService
         self.recommendation_service = RecommendationService(self.db)
         self.background_tasks = background_tasks
 
     def get_posts(self, user):
-        self.logger.info(f"Getting posts for user: {user.id}")
+        logger.info(f"Getting posts for user: {user.id}")
         return self.recommendation_service.get_recommendation(user.user_id)
 
     def get_post(self, post_id):
-        self.logger.info(f"Getting post: {post_id}")
+        logger.info(f"Getting post: {post_id}")
         post = self.db.query(Post).filter(Post.post_id == post_id).first()
         if post is None:
             raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
         return post
 
     def like_post(self, post_id, user):
-        self.logger.info(f"Liking post: {post_id} for user: {user.id}")
+        logger.info(f"Liking post: {post_id} for user: {user.id}")
         self.background_tasks.add_task(self._sum_to_post_likes, post_id)
         self.background_tasks.add_task(self._like_user_post, post_id, user)
 
     def comment_post(self, post_id, user, comment):
-        self.logger.info(f"Commenting post: {post_id} for user: {user.id}")
+        logger.info(f"Commenting post: {post_id} for user: {user.id}")
         self.background_tasks.add_task(self._sum_to_post_comments, post_id)
         self.background_tasks.add_task(self._comment_user_post, post_id, user, comment)
 
     def rate_post(self, post_id, user, rate):
-        self.logger.info(f"Rating post: {post_id} for user: {user.id}")
+        logger.info(f"Rating post: {post_id} for user: {user.id}")
         self.background_tasks.add_task(self._rate_user_post, post_id, user, rate.rating)
 
     def see_post(self, post_id, user):
-        self.logger.info(f"Seeing post: {post_id} for user: {user.id}")
+        logger.info(f"Seeing post: {post_id} for user: {user.id}")
         self.background_tasks.add_task(self._see_user_post, post_id, user)
 
     def _sum_to_post_likes(self, post_id):
