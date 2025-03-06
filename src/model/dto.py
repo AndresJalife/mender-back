@@ -46,7 +46,7 @@ class Rate(BaseModel):
     rating: float
 
 
-class Message:
+class Message(BaseModel):
     bot_made: bool
     order: int
     message: str

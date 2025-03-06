@@ -6,14 +6,12 @@ from src.config.database import Database
 from src.model import dto
 from src.models import User
 from src.service.Logger import logger
-from src.service.PostService import PostService
 
 
 class UserService:
     def __init__(self, db: Database, background_tasks: BackgroundTasks):
         self.db = db
         self.background_tasks = background_tasks
-        self.post_service = PostService(db, background_tasks)
 
     def create_user(self, request: dto.User):
         logger.info(f"Creating user {request.email} with request: {request.dict(exclude={'password'})}")
