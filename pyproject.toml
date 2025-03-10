@@ -4,7 +4,6 @@ version = "0.1.0"
 description = "Backend for Mender APP"
 license = "MIT"
 authors = ["Andres Jalife <andres.jalife@mercadolibre.com>"]
-readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.10"
