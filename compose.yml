@@ -18,25 +18,25 @@ services:
         aliases:
           - postgres_host
 
-#  backend:
-#    container_name: "backend"
-#    build:
-#      context: .
-#      dockerfile: Dockerfile
-#    restart: unless-stopped
-#    ports:
-#      - "8443:8443"
-#    env_file:
-#      - .env
-#    depends_on:
-#      - postgres
-#    volumes:
-#      - ./log:/app/log
-#    mem_limit: 512m
-#    networks:
-#      ig-network:
-#        aliases:
-#          - backend_host
+  backend:
+    container_name: "backend"
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8443:8443"
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+    volumes:
+      - ./log:/app/log
+    mem_limit: 512m
+    networks:
+      ig-network:
+        aliases:
+          - backend_host
 networks:
   ig-network:
     name: int-net
