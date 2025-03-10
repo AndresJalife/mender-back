@@ -13,7 +13,7 @@ WORKDIR /app
 COPY poetry.lock pyproject.toml ./
 RUN poetry config virtualenvs.in-project true \
     && poetry config virtualenvs.path /app/venv \
-    && poetry install
+    && poetry install --no-root
 
 COPY . /app
 
