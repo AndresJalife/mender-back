@@ -27,7 +27,8 @@ def upgrade() -> None:
                     sa.Column('new', sa.Boolean(), nullable=True),
                     sa.Column('sex', sa.String(), nullable=True),
                     sa.Column('language', sa.String(), nullable=True),
-                    sa.Column('username', sa.String(), nullable=True)
+                    sa.Column('username', sa.String(), nullable=True),
+                    sa.PrimaryKeyConstraint('post_id')
     )
     # ### end Alembic commands ###
 
