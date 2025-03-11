@@ -52,7 +52,7 @@ class UserService:
         logger.info(f"User {user_id} updated")
 
     def _create_db_user(self, request):
-        db_user = User(**request.dict())
+        db_user = User(**request.dict(exclude={'password'}))
         self.db.add(db_user)
         self.db.commit()
         return db_user.user_id

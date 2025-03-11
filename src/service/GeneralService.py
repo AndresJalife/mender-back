@@ -21,7 +21,7 @@ class GeneralService:
 
     def create_user(self, user_dto):
         try:
-            user = self.user_service.create_user(User(user_dto))
+            user = self.user_service.create_user(user_dto)
             logger.info(f'User: {user_dto.email} signed up')
             return user
         except HTTPError as e:
