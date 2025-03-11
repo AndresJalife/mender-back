@@ -64,7 +64,7 @@ class Comments(Base):
     comment = Column(String, nullable=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
-    post = relationship("Post", back_populates="comments")
+    post = relationship("Post", back_populates="comments_entity")
     user = relationship("User", back_populates="comments")
 
 
