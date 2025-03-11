@@ -46,8 +46,7 @@ class GeneralService:
                 'token': jwt,
                 'email': request.email,
                 'name': user['displayName'],
-                'user_id': decoded_token['userId'],
-                'admin': decoded_token['admin'],
+                'user_id': decoded_token['userId']
             },
                     status_code=200)
         except HTTPError as e:
