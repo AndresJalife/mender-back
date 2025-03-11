@@ -54,6 +54,7 @@ class Post(Base):
     comments_entity = relationship("Comments", back_populates="post", cascade="all, delete-orphan")
     user_post_info = relationship("UserPostInfo", back_populates="post")
     playlist_item = relationship("PlaylistItem", back_populates="post")
+    implicit_data = relationship("ImplicitData", back_populates="post")
 
 
 class Comments(Base):
