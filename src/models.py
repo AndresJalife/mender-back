@@ -39,6 +39,7 @@ class User(Base):
     playlist = relationship("Playlist", back_populates="user")
     saved_playlist = relationship("SavedPlaylist", back_populates="user")
     implicit_data = relationship("ImplicitData", back_populates="user")
+    chat_history = relationship("ChatHistory", back_populates="post")
 
 
 class Post(Base):
@@ -55,7 +56,6 @@ class Post(Base):
     user_post_info = relationship("UserPostInfo", back_populates="post")
     playlist_item = relationship("PlaylistItem", back_populates="post")
     implicit_data = relationship("ImplicitData", back_populates="post")
-    chat_history = relationship("ChatHistory", back_populates="post")
 
 
 
