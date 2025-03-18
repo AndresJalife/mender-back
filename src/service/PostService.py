@@ -1,6 +1,7 @@
 from fastapi import HTTPException, BackgroundTasks
 
 from src.config.database import Database
+from src.model import dto
 from src.models import Post, UserPostInfo, Comments
 from src.service.Logger import logger
 
@@ -11,18 +12,41 @@ from src.service.recommendation.RecommendationService import RecommendationServi
 class PostService:
 
     def __init__(self, db: Database, background_tasks: BackgroundTasks):
+        logger.info(f"Initializing PostService")
         self.db = db
         self.user_service = UserService
-        self.recommendation_service = RecommendationService(self.db)
+        self.recommendation_service = RecommendationService(self.db, background_tasks)
         self.background_tasks = background_tasks
 
     def get_posts(self, user):
-        logger.info(f"Getting posts for user: {user.id}")
-        return self.recommendation_service.get_recommendation(user.user_id)
+        logger.info(f"Getting posts for user: {user.user_id}")
+        entity_ids = self.recommendation_service.get_recommendation(user.user_id)
+        logger.info(f"Getting posts: {entity_ids}")
+        # [802119, 441130, 278154, 414419, 381289, 446893, 679, 637, 431580, 417859]
+        posts = []
+        for entity_id in entity_ids:
+            posts.append(self.get_post_by_entity(entity_id, 'm'))
+        return posts
+
+    def create_post(self, request: dto.Post):
+        try:
+            db_post = Post(**request.dict())
+            self.db.add(db_post)
+            self.db.commit()
+        except Exception as e:
+            logger.error(f"Error creating user {request.entity_id}: {e}")
+            raise HTTPException(detail={'message': f'{e}'}, status_code=400)
 
     def get_post(self, post_id):
         logger.info(f"Getting post: {post_id}")
         post = self.db.query(Post).filter(Post.post_id == post_id).first()
+        if post is None:
+            raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
+        return post
+
+    def get_post_by_entity(self, entity_id, entity_type):
+        logger.info(f"Getting post: {entity_id}")
+        post = self.db.query(Post).filter((Post.entity_id == entity_id) and (Post.entity_type == entity_type)).first()
         if post is None:
             raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
         return post

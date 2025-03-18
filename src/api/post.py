@@ -23,6 +23,11 @@ async def get_posts(user: User = Depends(authenticate_and_get_user),
                     post_service: PostService = Depends(get_post_service)):
     return post_service.get_posts(user)
 
+@post_router.post("", description="Creates a new post", response_model=None)
+async def create_post(request: dto.Post,
+                      user: User = Depends(authenticate_and_get_user),
+                      post_service: PostService = Depends(get_post_service)):
+    post_service.create_post(request)
 
 @post_router.get("/{post_id}", description="Gets details of a post", response_model=dto.Post)
 async def get_post(post_id: str, user: User = Depends(authenticate_and_get_user),
@@ -61,3 +66,4 @@ async def see_post(post_id: str,
                    user: User = Depends(authenticate_and_get_user),
                    post_service: PostService = Depends(get_post_service)):
     return post_service.see_post(post_id, user)
+

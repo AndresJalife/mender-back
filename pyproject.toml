@@ -17,6 +17,10 @@ pyrebase4 = "^4.8.0"
 cryptography = "^42.0.7"
 apscheduler = "^3.10.4"
 setuptools = "^75.8.0"
+pandas = "^2.2.3"
+numpy = "^2.2.3"
+scipy = "^1.15.2"
+scikit-learn = "^1.6.1"
 
 
 [build-system]

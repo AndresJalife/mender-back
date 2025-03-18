@@ -10,6 +10,7 @@ from src.service.Logger import logger
 
 class UserService:
     def __init__(self, db: Database, background_tasks: BackgroundTasks):
+        logger.info(f"Initializing UserService")
         self.db = db
         self.background_tasks = background_tasks
 
