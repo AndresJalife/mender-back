@@ -47,7 +47,7 @@ class Rate(BaseModel):
 
 
 class Message(BaseModel):
-    bot_made: bool
-    order: int
+    bot_made: Optional[bool] = None
+    order: Optional[int] = None
     message: str
     model_config = ConfigDict(from_attributes=True)
