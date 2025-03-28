@@ -23,6 +23,8 @@ class ChatService:
         if not chat:
             return []
 
+        return chat
+
     def send_message(self, user, message):
         logger.info(f"Sending message from user {user.user_id}")
         next_order = self._save_message(user, message)
