@@ -38,6 +38,8 @@ class Post(BaseModel):
     entity_type: Optional[str] = None
     entity: Optional[Entity] = None
     likes: Optional[int] = None
+    liked: Optional[bool] = None
+    seen: Optional[bool] = None
     comments: Optional[int] = None
     created_date: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)

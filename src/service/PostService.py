@@ -40,6 +40,8 @@ class PostService:
                     "rating": 8.7
                 },
                 "likes": 40,
+                "liked": True,
+                "seen": False,
                 "comments": 3
             },
             {
@@ -58,6 +60,8 @@ class PostService:
                     "rating": 8.3
                 },
                 "likes": 15,
+                "liked": False,
+                "seen": True,
                 "comments": 0
             }
         ]
@@ -153,3 +157,13 @@ class PostService:
         user_post_info = self.get_or_create_post_info(post_id, user)
         user_post_info.seen = True
         self.db.commit()
+
+    def search_posts(self, q):
+        #         search for posts with q in title or director
+        logger.info(f"Searched for posts: {q}")
+
+    def get_comments(self, post_id):
+        logger.info(f"Getting comments for post: {post_id}")
+        comments = self.db.query(Comments).filter(Comments.post_id == post_id).all()
+        return comments
+

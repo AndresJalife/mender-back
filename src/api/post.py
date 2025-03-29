@@ -1,5 +1,5 @@
 from typing import List
-from fastapi import APIRouter, Depends, BackgroundTasks
+from fastapi import APIRouter, Depends, BackgroundTasks, Query
 
 from ..config.database import Database, get_db
 from ..model import dto
@@ -67,3 +67,17 @@ async def see_post(post_id: str,
                    post_service: PostService = Depends(get_post_service)):
     return post_service.see_post(post_id, user)
 
+
+@post_router.get("/search", description="Searches for posts",
+                    response_model=List[dto.Post])
+async def search_posts(q: str = Query(...),
+                       user: User = Depends(authenticate_and_get_user),
+                       post_service: PostService = Depends(get_post_service)):
+    return post_service.search_posts(q)
+
+@post_router.get("/{post_id}/comments", description="Gets comments of a post",
+                    response_model=List[dto.Comment])
+async def get_comments(post_id: str,
+                       user: User = Depends(authenticate_and_get_user),
+                       post_service: PostService = Depends(get_post_service)):
+    return post_service.get_comments(post_id)
