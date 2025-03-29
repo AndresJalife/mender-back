@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, List
 
 from pydantic import BaseModel, ConfigDict
 
@@ -20,10 +20,23 @@ class User(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class Entity(BaseModel):
+    title: Optional[str] = None
+    overview: Optional[str] = None
+    year: Optional[int] = None
+    link: Optional[str] = None
+    director: Optional[str] = None
+    screenplay: Optional[str] = None
+    genres: Optional[List[str]] = None
+    rating: Optional[float] = None
+    original_language: Optional[str] = None
+
+
 class Post(BaseModel):
     post_id: Optional[int] = None
     entity_id: Optional[int] = None
     entity_type: Optional[str] = None
+    entity: Optional[Entity] = None
     likes: Optional[int] = None
     comments: Optional[int] = None
     created_date: Optional[str] = None
