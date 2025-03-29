@@ -55,6 +55,8 @@ class PostSeen(BaseModel):
 
 class Comment(BaseModel):
     comment: str
+    user: Optional[User] = None
+    created_date: Optional[str] = None
 
 
 class Rate(BaseModel):

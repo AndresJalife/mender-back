@@ -171,6 +171,51 @@ class PostService:
     def search_posts(self, q):
         #         search for posts with q in title or director
         logger.info(f"Searched for posts: {q}")
+        return [
+            {
+                "post_id": 1,
+                "entity_id": 802119,
+                "entity_type": 'm',
+                "entity": {
+                    "title": "The Shawshank Redemption",
+                    "overview": "Imprisoned in the 1940s for the double murder of his wife and her lover, "
+                                "upstanding banker Andy Dufresne begins a new life at the Shawshank prison, "
+                                "where he puts his accounting skills to work for an amoral warden. During his"
+                                " long stretch in prison, Dufresne comes to be admired by the other inmates -- "
+                                "including an older prisoner named Red -- for his integrity and unquenchable sense of hope.",
+                    "year": 1994,
+                    "link": "xyXX8LXiNJ4",
+                    "director": "Frank Darabont",
+                    "screenplay": "Stephen King",
+                    "genres": ["Drama", "Crime"],
+                    "rating": 8.7
+                },
+                "likes": 40,
+                "liked": True,
+                "seen": False,
+                "comments": 3
+            },
+            {
+                "post_id": 2,
+                "entity_id": 802114,
+                "entity_type": 'm',
+                "entity": {
+                    "title": "Flow",
+                    "overview": "A solitary cat, displaced by a great flood, finds refuge on a boat with various species "
+                                "and must navigate the challenges of adapting to a transformed world together.",
+                    "year": 2024,
+                    "link": "l5zSgSuIDU4",
+                    "director": "Gints Zilbalodis",
+                    "screenplay": "Matīss Kaža",
+                    "genres": ["Animation", "Fantasy", "Adventure"],
+                    "rating": 8.3
+                },
+                "likes": 15,
+                "liked": False,
+                "seen": True,
+                "comments": 0
+            }
+        ]
 
     def get_comments(self, post_id):
         logger.info(f"Getting comments for post: {post_id}")
