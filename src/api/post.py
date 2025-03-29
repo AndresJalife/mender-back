@@ -29,6 +29,13 @@ async def create_post(request: dto.Post,
                       post_service: PostService = Depends(get_post_service)):
     post_service.create_post(request)
 
+@post_router.get("/search", description="Searches for posts",
+                 response_model=List[dto.Post])
+async def search_posts(q: str = Query(...),
+                       user: User = Depends(authenticate_and_get_user),
+                       post_service: PostService = Depends(get_post_service)):
+    return post_service.search_posts(q)
+
 @post_router.get("/{post_id}", description="Gets details of a post", response_model=dto.Post)
 async def get_post(post_id: str, user: User = Depends(authenticate_and_get_user),
                    post_service: PostService = Depends(get_post_service)):
@@ -67,13 +74,6 @@ async def see_post(post_id: str,
                    post_service: PostService = Depends(get_post_service)):
     return post_service.see_post(post_id, user)
 
-
-@post_router.get("/search", description="Searches for posts",
-                    response_model=List[dto.Post])
-async def search_posts(q: str = Query(...),
-                       user: User = Depends(authenticate_and_get_user),
-                       post_service: PostService = Depends(get_post_service)):
-    return post_service.search_posts(q)
 
 @post_router.get("/{post_id}/comments", description="Gets comments of a post",
                     response_model=List[dto.Comment])
