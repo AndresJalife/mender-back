@@ -124,7 +124,12 @@ class PostService:
 
     def _like_user_post(self, post_id, user):
         user_post_info = self.get_or_create_post_info(post_id, user)
-        user_post_info.liked = True
+
+        if not user_post_info.liked:
+            user_post_info.liked = True
+        else:
+            user_post_info.liked = False
+
         self.db.commit()
 
     def get_or_create_post_info(self, post_id, user):
@@ -155,7 +160,12 @@ class PostService:
 
     def _see_user_post(self, post_id, user):
         user_post_info = self.get_or_create_post_info(post_id, user)
-        user_post_info.seen = True
+
+        if not user_post_info.seen:
+            user_post_info.seen = True
+        else:
+            user_post_info.seen = False
+
         self.db.commit()
 
     def search_posts(self, q):
