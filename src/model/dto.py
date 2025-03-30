@@ -19,33 +19,47 @@ class User(BaseModel):
     uid: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class Genre(BaseModel):
     genre_id: Optional[int] = None
     genre: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
+
 
 class Actor(BaseModel):
     actor_id: Optional[int] = None
     actor: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class ProductionCompany(BaseModel):
     production_company_id: Optional[int] = None
     production_company: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
+
 
 class WatchProvider(BaseModel):
     watch_provider_id: Optional[int] = None
     watch_provider: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
+
 class Entity(BaseModel):
+    entity_id: Optional[int] = None
+    entity_type: Optional[str] = None
+    tmbd_id: Optional[int] = None
+    imdb_id: Optional[str] = None
     title: Optional[str] = None
+    vote_average: Optional[float] = None
+    release_date: Optional[str] = None
+    revenue: Optional[int] = None
+    runtime: Optional[int] = None
     overview: Optional[str] = None
-    year: Optional[int] = None
-    link: Optional[str] = None
+    popularity: Optional[float] = None
+    tagline: Optional[str] = None
+    trailer: Optional[str] = None
     director: Optional[str] = None
-    screenplay: Optional[str] = None
+
     genres: Optional[List[Genre]] = None
     actors: Optional[List[Actor]] = None
     production_companies: Optional[List[ProductionCompany]] = None
@@ -57,7 +71,6 @@ class Entity(BaseModel):
 class Post(BaseModel):
     post_id: Optional[int] = None
     entity_id: Optional[int] = None
-    entity_type: Optional[str] = None
     entity: Optional[Entity] = None
     likes: Optional[int] = None
     liked: Optional[bool] = None

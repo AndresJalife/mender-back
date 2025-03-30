@@ -47,7 +47,6 @@ class Post(Base):
 
     post_id = Column(Integer, primary_key=True, name="post_id", autoincrement=True)
     entity_id = Column(Integer, ForeignKey('entity.entity_id', ondelete="CASCADE"), nullable=False)
-    entity_type = Column(String, nullable=False)
     likes = Column(Integer, default=0)
     comments = Column(Integer, default=0)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
