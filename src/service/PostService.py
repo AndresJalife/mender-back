@@ -6,7 +6,7 @@ from src.models import Post, UserPostInfo, Comments
 from src.service.Logger import logger
 
 from src.service.UserService import UserService
-from src.service.recommendation.RecommendationService import RecommendationService
+from src.service.recommendation.RecommendationService import recommendation_service
 
 
 class PostService:
@@ -15,8 +15,18 @@ class PostService:
         logger.info(f"Initializing PostService")
         self.db = db
         self.user_service = UserService
-        self.recommendation_service = RecommendationService(self.db, background_tasks)
+        self.recommendation_service = recommendation_service
         self.background_tasks = background_tasks
+
+    # def get_posts(self, user):
+    #     logger.info(f"Getting posts for user: {user.user_id}")
+    #     entity_ids = self.recommendation_service.get_recommendation(user.user_id)
+    #     logger.info(f"Getting posts: {entity_ids}")
+    #     # [802119, 441130, 278154, 414419, 381289, 446893, 679, 637, 431580, 417859]
+    #     posts = []
+    #     for entity_id in entity_ids:
+    #         posts.append(self.get_post_by_entity(entity_id, 'm'))
+    #     return posts
 
     def get_posts(self, user):
         logger.info(f"Getting posts for user: {user.user_id}")
@@ -65,14 +75,6 @@ class PostService:
                 "comments": 0
             }
         ]
-
-        # entity_ids = self.recommendation_service.get_recommendation(user.user_id)
-        # logger.info(f"Getting posts: {entity_ids}")
-        # # [802119, 441130, 278154, 414419, 381289, 446893, 679, 637, 431580, 417859]
-        # posts = []
-        # for entity_id in entity_ids:
-        #     posts.append(self.get_post_by_entity(entity_id, 'm'))
-        # return posts
 
     def create_post(self, request: dto.Post):
         try:
