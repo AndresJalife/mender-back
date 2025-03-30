@@ -33,7 +33,7 @@ services:
     volumes:
       - ./log:/app/log
       - ./src/service/recommendation/ratings_with_id32.csv:/data/ratings_with_id32.csv
-    mem_limit: 1024m
+    mem_limit: 1536m
     networks:
       ig-network:
         aliases:
