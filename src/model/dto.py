@@ -19,6 +19,25 @@ class User(BaseModel):
     uid: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
+class Genre(BaseModel):
+    genre_id: Optional[int] = None
+    genre: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+class Actor(BaseModel):
+    actor_id: Optional[int] = None
+    actor: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+class ProductionCompany(BaseModel):
+    production_company_id: Optional[int] = None
+    production_company: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
+
+class WatchProvider(BaseModel):
+    watch_provider_id: Optional[int] = None
+    watch_provider: Optional[str] = None
+    model_config = ConfigDict(from_attributes=True)
 
 class Entity(BaseModel):
     title: Optional[str] = None
@@ -27,7 +46,10 @@ class Entity(BaseModel):
     link: Optional[str] = None
     director: Optional[str] = None
     screenplay: Optional[str] = None
-    genres: Optional[List[str]] = None
+    genres: Optional[List[Genre]] = None
+    actors: Optional[List[Actor]] = None
+    production_companies: Optional[List[ProductionCompany]] = None
+    watch_providers: Optional[List[WatchProvider]] = None
     rating: Optional[float] = None
     original_language: Optional[str] = None
 
