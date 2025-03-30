@@ -12,7 +12,6 @@ services:
       - .env
     ports:
       - "5432:5432"
-    mem_limit: 512m
     networks:
       ig-network:
         aliases:
@@ -33,7 +32,6 @@ services:
     volumes:
       - ./log:/app/log
       - ./src/service/recommendation/ratings_with_id32.csv:/data/ratings_with_id32.csv
-    mem_limit: 1536m
     networks:
       ig-network:
         aliases:
