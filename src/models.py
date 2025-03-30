@@ -160,8 +160,7 @@ class EntityGenre(Base):
     name = Column(String, nullable=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
-    entity = relationship("Entity", back_populates="entity_genre")
-    genre = relationship("Genre", back_populates="entity_genre")
+    entity = relationship("Entity", back_populates="genres")
 
 class EntityProductionCompany(Base):
     __tablename__ = 'entity_production_company'
@@ -171,18 +170,17 @@ class EntityProductionCompany(Base):
     name = Column(String, nullable=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
-    entity = relationship("Entity", back_populates="entity_production_company")
-    production_company = relationship("ProductionCompany", back_populates="entity_production_company")
+    entity = relationship("Entity", back_populates="entity_production_companies")
 
 class WatchProvider(Base):
     __tablename__ = 'watch_provider'
 
     watch_provider_id = Column(Integer, primary_key=True, name="watch_provider_id", autoincrement=True)
-    provider_id = Column(Integer, nullable=False)
     provider_name = Column(String, nullable=False)
+    entity_id = Column(Integer, ForeignKey('entity.entity_id', ondelete="CASCADE"), nullable=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
-    watch_providers = relationship("WatchProviders", back_populates="watch_provider")
+    entity = relationship("Entity", back_populates="watch_providers")
 
 class Actor(Base):
     __tablename__ = 'actor'
@@ -192,7 +190,8 @@ class Actor(Base):
     entity_id = Column(Integer, ForeignKey('entity.entity_id', ondelete="CASCADE"), nullable=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
-    actors = relationship("Actors", back_populates="actor")
+    entity = relationship("Entity", back_populates="actors")
+
 class Entity(Base):
     __tablename__ = 'entity'
 

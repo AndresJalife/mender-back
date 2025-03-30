@@ -1,16 +1,11 @@
 import os
 
-from firebase_admin import auth
-from fastapi import HTTPException, BackgroundTasks
-from firebase_admin import auth as fauth
 import pandas as pd
 import numpy as np
 from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
 
 from src.config.database import Database, get_db
-from src.model import dto
-from src.models import User
 from src.service.Logger import logger
 
 class RecommendationService:
@@ -34,6 +29,8 @@ class RecommendationService:
         item_index = [self.movie_mapper[i] for i in self.ratings['movie_id']]
 
         self.X = csr_matrix((self.ratings["rating"], (user_index, item_index)), shape=(M, N))
+
+        logger.info(f"RecommendationService initialized")
 
     def find_similar_users_to_movies(self, rated_movies, k=10, metric='cosine'):
         """
