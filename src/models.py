@@ -152,3 +152,72 @@ class ChatHistory(Base):
 
     user = relationship("User", back_populates="chat_history")
 
+class EntityGenre(Base):
+    __tablename__ = 'entity_genre'
+
+    entity_genre_id = Column(Integer, primary_key=True, name="entity_genre_id", autoincrement=True)
+    entity_id = Column(Integer, ForeignKey('entity.entity_id', ondelete="CASCADE"), nullable=False)
+    name = Column(String, nullable=False)
+    created_date = Column(FormattedDate, name="created_date", default=date.today())
+
+    entity = relationship("Entity", back_populates="entity_genre")
+    genre = relationship("Genre", back_populates="entity_genre")
+
+class EntityProductionCompany(Base):
+    __tablename__ = 'entity_production_company'
+
+    entity_production_company_id = Column(Integer, primary_key=True, name="entity_production_company_id", autoincrement=True)
+    entity_id = Column(Integer, ForeignKey('entity.entity_id', ondelete="CASCADE"), nullable=False)
+    name = Column(String, nullable=False)
+    created_date = Column(FormattedDate, name="created_date", default=date.today())
+
+    entity = relationship("Entity", back_populates="entity_production_company")
+    production_company = relationship("ProductionCompany", back_populates="entity_production_company")
+
+class WatchProvider(Base):
+    __tablename__ = 'watch_provider'
+
+    watch_provider_id = Column(Integer, primary_key=True, name="watch_provider_id", autoincrement=True)
+    provider_id = Column(Integer, nullable=False)
+    provider_name = Column(String, nullable=False)
+    created_date = Column(FormattedDate, name="created_date", default=date.today())
+
+    watch_providers = relationship("WatchProviders", back_populates="watch_provider")
+
+class Actor(Base):
+    __tablename__ = 'actor'
+
+    actor_id = Column(Integer, primary_key=True, name="actor_id", autoincrement=True)
+    name = Column(String, nullable=False)
+    entity_id = Column(Integer, ForeignKey('entity.entity_id', ondelete="CASCADE"), nullable=False)
+    created_date = Column(FormattedDate, name="created_date", default=date.today())
+
+    actors = relationship("Actors", back_populates="actor")
+class Entity(Base):
+    __tablename__ = 'entity'
+
+    entity_id = Column(Integer, primary_key=True, name="entity_id", autoincrement=True)
+    entity_type = Column(String, nullable=False)
+    tmbd_id = Column(Integer)
+    imdb_id = Column(String)
+    title = Column(String)
+    vote_average = Column(Float)
+    release_date = Column(FormattedDate)
+    revenue = Column(BigInteger)
+    runtime = Column(Integer)
+    budget = Column(BigInteger)
+    original_language = Column(String)
+    overview = Column(String)
+    popularity = Column(Float)
+    tagline = Column(String)
+    trailer = Column(String)
+    director = Column(String)
+    created_date = Column(FormattedDate, name="created_date", default=date.today())
+
+    post = relationship("Post", back_populates="entity")
+    playlist_item = relationship("PlaylistItem", back_populates="entity")
+    implicit_data = relationship("ImplicitData", back_populates="entity")
+    genres = relationship("EntityGenre", back_populates="entity")
+    entity_production_companies = relationship("EntityProductionCompany", back_populates="entity")
+    actors = relationship("Actor", back_populates="entity")
+    watch_providers = relationship("WatchProviders", back_populates="entity")
