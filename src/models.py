@@ -46,7 +46,7 @@ class Post(Base):
     __tablename__ = 'post'
 
     post_id = Column(Integer, primary_key=True, name="post_id", autoincrement=True)
-    entity_id = Column(Integer, nullable=False)
+    entity_id = Column(Integer, ForeignKey('entity.entity_id', ondelete="CASCADE"), nullable=False)
     entity_type = Column(String, nullable=False)
     likes = Column(Integer, default=0)
     comments = Column(Integer, default=0)
@@ -56,6 +56,7 @@ class Post(Base):
     user_post_info = relationship("UserPostInfo", back_populates="post")
     playlist_item = relationship("PlaylistItem", back_populates="post")
     implicit_data = relationship("ImplicitData", back_populates="post")
+    entity = relationship("Entity", back_populates="post")
 
 
 
@@ -214,9 +215,7 @@ class Entity(Base):
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
     post = relationship("Post", back_populates="entity")
-    playlist_item = relationship("PlaylistItem", back_populates="entity")
-    implicit_data = relationship("ImplicitData", back_populates="entity")
     genres = relationship("EntityGenre", back_populates="entity")
     entity_production_companies = relationship("EntityProductionCompany", back_populates="entity")
     actors = relationship("Actor", back_populates="entity")
-    watch_providers = relationship("WatchProviders", back_populates="entity")
+    watch_providers = relationship("WatchProvider", back_populates="entity")
