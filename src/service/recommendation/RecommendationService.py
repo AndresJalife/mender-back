@@ -1,3 +1,5 @@
+import os
+
 from firebase_admin import auth
 from fastapi import HTTPException, BackgroundTasks
 from firebase_admin import auth as fauth
@@ -17,7 +19,7 @@ class RecommendationService:
         pass
         logger.info(f"Initializing RecommendationService")
         self.db = db
-        self.ratings = pd.read_csv('service/recommendation/data/ratings_with_id32.csv')
+        self.ratings = pd.read_csv(os.getenv("RATINGS_PATH"))
         self.ratings = self.ratings[['user_id', 'movie_id', 'rating']]
         M = self.ratings['user_id'].nunique()
         N = self.ratings['movie_id'].nunique()
