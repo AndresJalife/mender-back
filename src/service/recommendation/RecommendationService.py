@@ -19,13 +19,12 @@ class RecommendationService:
         M = self.ratings['user_id'].nunique()
         N = self.ratings['movie_id'].nunique()
 
-        self.user_mapper = dict(zip(np.unique(self.ratings["user_id"]), list(range(M))))
+        user_mapper = dict(zip(np.unique(self.ratings["user_id"]), list(range(M))))
         self.movie_mapper = dict(zip(np.unique(self.ratings["movie_id"]), list(range(N))))
 
         self.user_inv_mapper = dict(zip(list(range(M)), np.unique(self.ratings["user_id"])))
-        self.movie_inv_mapper = dict(zip(list(range(N)), np.unique(self.ratings["movie_id"])))
 
-        user_index = [self.user_mapper[i] for i in self.ratings['user_id']]
+        user_index = [user_mapper[i] for i in self.ratings['user_id']]
         item_index = [self.movie_mapper[i] for i in self.ratings['movie_id']]
 
         self.X = csr_matrix((self.ratings["rating"], (user_index, item_index)), shape=(M, N))
