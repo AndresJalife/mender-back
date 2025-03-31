@@ -52,9 +52,9 @@ class Post(Base):
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
     comments_entity = relationship("Comments", back_populates="post", cascade="all, delete-orphan")
-    user_post_info = relationship("UserPostInfo", back_populates="post")
-    playlist_item = relationship("PlaylistItem", back_populates="post")
-    implicit_data = relationship("ImplicitData", back_populates="post")
+    user_post_info = relationship("UserPostInfo", back_populates="post", cascade="all, delete-orphan")
+    playlist_item = relationship("PlaylistItem", back_populates="post", cascade="all, delete-orphan")
+    implicit_data = relationship("ImplicitData", back_populates="post", cascade="all, delete-orphan")
     entity = relationship("Entity", back_populates="post")
 
 
@@ -62,8 +62,9 @@ class Post(Base):
 class Comments(Base):
     __tablename__ = 'comments'
 
-    post_id = Column(Integer, ForeignKey('post.post_id', ondelete="CASCADE"), nullable=False, primary_key=True)
-    user_id = Column(Integer, ForeignKey('user.user_id', ondelete="CASCADE"), nullable=False, primary_key=True)
+    comment_id = Column(Integer, primary_key=True, name="comment_id", autoincrement=True)
+    post_id = Column(Integer, ForeignKey('post.post_id', ondelete="CASCADE"), nullable=False)
+    user_id = Column(Integer, ForeignKey('user.user_id', ondelete="CASCADE"), nullable=False)
     comment = Column(String, nullable=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
