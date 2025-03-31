@@ -21,26 +21,26 @@ class User(BaseModel):
 
 
 class Genre(BaseModel):
-    genre_id: Optional[int] = None
-    genre: Optional[str] = None
+    entity_genre_id: Optional[int] = None
+    name: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 
 class Actor(BaseModel):
     actor_id: Optional[int] = None
-    actor: Optional[str] = None
+    name: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 
 class ProductionCompany(BaseModel):
-    production_company_id: Optional[int] = None
-    production_company: Optional[str] = None
+    entity_production_company_id: Optional[int] = None
+    name: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 
 class WatchProvider(BaseModel):
     watch_provider_id: Optional[int] = None
-    watch_provider: Optional[str] = None
+    provider_name: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 

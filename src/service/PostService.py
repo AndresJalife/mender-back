@@ -1,8 +1,9 @@
 from fastapi import HTTPException, BackgroundTasks
+from sqlalchemy.orm import joinedload
 
 from src.config.database import Database
 from src.model import dto
-from src.models import Post, UserPostInfo, Comments
+from src.models import Post, UserPostInfo, Comments, Entity
 from src.service.Logger import logger
 
 from src.service.UserService import UserService
@@ -18,63 +19,77 @@ class PostService:
         self.recommendation_service = recommendation_service
         self.background_tasks = background_tasks
 
+    def get_posts(self, user):
+        logger.info(f"Getting post recommendations for user: {user.user_id}")
+        tmbd_ids = self.recommendation_service.get_recommendation(user.user_id)
+        if not tmbd_ids:
+            return []
+
+        posts = (
+            self.db.query(Post)
+            .join(Entity, Post.entity_id == Entity.entity_id)
+            .options(
+                    joinedload(Post.entity)
+                    .joinedload(Entity.genres),
+                    joinedload(Post.entity)
+                    .joinedload(Entity.actors),
+                    joinedload(Post.entity)
+                    .joinedload(Entity.entity_production_companies),
+                    joinedload(Post.entity)
+                    .joinedload(Entity.watch_providers)
+            )
+            .filter(Entity.tmbd_id.in_(tmbd_ids))
+            .all()
+        )
+        return posts
+
     # def get_posts(self, user):
     #     logger.info(f"Getting posts for user: {user.user_id}")
-    #     entity_ids = self.recommendation_service.get_recommendation(user.user_id)
-    #     logger.info(f"Getting posts: {entity_ids}")
-    #     # [802119, 441130, 278154, 414419, 381289, 446893, 679, 637, 431580, 417859]
-    #     posts = []
-    #     for entity_id in entity_ids:
-    #         posts.append(self.get_post_by_entity(entity_id, 'm'))
-    #     return posts
-
-    def get_posts(self, user):
-        logger.info(f"Getting posts for user: {user.user_id}")
-        return [
-            {
-                "post_id": 1,
-                "entity_id": 802119,
-                "entity_type": 'm',
-                "entity": {
-                    "title": "The Shawshank Redemption",
-                    "overview": "Imprisoned in the 1940s for the double murder of his wife and her lover, "
-                                "upstanding banker Andy Dufresne begins a new life at the Shawshank prison, "
-                                "where he puts his accounting skills to work for an amoral warden. During his"
-                                " long stretch in prison, Dufresne comes to be admired by the other inmates -- "
-                                "including an older prisoner named Red -- for his integrity and unquenchable sense of hope.",
-                    "year": 1994,
-                    "link": "xyXX8LXiNJ4",
-                    "director": "Frank Darabont",
-                    "screenplay": "Stephen King",
-                    "genres": ["Drama", "Crime"],
-                    "rating": 8.7
-                },
-                "likes": 40,
-                "liked": True,
-                "seen": False,
-                "comments": 3
-            },
-            {
-                "post_id": 2,
-                "entity_id": 802114,
-                "entity_type": 'm',
-                "entity": {
-                    "title": "Flow",
-                    "overview": "A solitary cat, displaced by a great flood, finds refuge on a boat with various species "
-                                "and must navigate the challenges of adapting to a transformed world together.",
-                    "year": 2024,
-                    "link": "l5zSgSuIDU4",
-                    "director": "Gints Zilbalodis",
-                    "screenplay": "Matīss Kaža",
-                    "genres": ["Animation", "Fantasy", "Adventure"],
-                    "rating": 8.3
-                },
-                "likes": 15,
-                "liked": False,
-                "seen": True,
-                "comments": 0
-            }
-        ]
+    #     return [
+    #         {
+    #             "post_id": 1,
+    #             "entity_id": 802119,
+    #             "entity_type": 'm',
+    #             "entity": {
+    #                 "title": "The Shawshank Redemption",
+    #                 "overview": "Imprisoned in the 1940s for the double murder of his wife and her lover, "
+    #                             "upstanding banker Andy Dufresne begins a new life at the Shawshank prison, "
+    #                             "where he puts his accounting skills to work for an amoral warden. During his"
+    #                             " long stretch in prison, Dufresne comes to be admired by the other inmates -- "
+    #                             "including an older prisoner named Red -- for his integrity and unquenchable sense of hope.",
+    #                 "year": 1994,
+    #                 "link": "xyXX8LXiNJ4",
+    #                 "director": "Frank Darabont",
+    #                 "screenplay": "Stephen King",
+    #                 "genres": ["Drama", "Crime"],
+    #                 "rating": 8.7
+    #             },
+    #             "likes": 40,
+    #             "liked": True,
+    #             "seen": False,
+    #             "comments": 3
+    #         },
+    #         {
+    #             "post_id": 2,
+    #             "entity_id": 802114,
+    #             "entity_type": 'm',
+    #             "entity": {
+    #                 "title": "Flow",
+    #                 "overview": "A solitary cat, displaced by a great flood, finds refuge on a boat with various species "
+    #                             "and must navigate the challenges of adapting to a transformed world together.",
+    #                 "year": 2024,
+    #                 "link": "l5zSgSuIDU4",
+    #                 "director": "Gints Zilbalodis",
+    #                 "screenplay": "Matīss Kaža",
+    #                 "genres": ["Animation", "Fantasy", "Adventure"],
+    #                 "rating": 8.3
+    #             },
+    #             "likes": 15,
+    #             "liked": False,
+    #             "seen": True,
+    #             "comments": 0
+    #         }
+    #     ]
 
     def create_post(self, request: dto.Post):
         try:
@@ -92,9 +107,9 @@ class PostService:
             raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
         return post
 
-    def get_post_by_entity(self, entity_id, entity_type):
-        logger.info(f"Getting post: {entity_id}")
-        post = self.db.query(Post).filter((Post.entity_id == entity_id) and (Post.entity_type == entity_type)).first()
+    def get_post_by_tmdb_id(self, tmdb_id, entity_type):
+        logger.info(f"Getting post: {tmdb_id}")
+        post = self.db.query(Post).filter((Post.tmdb_id == tmdb_id)).first()
         if post is None:
             raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
         return post

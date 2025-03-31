@@ -1,6 +1,4 @@
-import os
-import ssl
-from datetime import date, timedelta
+import logging
 
 from fastapi import FastAPI
 from starlette.middleware.cors import CORSMiddleware
@@ -42,6 +40,11 @@ app.add_middleware(
 )
 
 setup_exception_handlers(app)
+
+# Configure logging
+logging.basicConfig()
+logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
+
 
 ############# Initialize Database ############
 
