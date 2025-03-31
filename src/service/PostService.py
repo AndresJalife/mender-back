@@ -3,7 +3,7 @@ from sqlalchemy.orm import joinedload
 
 from src.config.database import Database
 from src.model import dto
-from src.models import Post, UserPostInfo, Comments, Entity
+from src.models import Post, UserPostInfo, Comments, Entity, ImplicitData
 from src.service.Logger import logger
 
 from src.service.UserService import UserService
@@ -37,6 +37,7 @@ class PostService:
                     .joinedload(Entity.entity_production_companies),
                     joinedload(Post.entity)
                     .joinedload(Entity.watch_providers)
+                    .joinedload(Post.user_post_info)
             )
             .filter(Entity.tmbd_id.in_(tmbd_ids))
             .all()
@@ -52,7 +53,7 @@ class PostService:
             logger.error(f"Error creating user {request.entity_id}: {e}")
             raise HTTPException(detail={'message': f'{e}'}, status_code=400)
 
-    def get_post(self, post_id):
+    def get_post(self, post_id, user):
         logger.info(f"Getting post: {post_id}")
         post = self.db.query(Post).filter(Post.post_id == post_id).first()
         if post is None:
@@ -65,7 +66,7 @@ class PostService:
     def _update_user_post_click(self, post_id, user_id):
         implicit_data = self.db.query(ImplicitData).filter(ImplicitData.post_id == post_id, ImplicitData.user_id == user_id).first()
         if implicit_data is None:
-            implicit_data = ImplicitData(post_id=post_id, user_id=user_id, clicks=1)
+            implicit_data = ImplicitData(post_id=post_id, user_id=user_id, clicked=True)
             self.db.add(implicit_data)
         else:
            implicit_data.clicked = True
@@ -73,7 +74,6 @@ class PostService:
 
     def like_post(self, post_id, user):
         logger.info(f"Liking post: {post_id} for user: {user.user_id}")
-        self.background_tasks.add_task(self._sum_to_post_likes, post_id)
         self.background_tasks.add_task(self._like_user_post, post_id, user)
 
     def comment_post(self, post_id, user, comment):
@@ -89,11 +89,11 @@ class PostService:
         logger.info(f"Seeing post: {post_id} for user: {user.user_id}")
         self.background_tasks.add_task(self._see_user_post, post_id, user)
 
-    def _sum_to_post_likes(self, post_id):
+    def _sum_to_post_likes(self, post_id, liked):
         post = self.db.query(Post).filter(Post.post_id == post_id).first()
         if post is None:
             raise HTTPException(status_code=404, detail="Post not found")
-        post.likes += 1
+        post.likes += 1 if liked else -1
         self.db.commit()
 
     def _like_user_post(self, post_id, user):
@@ -103,6 +103,8 @@ class PostService:
             user_post_info.liked = True
         else:
             user_post_info.liked = False
+
+        self._sum_to_post_likes(post_id, user_post_info.liked)
 
         self.db.commit()
 

@@ -39,7 +39,7 @@ async def search_posts(q: str = Query(...),
 @post_router.get("/{post_id}", description="Gets details of a post", response_model=dto.Post)
 async def get_post(post_id: str, user: User = Depends(authenticate_and_get_user),
                    post_service: PostService = Depends(get_post_service)):
-    return post_service.get_post(post_id)
+    return post_service.get_post(post_id, user)
 
 
 @post_router.post("/{post_id}/like", description="Likes a post",
