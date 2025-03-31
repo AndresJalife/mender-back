@@ -52,7 +52,7 @@ class Post(Base):
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
     comments_entity = relationship("Comments", back_populates="post", cascade="all, delete-orphan")
-    user_post_info = relationship("UserPostInfo", back_populates="post")
+    user_post_info = relationship("UserPostInfo", back_populates="post", uselist=False)
     playlist_item = relationship("PlaylistItem", back_populates="post")
     implicit_data = relationship("ImplicitData", back_populates="post")
     entity = relationship("Entity", back_populates="post")

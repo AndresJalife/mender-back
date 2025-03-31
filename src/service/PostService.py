@@ -55,7 +55,13 @@ class PostService:
 
     def get_post(self, post_id, user):
         logger.info(f"Getting post: {post_id}")
-        post = self.db.query(Post).filter(Post.post_id == post_id).first()
+        post = (
+            self.db.query(Post)
+            .options(joinedload(Post.user_post_info))
+            .filter(Post.post_id == post_id)
+            .first()
+        )
+
         if post is None:
             raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
         
