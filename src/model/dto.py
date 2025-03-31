@@ -69,8 +69,6 @@ class Entity(BaseModel):
 
 
 class UserPostInfo(BaseModel):
-    user_id: Optional[int] = None
-    post_id: Optional[int] = None
     liked: Optional[bool] = None
     seen: Optional[bool] = None
     user_rating: Optional[float] = None

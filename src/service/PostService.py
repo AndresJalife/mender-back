@@ -36,8 +36,8 @@ class PostService:
                     joinedload(Post.entity)
                     .joinedload(Entity.entity_production_companies),
                     joinedload(Post.entity)
-                    .joinedload(Entity.watch_providers)
-                    .joinedload(Post.user_post_info)
+                    .joinedload(Entity.watch_providers),
+                    joinedload(Post.user_post_info)
             )
             .filter(Entity.tmbd_id.in_(tmbd_ids))
             .all()
