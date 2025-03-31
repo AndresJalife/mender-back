@@ -42,8 +42,8 @@ app.add_middleware(
 setup_exception_handlers(app)
 
 # Configure logging
-logging.basicConfig()
-logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
+# logging.basicConfig()
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
 
 
 ############# Initialize Database ############
