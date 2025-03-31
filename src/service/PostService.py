@@ -180,25 +180,7 @@ class PostService:
         ]
 
     def get_comments(self, post_id):
-        return [
-            {
-                "user": {
-                    "user_id": 1,
-                    "username": "Jane Doe"
-                },
-                "comment": "Great movie!",
-                "created_date": "2021-10-01"
-            },
-            {
-                "user": {
-                    "user_id": 2,
-                    "username": "John Doe"
-                },
-                "comment": "I loved it!",
-                "created_date": "2024-10-02"
-            }
-        ]
-        # logger.info(f"Getting comments for post: {post_id}")
-        # comments = self.db.query(Comments).filter(Comments.post_id == post_id).all()
-        # return comments
+        logger.info(f"Getting comments for post: {post_id}")
+        comments = self.db.query(Comments).filter(Comments.post_id == post_id).all()
+        return comments
 
