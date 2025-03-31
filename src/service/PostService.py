@@ -1,5 +1,5 @@
 from fastapi import HTTPException, BackgroundTasks
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, contains_eager
 
 from src.config.database import Database
 from src.model import dto
@@ -28,6 +28,8 @@ class PostService:
         posts = (
             self.db.query(Post)
             .join(Entity, Post.entity_id == Entity.entity_id)
+            .outerjoin(UserPostInfo, (Post.post_id == UserPostInfo.post_id) & (
+                    UserPostInfo.user_id == user.user_id))
             .options(
                     joinedload(Post.entity)
                     .joinedload(Entity.genres),
@@ -37,7 +39,7 @@ class PostService:
                     .joinedload(Entity.entity_production_companies),
                     joinedload(Post.entity)
                     .joinedload(Entity.watch_providers),
-                    joinedload(Post.user_post_info)
+                    contains_eager(Post.user_post_info)
             )
             .filter(Entity.tmbd_id.in_(tmbd_ids))
             .all()
@@ -57,10 +59,18 @@ class PostService:
         logger.info(f"Getting post: {post_id}")
         post = (
             self.db.query(Post)
-            .options(joinedload(Post.user_post_info))
+            .outerjoin(UserPostInfo, (Post.post_id == UserPostInfo.post_id) & (
+                        UserPostInfo.user_id == user.user_id))
+            .options(contains_eager(Post.user_post_info))
             .filter(Post.post_id == post_id)
             .first()
         )
+
+        try:
+            for info in post.user_post_info:
+                logger.info(f'{info.user_id}, {info.liked}, {info.seen}, {info.user_rating}')
+        except Exception as e:
+            logger.info(f"Error: {e}")
 
         if post is None:
             raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
