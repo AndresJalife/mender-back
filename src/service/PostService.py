@@ -57,7 +57,19 @@ class PostService:
         post = self.db.query(Post).filter(Post.post_id == post_id).first()
         if post is None:
             raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
+        
+        self.background_tasks.add_task(self._update_user_post_click, post_id, user.user_id)
+        
         return post
+
+    def _update_user_post_click(self, post_id, user_id):
+        implicit_data = self.db.query(ImplicitData).filter(ImplicitData.post_id == post_id, ImplicitData.user_id == user_id).first()
+        if implicit_data is None:
+            implicit_data = ImplicitData(post_id=post_id, user_id=user_id, clicks=1)
+            self.db.add(implicit_data)
+        else:
+           implicit_data.clicked = True
+        self.db.commit()
 
     def like_post(self, post_id, user):
         logger.info(f"Liking post: {post_id} for user: {user.user_id}")
@@ -111,8 +123,25 @@ class PostService:
         self.db.commit()
 
     def _comment_user_post(self, post_id, user, comment):
-        comment = Comments(user_id=user.user_id, post_id=post_id, comment=comment.comment)
-        self.db.add(comment)
+        # Add the comment to the Comments table
+        comment_entry = Comments(user_id=user.user_id, post_id=post_id, comment=comment.comment)
+        self.db.add(comment_entry)
+        self.db.commit()
+
+        # Send a background task to update the implicit data comments
+        self.background_tasks.add_task(self._update_implicit_data_comments, post_id, user.user_id)
+
+    def _update_implicit_data_comments(self, post_id, user_id):
+        implicit_data = self.db.query(ImplicitData).filter(ImplicitData.post_id == post_id, ImplicitData.user_id == user_id).first()
+        
+        if implicit_data is None:
+            # Create a new ImplicitData entry if it doesn't exist
+            implicit_data = ImplicitData(post_id=post_id, user_id=user_id, comments=1)
+            self.db.add(implicit_data)
+        else:
+            # Increment the comments count
+            implicit_data.comments = implicit_data.comments + 1 if implicit_data.comments else 1
+        
         self.db.commit()
 
     def _rate_user_post(self, post_id, user, rating):

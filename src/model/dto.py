@@ -68,14 +68,22 @@ class Entity(BaseModel):
     original_language: Optional[str] = None
 
 
+class UserPostInfo(BaseModel):
+    user_id: Optional[int] = None
+    post_id: Optional[int] = None
+    liked: Optional[bool] = None
+    seen: Optional[bool] = None
+    user_rating: Optional[float] = None
+    model_config = ConfigDict(from_attributes=True)
+
+
 class Post(BaseModel):
     post_id: Optional[int] = None
     entity_id: Optional[int] = None
     entity: Optional[Entity] = None
     likes: Optional[int] = None
-    liked: Optional[bool] = None
-    seen: Optional[bool] = None
     comments: Optional[int] = None
+    user_post_info: Optional[UserPostInfo] = None
     created_date: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
