@@ -6,7 +6,33 @@ from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
 
 from src.config.database import Database, get_db
+from src.models import UserPostInfo, Entity
 from src.service.Logger import logger
+
+
+def get_user_ratings(db, user_id):
+    posts = (
+        db.query(UserPostInfo, Entity)
+        .join(Entity, UserPostInfo.post_id == Entity.entity_id)
+        .filter(UserPostInfo.user_id == user_id)
+        .order_by(UserPostInfo.created_date.desc())
+        .limit(5)
+        .all()
+    )
+
+    return [(entity.tmbd_id, user_post.user_rating) for user_post, entity in posts]
+
+def get_seen_movies(db, user_id):
+    posts = (
+        db.query(UserPostInfo, Entity)
+        .join(Entity, UserPostInfo.post_id == Entity.entity_id)
+        .filter(UserPostInfo.user_id == user_id)
+        .filter(UserPostInfo.seen == True)
+        .all()
+    )
+
+    return [entity.tmbd_id for user_post, entity in posts]
+
 
 class RecommendationService:
 
@@ -68,7 +94,7 @@ class RecommendationService:
 
         return similar_users
 
-    def get_recommended_movies(self, rated_movies, k=10):
+    def get_recommended_movies(self, rated_movies, seen_movies, k=10):
         """
         Finds movie recommendations based on users with similar preferences to the given rated movies,
         using a weighted average rating approach.
@@ -78,6 +104,9 @@ class RecommendationService:
             k: Number of recommendations to return
 
         Output: List of recommended movie IDs with predicted ratings
+        :param rated_movies:
+        :param seen_movies:
+        :param k:
         """
         similar_users = self.find_similar_users_to_movies(rated_movies, k=20)
         similar_users = pd.DataFrame(similar_users, columns=['user_id', 'similarity'])
@@ -106,19 +135,16 @@ class RecommendationService:
 
         # Remove movies already rated by input
         movie_predictions = movie_predictions[~movie_predictions.index.isin(rated_movie_ids)]
+        # Remove movies the user has already seen
+        movie_predictions = movie_predictions[~movie_predictions.index.isin(seen_movies)]
 
         # Return top recommendations with predicted ratings
         return movie_predictions.sort_values('predicted_rating', ascending=False).head(k).index.to_list()
 
-    def get_recommendation(self, user_id, k=10):
-        ### Hardcode
-        user_ratings = [
-            (568124, 5),
-            (38757, 5),
-            (109445, 5),
-            (9502, 5),
-            (508439, 5)
-        ]
-        return self.get_recommended_movies(user_ratings, k)
+    def get_recommendation(self, db, user_id, k=10):
+        user_ratings = get_user_ratings(db, user_id)
+        seen_movies = get_seen_movies(db, user_id)
+
+        return self.get_recommended_movies(user_ratings, seen_movies, k)
 
 recommendation_service = RecommendationService(get_db())
