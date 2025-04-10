@@ -11,8 +11,8 @@ from src.service.Logger import logger
 
 
 def get_user_ratings(db, user_id):
-    posts = (
-        db.query(UserPostInfo, Entity)
+    ratins_and_ids = (
+        db.query(UserPostInfo.user_rating, Entity.tmbd_id)
         .join(Entity, UserPostInfo.post_id == Entity.entity_id)
         .filter(UserPostInfo.user_id == user_id)
         .order_by(UserPostInfo.created_date.desc())
@@ -20,7 +20,8 @@ def get_user_ratings(db, user_id):
         .all()
     )
 
-    return [(entity.tmbd_id, user_post.user_rating) for user_post, entity in posts]
+    return [(touple[1], touple[0]) for touple in ratins_and_ids]
+
 
 def get_seen_movies(db, user_id):
     posts = (
@@ -122,8 +123,8 @@ class RecommendationService:
 
         # Aggregate ratings per movie
         movie_predictions = merged_ratings.groupby('movie_id').agg(
-            predicted_rating=('weighted_rating', 'sum'),
-            similarity_sum=('similarity', 'sum')
+                predicted_rating=('weighted_rating', 'sum'),
+                similarity_sum=('similarity', 'sum')
         )
 
         # Normalize by total similarity to get final predicted rating
@@ -141,10 +142,12 @@ class RecommendationService:
         # Return top recommendations with predicted ratings
         return movie_predictions.sort_values('predicted_rating', ascending=False).head(k).index.to_list()
 
-    def get_recommendation(self, db, user_id, k=10):
-        user_ratings = get_user_ratings(db, user_id)
-        seen_movies = get_seen_movies(db, user_id)
+    def get_recommendation(self, user_id, k=10):
+        user_ratings = get_user_ratings(self.db, user_id)
+        seen_movies = get_seen_movies(self.db, user_id)
 
         return self.get_recommended_movies(user_ratings, seen_movies, k)
 
-recommendation_service = RecommendationService(get_db())
+
+db_instance = next(get_db())
+recommendation_service = RecommendationService(db_instance)
