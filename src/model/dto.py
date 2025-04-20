@@ -117,6 +117,6 @@ class PostFilters(BaseModel):
     max_release_date: Optional[str] = None
     min_rating: Optional[float] = None
     max_rating: Optional[float] = None
-    avoid_imdb_ids: Optional[List[int]] = None
+    avoid_imdb_ids: Optional[List[str]] = None
 
     model_config = ConfigDict()
