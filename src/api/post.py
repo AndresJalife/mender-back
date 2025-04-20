@@ -17,12 +17,13 @@ def get_post_service(background_tasks: BackgroundTasks, db: Database = Depends(g
     return PostService(db, background_tasks)
 
 
-@post_router.get("", description="Gets n posts for a specific user",
+@post_router.post("", description="Gets n posts for a specific user",
                  response_model=List[dto.Post])
-async def get_posts(user: User = Depends(authenticate_and_get_user),
-                    k: int = Query(10, gt=0, lt=30),
-                    post_service: PostService = Depends(get_post_service)):
-    return post_service.get_posts(user, k)
+async def get_recommendations(filters: dto.PostFilters,
+                              user: User = Depends(authenticate_and_get_user),
+                              k: int = Query(10, gt=0, lt=30),
+                              post_service: PostService = Depends(get_post_service)):
+    return post_service.get_posts(user, k, filters)
 
 @post_router.post("", description="Creates a new post", response_model=None)
 async def create_post(request: dto.Post,

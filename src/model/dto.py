@@ -109,3 +109,14 @@ class Message(BaseModel):
     order: Optional[int] = None
     message: str
     model_config = ConfigDict(from_attributes=True)
+
+
+class PostFilters(BaseModel):
+    genre: Optional[str] = None
+    min_release_date: Optional[str] = None
+    max_release_date: Optional[str] = None
+    min_rating: Optional[float] = None
+    max_rating: Optional[float] = None
+    avoid_imdb_ids: Optional[List[int]] = None
+
+    model_config = ConfigDict()

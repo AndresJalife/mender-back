@@ -19,9 +19,9 @@ class PostService:
         self.recommendation_service = recommendation_service
         self.background_tasks = background_tasks
 
-    def get_posts(self, user, k):
+    def get_posts(self, user, k, filters):
         logger.info(f"Getting post recommendations for user: {user.user_id}")
-        tmbd_ids = self.recommendation_service.get_recommendation(user.user_id, k)
+        tmbd_ids = self.recommendation_service.get_recommendation(user.user_id, filters, k)
         if not tmbd_ids:
             return []
 

@@ -6,6 +6,7 @@ from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
 
 from src.config.database import Database, get_db
+from src.model import dto
 from src.models import UserPostInfo, Entity
 from src.service.Logger import logger
 
@@ -95,7 +96,7 @@ class RecommendationService:
 
         return similar_users
 
-    def get_recommended_movies(self, rated_movies, seen_movies, k=10):
+    def get_recommended_movies(self, rated_movies, seen_movies, filters: dto.PostFilters, k=10):
         """
         Finds movie recommendations based on users with similar preferences to the given rated movies,
         using a weighted average rating approach.
@@ -138,15 +139,17 @@ class RecommendationService:
         movie_predictions = movie_predictions[~movie_predictions.index.isin(rated_movie_ids)]
         # Remove movies the user has already seen
         movie_predictions = movie_predictions[~movie_predictions.index.isin(seen_movies)]
+        # avoid seen ids
+        movie_predictions = movie_predictions[~movie_predictions.index.isin(filters.avoid_imdb_ids)]
 
         # Return top recommendations with predicted ratings
         return movie_predictions.sort_values('predicted_rating', ascending=False).head(k).index.to_list()
 
-    def get_recommendation(self, user_id, k=10):
+    def get_recommendation(self, user_id, filters, k=10):
         user_ratings = get_user_ratings(self.db, user_id)
         seen_movies = get_seen_movies(self.db, user_id)
 
-        return self.get_recommended_movies(user_ratings, seen_movies, k)
+        return self.get_recommended_movies(user_ratings, seen_movies, filters, k)
 
 
 db_instance = next(get_db())
