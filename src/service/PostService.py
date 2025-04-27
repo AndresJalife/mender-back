@@ -21,6 +21,7 @@ class PostService:
 
     def get_posts(self, user, k, filters):
         logger.info(f"Getting post recommendations for user: {user.user_id}")
+        logger.info(f"Filters: {filters}")
         tmbd_ids = self.recommendation_service.get_recommendation(user.user_id, filters, k)
         if not tmbd_ids:
             return []
