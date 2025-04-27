@@ -1,6 +1,4 @@
-from typing import List
-
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 
 from ..config.database import Database, get_db
 from ..model import dto
@@ -13,8 +11,8 @@ implicit_router = APIRouter(
     tags=["Implicit Data"],
 )
 
-def get_implicit_service(db: Database = Depends(get_db)) -> ImplicitService:
-    return ImplicitService(db)
+def get_implicit_service(background_tasks: BackgroundTasks, db: Database = Depends(get_db)) -> ImplicitService:
+    return ImplicitService(db, background_tasks)
 
 
 @implicit_router.post("/post/{post_id}/post_seen", description="Stores the amount of time a user has seen a post",

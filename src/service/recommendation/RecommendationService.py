@@ -7,13 +7,14 @@ from sklearn.neighbors import NearestNeighbors
 
 from src.config.database import Database, get_db
 from src.model import dto
-from src.models import UserPostInfo, Entity
+from src.models import UserPostInfo, Entity, CalculatedRating
+from src.service.ImplicitService import ImplicitService
 from src.service.Logger import logger
 
 
 def get_user_ratings(db, user_id):
     ratins_and_ids = (
-        db.query(UserPostInfo.user_rating, Entity.tmbd_id)
+        db.query(UserPostInfo.user_rating, Entity.tmbd_id, CalculatedRating.rating)
         .join(Entity, UserPostInfo.post_id == Entity.entity_id)
         .filter(UserPostInfo.user_id == user_id)
         .order_by(UserPostInfo.created_date.desc())
@@ -36,6 +37,7 @@ def get_seen_movies(db, user_id):
     return [entity.tmbd_id for user_post, entity in posts]
 
 
+
 class RecommendationService:
 
     def __init__(self, db: Database):
@@ -56,6 +58,8 @@ class RecommendationService:
         item_index = [self.movie_mapper[i] for i in self.ratings['movie_id']]
 
         self.X = csr_matrix((self.ratings["rating"], (user_index, item_index)), shape=(M, N))
+
+        self.implicit_service = ImplicitService(db)
 
         logger.info(f"RecommendationService initialized")
 
@@ -146,6 +150,7 @@ class RecommendationService:
         return movie_predictions.sort_values('predicted_rating', ascending=False).head(k).index.to_list()
 
     def get_recommendation(self, user_id, filters, k=10):
+        # implicit_ratings = get_user_implicit_ratings(self.db, user_id)
         user_ratings = get_user_ratings(self.db, user_id)
         seen_movies = get_seen_movies(self.db, user_id)
 

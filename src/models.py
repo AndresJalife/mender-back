@@ -80,7 +80,6 @@ class UserPostInfo(Base):
     liked = Column(Boolean, default=False)
     user_rating = Column(Float, default=0)
     seen = Column(Boolean, default=False)
-    calculated_rating = Column(Float, default=0)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
     user = relationship("User", back_populates="user_post_info")
@@ -128,6 +127,18 @@ class ImplicitData(Base):
     user = relationship("User", back_populates="implicit_data")
     post = relationship("Post", back_populates="implicit_data")
 
+class CalculatedRating(Base):
+    __tablename__ = 'calculated_rating'
+
+    calculated_rating_id = Column(Integer, primary_key=True, name="calculated_rating_id", autoincrement=True)
+    user_id = Column(Integer, ForeignKey('user.user_id', ondelete="CASCADE"), nullable=False)
+    post_id = Column(Integer, ForeignKey('post.post_id', ondelete="CASCADE"), nullable=False)
+    rating = Column(Float, default=0)
+    created_date = Column(FormattedDate, name="created_date", default=date.today())
+    updated_date = Column(FormattedDate, name="updated_date", default=date.today(), onupdate=date.today())
+
+    user = relationship("User", back_populates="calculated_rating")
+    post = relationship("Post", back_populates="calculated_rating")
 
 class SavedPlaylist(Base):
     __tablename__ = 'saved_playlist'

@@ -4,6 +4,7 @@ from sqlalchemy.orm import joinedload, contains_eager
 from src.config.database import Database
 from src.model import dto
 from src.models import Post, UserPostInfo, Comments, Entity, ImplicitData
+from src.service.ImplicitService import ImplicitService
 from src.service.Logger import logger
 
 from src.service.UserService import UserService
@@ -18,6 +19,7 @@ class PostService:
         self.user_service = UserService
         self.recommendation_service = recommendation_service
         self.background_tasks = background_tasks
+        self.implicit_service = ImplicitService(db)
 
     def get_posts(self, user, k, filters):
         logger.info(f"Getting post recommendations for user: {user.user_id}")
@@ -78,6 +80,7 @@ class PostService:
             raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
         
         self.background_tasks.add_task(self._update_user_post_click, post_id, user.user_id)
+        self.background_tasks.add_task(self.implicit_service.post_clicked, post_id, user.user_id)
         
         return post
 
