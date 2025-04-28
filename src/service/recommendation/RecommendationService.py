@@ -37,6 +37,16 @@ def get_seen_movies(db, user_id):
     return [entity.tmbd_id for user_post, entity in posts]
 
 
+def get_user_implicit_ratings(db, user_id):
+    implicit_ratings = (
+        db.query(CalculatedRating.rating, CalculatedRating.post_id)
+        .join(Entity, Entity.entity_id == CalculatedRating.post_id)
+        .filter(CalculatedRating.user_id == user_id)
+        .sort_by(CalculatedRating.updated_date.desc())
+        .limit(25)
+    )
+
+    return [(rating[1], rating[0]) for rating in implicit_ratings]
 
 class RecommendationService:
 
@@ -100,7 +110,7 @@ class RecommendationService:
 
         return similar_users
 
-    def get_recommended_movies(self, rated_movies, seen_movies, filters: dto.PostFilters, k=10):
+    def get_recommended_movies(self, rated_movies, seen_movies, implicit_ratings, filters: dto.PostFilters, k=10):
         """
         Finds movie recommendations based on users with similar preferences to the given rated movies,
         using a weighted average rating approach.
@@ -150,11 +160,11 @@ class RecommendationService:
         return movie_predictions.sort_values('predicted_rating', ascending=False).head(k).index.to_list()
 
     def get_recommendation(self, user_id, filters, k=10):
-        # implicit_ratings = get_user_implicit_ratings(self.db, user_id)
+        implicit_ratings = get_user_implicit_ratings(self.db, user_id)
         user_ratings = get_user_ratings(self.db, user_id)
         seen_movies = get_seen_movies(self.db, user_id)
 
-        return self.get_recommended_movies(user_ratings, seen_movies, filters, k)
+        return self.get_recommended_movies(user_ratings, seen_movies, implicit_ratings, filters, k)
 
 
 db_instance = next(get_db())
