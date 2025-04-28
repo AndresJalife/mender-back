@@ -5,13 +5,12 @@ from src.service.Logger import logger
 
 class ImplicitService:
 
-    def __init__(self, db: Database, background_tasks):
+    def __init__(self, db: Database):
         self.db = db
-        self.background_tasks = background_tasks
 
-    def post_seen(self, post_id, seen_dto):
+    def post_seen(self, post_id, seen_dto, background_tasks):
         logger.info(f"Post {post_id} seen by user {seen_dto.time_seen}")
-        self.background_tasks.add_task(self._post_seen, post_id, seen_dto)
+        background_tasks.add_task(self._post_seen, post_id, seen_dto)
 
     def _post_seen(self, post_id, seen_dto):
         implicit_data = self.db.query(models.ImplicitData).filter(
