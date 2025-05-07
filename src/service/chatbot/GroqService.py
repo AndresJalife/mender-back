@@ -1,5 +1,6 @@
 import json
 
+from src.model.dto import PostFilters
 from src.models import Entity
 from src.service.chatbot.llm import search_movies_schema, get_llm
 from src.service.recommendation.RecommendationService import recommendation_service
@@ -13,12 +14,12 @@ class GroqService:
         self.rec = recommendation_service
 
     async def generate(self, user, history, text: str) -> str:
-        first = await self.llm.chat.completions.create(
-                model="llama-3-8b-8192",
+        history.insert(0, self._get_system_msg())
+
+        first = await self._create(
                 messages=history + [{"role": "user", "content": text}],
                 tools=[search_movies_schema],
                 tool_choice="auto",
-                temperature=0.0,  # deterministic JSON
         )
 
         choice = first.choices[0]
@@ -26,7 +27,7 @@ class GroqService:
             # The model wants a clarification; return its text directly.
             return choice.message.content
 
-        filters = json.loads(choice.message.tool_call.arguments)
+        filters = self._parse_json(choice.message.tool_call.arguments)
 
         candidate_ids = self._get_recommendations(user, filters)
 
@@ -46,18 +47,29 @@ class GroqService:
                 ],
                 tools=[],
                 tool_choice="auto",
+                temp=0.7,
         )
         return final.choices[0].message.content
 
-    async def _create(self, messages, tools, tool_choice):
+    def _get_system_msg(self):
+        return {
+          "role": "system",
+          "content": (
+            "You are a helpful movie assistant. The user will describe the type of movie "
+            "they want to watch. Return a JSON object with appropriate search filters using "
+            "the `search_movies` function. If the user's message is unclear, ask a clarifying question instead."
+          )
+        }
+
+
+    async def _create(self, messages, tools, tool_choice, temp=0.0):
         return await self.llm.chat.completions.create(
                 model="llama-3-8b-8192",
                 messages=messages,
                 tools=tools,
                 tool_choice=tool_choice,
-                temperature=0.5,  # deterministic JSON
+                temperature=temp,
         )
-
 
     def _fetch_movies(self, candidate_ids):
         movies = self.db.query(Entity).filter(Entity.tmbd_id.in_(candidate_ids)).all()
@@ -65,14 +77,13 @@ class GroqService:
 
     def _get_recommendations(self, user, filters):
         user_id = user.user_id
-        filters = {k: v for k, v in filters.items() if v is not None}
-        filters["user_id"] = user_id
-        filters["seen"] = False
 
-        # Get the recommendations from the recommendation service
-        recommendations = self.rec.self.rec.get_recommended_movies(user, 10, filters)
+        recommendations = self.rec.self.rec.get_recommendation(user_id, filters, 10)
 
-        # Extract the IDs of the recommended movies
         candidate_ids = [rec.tmbd_id for rec in recommendations]
 
         return candidate_ids
+
+    def _parse_json(self, arguments):
+        filters = PostFilters(**json.loads(arguments))
+        return filters
