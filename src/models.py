@@ -57,6 +57,7 @@ class Post(Base):
     playlist_item = relationship("PlaylistItem", back_populates="post", cascade="all, delete-orphan")
     implicit_data = relationship("ImplicitData", back_populates="post", cascade="all, delete-orphan")
     entity = relationship("Entity", back_populates="post")
+    calculated_rating = relationship("CalculatedRating", back_populates="post", cascade="all, delete-orphan")
 
 
 
