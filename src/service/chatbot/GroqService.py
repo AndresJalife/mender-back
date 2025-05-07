@@ -2,6 +2,7 @@ import json
 
 from src.model.dto import PostFilters
 from src.models import Entity
+from src.service.Logger import logger
 from src.service.chatbot.llm import search_movies_schema, get_llm
 from src.service.recommendation.RecommendationService import recommendation_service
 
@@ -12,9 +13,13 @@ class GroqService:
         self.db = db
         self.llm = get_llm()
         self.rec = recommendation_service
+        self.model = "llama3-8b-8192"
 
     async def generate(self, user, history, text: str) -> str:
         history.insert(0, self._get_system_msg())
+
+        logger.info(f"Generating response for user {user.user_id} with message: {text}")
+        logger.info(f"History: {history}")
 
         first = await self._create(
                 messages=history + [{"role": "user", "content": text}],
@@ -22,14 +27,20 @@ class GroqService:
                 tool_choice="auto",
         )
 
+        logger.info(f"First response: {first}")
+
         choice = first.choices[0]
-        if choice.finish_reason != "tool_call":
+        if choice.finish_reason != "tool_calls":
             # The model wants a clarification; return its text directly.
             return choice.message.content
 
-        filters = self._parse_json(choice.message.tool_call.arguments)
+        filters = self._parse_json(choice.message.tool_calls[0].function.arguments)
+
+        logger.info(f"Parsed filters: {filters}")
 
         candidate_ids = self._get_recommendations(user, filters)
+
+        logger.info(f"Candidate IDs: {candidate_ids}")
 
         if not candidate_ids:
             return "I couldn’t find any titles that match. Could you refine your request?"
@@ -41,14 +52,14 @@ class GroqService:
         )
 
         final = await self._create(
-                messages=history + [
-                    choice.message,
-                    {"role": "tool", "name": "search_movies", "content": summary}
-                ],
+                messages=history + [choice.message, {"role": "tool", "name": "search_movies", "content": summary}],
                 tools=[],
                 tool_choice="auto",
                 temp=0.7,
         )
+
+        logger.info(f"Final response: {final}")
+
         return final.choices[0].message.content
 
     def _get_system_msg(self):
@@ -64,7 +75,7 @@ class GroqService:
 
     async def _create(self, messages, tools, tool_choice, temp=0.0):
         return await self.llm.chat.completions.create(
-                model="llama-3-8b-8192",
+                model=self.model,
                 messages=messages,
                 tools=tools,
                 tool_choice=tool_choice,
@@ -78,7 +89,7 @@ class GroqService:
     def _get_recommendations(self, user, filters):
         user_id = user.user_id
 
-        recommendations = self.rec.self.rec.get_recommendation(user_id, filters, 10)
+        recommendations = self.rec.get_recommendation(user_id, filters, 10)
 
         candidate_ids = [rec.tmbd_id for rec in recommendations]
 

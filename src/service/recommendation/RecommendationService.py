@@ -42,7 +42,7 @@ def get_user_implicit_ratings(db, user_id):
         db.query(CalculatedRating.rating, CalculatedRating.post_id)
         .join(Entity, Entity.entity_id == CalculatedRating.post_id)
         .filter(CalculatedRating.user_id == user_id)
-        .sort_by(CalculatedRating.updated_date.desc())
+        .order_by(CalculatedRating.updated_date.desc())
         .limit(25)
     )
 

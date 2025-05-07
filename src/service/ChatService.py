@@ -47,7 +47,6 @@ class ChatService:
         )
 
         self.db.add(next_message)
-        self.db.commit()
 
         return next_message.order + 1
 
@@ -58,12 +57,20 @@ class ChatService:
     async def _get_bot_message(self, user, message, next_order):
         history = self._load_history(user)
         return_message = await self.groq_service.generate(user, history, message.message)
-
-        return dto.Message(
+        message = dto.Message(
             bot_made=True,
             order=next_order,
             message=return_message
-         )
+        )
+        self.db.add(ChatHistory(
+            user_id=user.user_id,
+            message=return_message,
+            order=next_order,
+            bot_made=True
+        ))
+
+        self.db.commit()
+        return message
 
     def _load_history(self, user, limit: int = 10) -> list[dict]:
         """
