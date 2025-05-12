@@ -32,4 +32,4 @@ async def get_chat(user: User = Depends(authenticate_and_get_user),
 @chat_router.post("/message", description="Sends a message to the chat", response_model=dto.Message)
 async def send_message(message: dto.Message, user: User = Depends(authenticate_and_get_user),
                        chat_service: ChatService = Depends(get_chat_service)):
-    return chat_service.send_message(user, message)
+    return await chat_service.send_message(user, message)
