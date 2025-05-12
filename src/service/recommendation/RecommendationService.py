@@ -7,14 +7,14 @@ from sklearn.neighbors import NearestNeighbors
 
 from src.config.database import Database, get_db
 from src.model import dto
-from src.models import UserPostInfo, Entity, CalculatedRating
+from src.models import UserPostInfo, Entity, CalculatedRating, EntityGenre
 from src.service.ImplicitService import ImplicitService
 from src.service.Logger import logger
 
 
 def get_user_ratings(db, user_id):
-    ratins_and_ids = (
-        db.query(UserPostInfo.user_rating, Entity.tmbd_id, CalculatedRating.rating)
+    ratings_and_ids = (
+        db.query(UserPostInfo.user_rating, Entity.tmbd_id)
         .join(Entity, UserPostInfo.post_id == Entity.entity_id)
         .filter(UserPostInfo.user_id == user_id)
         .order_by(UserPostInfo.created_date.desc())
@@ -22,7 +22,7 @@ def get_user_ratings(db, user_id):
         .all()
     )
 
-    return [(touple[1], touple[0]) for touple in ratins_and_ids]
+    return [(rating[1], rating[0]) for rating in ratings_and_ids]
 
 
 def get_seen_movies(db, user_id):
@@ -47,6 +47,43 @@ def get_user_implicit_ratings(db, user_id):
     )
 
     return [(rating[1], rating[0]) for rating in implicit_ratings]
+
+def get_filtered_movies_ids(db, filters: dto.PostFilters):
+    sql_filters = []
+
+    # Genre
+    if filters.genre:
+        sql_filters.append(EntityGenre.name == filters.genre)
+    # Release date
+    if filters.min_release_date:
+        sql_filters.append(Entity.release_date >= filters.min_release_date)
+    if filters.max_release_date:
+        sql_filters.append(Entity.release_date <= filters.max_release_date)
+    # Rating
+    if filters.min_rating:
+        sql_filters.append(Entity.vote_average/2 >= filters.min_rating)
+    if filters.max_rating:
+        sql_filters.append(Entity.vote_average/2 <= filters.max_rating)
+    # # Actor
+    # if filters.actor:
+    #     sql_filters.append(Entity.actors == filters.actor)
+    # # Director
+    # if filters.director:
+    #     sql_filters.append(Entity.director == filters.director)
+
+    results = (
+        db.query(Entity)
+        .join(EntityGenre)
+        .filter(*filters)
+        .all()
+    )
+
+    if filters.avoid_imdb_ids:
+        movie_ids = [entity.tmbd_id for entity in results if id not in filters.avoid_imdb_ids]
+    else:
+        movie_ids = [entity.tmbd_id for entity in results]
+
+    return movie_ids
 
 class RecommendationService:
 
@@ -96,9 +133,9 @@ class RecommendationService:
         user_vec = user_vec.reshape(1, -1)
 
         # Find similar users
-        kNN = NearestNeighbors(n_neighbors=k + 1, algorithm="brute", metric=metric)
-        kNN.fit(self.X)
-        distances, indices = kNN.kneighbors(user_vec, return_distance=True)
+        knn = NearestNeighbors(n_neighbors=k + 1, algorithm="brute", metric=metric)
+        knn.fit(self.X)
+        distances, indices = knn.kneighbors(user_vec, return_distance=True)
 
         similar_users = []
         for i in range(1, k + 1):
@@ -110,7 +147,7 @@ class RecommendationService:
 
         return similar_users
 
-    def get_recommended_movies(self, rated_movies, seen_movies, implicit_ratings, filters: dto.PostFilters, k=10):
+    def get_recommended_movies(self, ratings, seen_movies, filters: dto.PostFilters, k=10):
         """
         Finds movie recommendations based on users with similar preferences to the given rated movies,
         using a weighted average rating approach.
@@ -120,11 +157,12 @@ class RecommendationService:
             k: Number of recommendations to return
 
         Output: List of recommended movie IDs with predicted ratings
-        :param rated_movies:
+        :param ratings:
         :param seen_movies:
+        :param filters:
         :param k:
         """
-        similar_users = self.find_similar_users_to_movies(rated_movies, k=20)
+        similar_users = self.find_similar_users_to_movies(ratings, k=20)
         similar_users = pd.DataFrame(similar_users, columns=['user_id', 'similarity'])
 
         # Get movies rated by similar users
@@ -147,14 +185,14 @@ class RecommendationService:
         movie_predictions.drop(columns=['similarity_sum'], inplace=True)
 
         # Get movie IDs from input list
-        rated_movie_ids = [m[0] for m in rated_movies]
+        ratings_ids = [m[0] for m in ratings]
 
         # Remove movies already rated by input
-        movie_predictions = movie_predictions[~movie_predictions.index.isin(rated_movie_ids)]
+        movie_predictions = movie_predictions[~movie_predictions.index.isin(ratings_ids)]
         # Remove movies the user has already seen
         movie_predictions = movie_predictions[~movie_predictions.index.isin(seen_movies)]
-        # avoid seen ids
-        movie_predictions = movie_predictions[~movie_predictions.index.isin(filters.avoid_imdb_ids)]
+        # Apply filters
+        movie_predictions = movie_predictions[movie_predictions.index.isin(get_filtered_movies_ids(self.db, filters))]
 
         # Return top recommendations with predicted ratings
         return movie_predictions.sort_values('predicted_rating', ascending=False).head(k).index.to_list()
@@ -164,7 +202,7 @@ class RecommendationService:
         user_ratings = get_user_ratings(self.db, user_id)
         seen_movies = get_seen_movies(self.db, user_id)
 
-        return self.get_recommended_movies(user_ratings, seen_movies, implicit_ratings, filters, k)
+        return self.get_recommended_movies(user_ratings, seen_movies, filters, k)
 
 
 db_instance = next(get_db())
