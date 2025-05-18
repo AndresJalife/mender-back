@@ -26,7 +26,7 @@ class GroqService:
         first = await self._create(
                 messages=history + [{"role": "user", "content": text}],
                 tools=[search_movies_schema],
-                tool_choice="auto",
+                tool_choice="required",
         )
 
         logger.info(f"First response: {first}")

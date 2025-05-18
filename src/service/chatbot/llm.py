@@ -19,6 +19,7 @@ search_movies_system_message = {
         "No hace falta que completes todos los filtros. "
         "Si ya tenes la respuesta para alguno de los filtros, no lo vuelvas a preguntar. "
         "Si queres hacer repreguntas, que sea de algun filtro que falta."
+        "Intenta no hacer mas dde 3 o 4 preguntas. "
         "Tenes que hablar siempre en español"
     )
 }
