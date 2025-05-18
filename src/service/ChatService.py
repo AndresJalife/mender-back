@@ -1,13 +1,12 @@
 from datetime import datetime, timedelta
 from typing import Type
 
-from src import models
 from src.config.database import Database
 from src.model import dto
 from src.models import ChatHistory
 from src.service.Logger import logger
 from src.service.chatbot.GroqService import GroqService
-from src.util.util import str_to_date
+from src.util.util import str_to_datetime
 
 
 class ChatService:
@@ -64,7 +63,7 @@ class ChatService:
 
         created = last_message.created_date
         if isinstance(created, str):
-            created = str_to_date(created)
+            created = str_to_datetime(created)
 
         if created < last_30_minutes:
             return last_message.chat_id + 1
