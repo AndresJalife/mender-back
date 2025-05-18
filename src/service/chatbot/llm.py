@@ -18,6 +18,8 @@ search_movies_schema = {
             "You will create a JSON response that contains the filters that will be used to search for movies."
             "Try not to ask too many questions, but if you need more information, ask them."
             "Try not to ask more than 5 questions."
+            "You dont need to get all the filters, but you can get the most important ones."
+            "If you already asked 5 questions, just return the filters you have."
         ),
         "parameters": {
             "type": "object",
