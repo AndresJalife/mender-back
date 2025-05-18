@@ -197,15 +197,11 @@ class RecommendationService:
         user_ratings = get_user_ratings(self.db, user_id)
         seen_movies = get_seen_movies(self.db, user_id)
 
-        print('USER RATINGS:', user_ratings)
-
         recommendations = []
         collaborative_k = int(k*0.7)
         recommendations += (self.get_recommended_movies(user_ratings, seen_movies, filters, collaborative_k))
-        print('recommendations:', recommendations)
         content_k = k - len(recommendations)
         recommendations += (self.get_content_based_recommendation(user_ratings, seen_movies, filters, recommendations, content_k))
-        print('recommendations:', recommendations)
         return recommendations
 
 db_instance = next(get_db())
