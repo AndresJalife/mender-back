@@ -58,15 +58,17 @@ class GroqService:
                         "role": "tool",
                         "tool_call_id": choice.message.tool_calls[0].id,
                         "name": "search_movies",
-                        "content": summary
+                        "content": summary,
                     }
                 ],
-                tools=[],
-                tool_choice="none",
-                temp=0.7,
+                temperature=0.7,
+                tools=None,
+                tool_choice=None,
         )
 
         logger.info(f"Final response: {final}")
+        logger.info(f"Final content: {final.choices[0].message.content}")
+        logger.info(f"Final finish_reason: {final.choices[0].finish_reason}")
 
         return final.choices[0].message.content
 
