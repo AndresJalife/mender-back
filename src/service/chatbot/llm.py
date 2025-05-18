@@ -10,13 +10,13 @@ def get_llm():
 
 search_movies_schema = {
     "type": "function",
-    "function": {                          # ← everything lives in here
+    "function": {
         "name": "search_movies",
         "description": (
             "Return a list of up to 10 movies that match the given filters, "
             "ordered by the best recommendation score for the user."
         ),
-        "parameters": {                   # ← <──────── moved
+        "parameters": {
             "type": "object",
             "properties": {
                 "genre": {

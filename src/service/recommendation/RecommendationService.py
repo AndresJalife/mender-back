@@ -49,21 +49,24 @@ def get_user_implicit_ratings(db, user_id):
     return [(rating[1], rating[0]) for rating in implicit_ratings]
 
 def get_filtered_movies_ids(db, filters: dto.PostFilters):
-    sql_filters = []
+    query = db.query(Entity).join(EntityGenre)
 
     # Genre
     if filters.genre:
-        sql_filters.append(EntityGenre.name == filters.genre)
+        query.filter(EntityGenre.name == filters.genre)
     # Release date
     if filters.min_release_date:
-        sql_filters.append(Entity.release_date >= filters.min_release_date)
+        query.filter(Entity.release_date >= filters.min_release_date)
     if filters.max_release_date:
-        sql_filters.append(Entity.release_date <= filters.max_release_date)
+        query.filter(Entity.release_date <= filters.max_release_date)
     # Rating
     if filters.min_rating:
-        sql_filters.append(Entity.vote_average/2 >= filters.min_rating)
+        query.filter(Entity.vote_average/2 >= filters.min_rating)
     if filters.max_rating:
-        sql_filters.append(Entity.vote_average/2 <= filters.max_rating)
+        query.filter(Entity.vote_average/2 <= filters.max_rating)
+
+    if filters.avoid_imdb_ids:
+        query.filter(Entity.tmbd_id.notin_(filters.avoid_imdb_ids))
     # # Actor
     # if filters.actor:
     #     sql_filters.append(Entity.actors == filters.actor)
@@ -72,18 +75,16 @@ def get_filtered_movies_ids(db, filters: dto.PostFilters):
     #     sql_filters.append(Entity.director == filters.director)
 
     results = (
-        db.query(Entity)
-        .join(EntityGenre)
-        .filter(*filters)
+        query
         .all()
     )
+    #
+    # if filters.avoid_imdb_ids:
+    #     movie_ids = [entity.tmbd_id for entity in results if id not in filters.avoid_imdb_ids]
+    # else:
+    #     movie_ids = [entity.tmbd_id for entity in results]
 
-    if filters.avoid_imdb_ids:
-        movie_ids = [entity.tmbd_id for entity in results if id not in filters.avoid_imdb_ids]
-    else:
-        movie_ids = [entity.tmbd_id for entity in results]
-
-    return movie_ids
+    return [entity.tmbd_id for entity in results]
 
 class RecommendationService:
 
