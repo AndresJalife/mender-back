@@ -59,7 +59,7 @@ class ChatService:
 
     from datetime import datetime, timedelta
 
-    def _get_chat_id(self, last_message: ChatHistory):
+    def _get_chat_id(self, last_message: Type[ChatHistory]):
         last_30_minutes = datetime.now() - timedelta(minutes=30)
 
         created = last_message.created_date

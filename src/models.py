@@ -1,9 +1,12 @@
+import pytz
 from sqlalchemy.orm import relationship
 from datetime import date, datetime
 from src.config.database import Base
-from sqlalchemy import Column, Integer, String, ForeignKey, Date, Boolean, UniqueConstraint, TypeDecorator, Float, BigInteger
+from sqlalchemy import Column, Integer, String, ForeignKey, Date, Boolean, UniqueConstraint, TypeDecorator, Float, \
+    BigInteger, DateTime
 
 metadata = Base.metadata
+ARG_TZ = pytz.timezone("America/Argentina/Buenos_Aires")
 
 class FormattedDate(TypeDecorator):
     impl = Date
@@ -19,6 +22,29 @@ class FormattedDate(TypeDecorator):
     def process_result_value(self, value, dialect):
         return value.strftime('%d/%m/%Y') if value else None
 
+class FormattedDateTime(TypeDecorator):
+    cache_ok = True
+    impl = DateTime
+
+    def process_bind_param(self, value, dialect):
+        if value is None:
+            return None
+        if isinstance(value, str):
+            try:
+                # iso format
+                return datetime.strptime(value, '%Y-%m-%dT%H:%M:%S')
+            except ValueError:
+                raise ValueError("Date must be in 'dd/mm/yyyy HH:MM:SS' format")
+        elif isinstance(value, datetime):
+            return value  # Already a datetime object, return as is
+        raise ValueError("Invalid date format. Must be 'dd/mm/yyyy HH:MM:SS' string or `datetime` object.")
+
+    def process_result_value(self, value, dialect):
+        if value is None:
+            return None
+        if isinstance(value, datetime):
+            return value.strftime('%d/%m/%Y %H:%M:%S')
+        raise ValueError("Unexpected value type returned from database.")
 
 class User(Base):
     __tablename__ = 'user'
@@ -163,7 +189,7 @@ class ChatHistory(Base):
     order = Column(Integer, nullable=False)
     message = Column(String, nullable=False)
     chat_id = Column(Integer, nullable=False)
-    created_date = Column(FormattedDate, name="created_date", default=date.today())
+    created_date = Column(FormattedDateTime, default=lambda: datetime.now(ARG_TZ))
 
     user = relationship("User", back_populates="chat_history")
 
