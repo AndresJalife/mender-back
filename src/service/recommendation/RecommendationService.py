@@ -59,8 +59,8 @@ def get_filtered_movies_ids(db, filters: dto.PostFilters, movie_ids):
         query = query.filter(Entity.release_date >= filters.min_release_date)
     if filters.max_release_date:
         query = query.filter(Entity.release_date <= filters.max_release_date)
-    if filters.avoid_imdb_ids:
-        ids = [id_ for id_ in filters.avoid_imdb_ids if id_]  # remove empty strings
+    if filters.avoid_tmdb_ids:
+        ids = [id_ for id_ in filters.avoid_tmdb_ids if id_]  # remove empty strings
         if ids:
             query = query.filter(Entity.tmbd_id.notin_(ids))
 
