@@ -16,7 +16,7 @@ class GroqService:
         self.model = "llama3-8b-8192"
 
     async def generate(self, user, history, text: str) -> str:
-        history.insert(0, search_movies_system_message())
+        history.insert(0, search_movies_system_message)
 
         logger.info(f"Generating response for user {user.user_id} with message: {text}")
         logger.info(f"History: {history}")
