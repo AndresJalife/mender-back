@@ -20,78 +20,86 @@ search_movies_system_message = {
 }
 
 search_movies_schema = {
-    "name": "search_movies",
-    "description": (
-        "Estás construyendo un sistema de recomendación de películas. "
-        "Sos un asistente que intenta entender qué tipo de película quiere ver el usuario. "
-        "Debés devolver un JSON con los filtros más relevantes para hacer recomendaciones. "
-        "Si el mensaje es vago, hacé preguntas aclaratorias (máximo 5). "
-        "No es necesario obtener todos los filtros; con los más importantes alcanza."
-    ),
-    "parameters": {
-        "type": "object",
-        "properties": {
-            "genre": {
-                "type": "array",
-                "description": (
-                    "Géneros principales que quiere ver el usuario, por ejemplo: ['Comedia'], ['Suspenso', 'Ciencia Ficción']. "
-                    "Si el usuario menciona más de un género, incluirlos todos en el array. "
-                    "Si no menciona ningún género, dejar vacío. "
-                    "Usar strings con mayúscula inicial."
-                )
-            },
-            "min_release_date": {
-                "type": "string",
-                "format": "date",
-                "description": "Fecha mínima de estreno (formato: dd/mm/yyyy)."
-            },
-            "max_release_date": {
-                "type": "string",
-                "format": "date",
-                "description": "Fecha máxima de estreno (formato: dd/mm/yyyy)."
-            },
-            "actors": {
-                "type": "array",
-                "description": (
-                    "Lista de actores que el usuario quiere ver. Ejemplo: ['Tom Hanks']. "
-                    "Si el usuario menciona más de uno, agregarlos todos. "
-                    "Si no menciona actores, dejar vacío. "
-                    "Intentá deducir el nombre del actor si el usuario lo sugiere implícitamente. "
-                    "Formato esperado: 'Nombre Apellido'."
-                )
-            },
-            "directors": {
-                "type": "array",
-                "description": (
-                    "Lista de directores preferidos. Ejemplo: ['Steven Spielberg']. "
-                    "Si hay más de uno, incluir todos. "
-                    "Si no se menciona ninguno, dejar vacío. "
-                    "Podés inferir el nombre si el usuario lo sugiere. "
-                    "Formato: 'Nombre Apellido'."
-                )
-            },
-            "original_language": {
-                "type": "string",
-                "description": (
-                    "Idioma original de la película que quiere ver el usuario. "
-                    "Ejemplo: 'es' para español, 'en' para inglés. "
-                    "Si no se menciona, dejar vacío."
-                )
-            },
-            "min_runtime": {
-                "type": "integer",
-                "description": (
-                    "Duración mínima en minutos de la película. "
-                    "Si no se menciona, dejar vacío."
-                )
-            },
-            "max_runtime": {
-                "type": "integer",
-                "description": (
-                    "Duración máxima en minutos de la película. "
-                    "Si no se menciona, dejar vacío."
-                )
-            },
+    "type": "function",
+    "function": {
+        "name": "search_movies",
+        "description": (
+            "Sos un asistente que ayuda a recomendar películas. "
+            "Tu tarea es interpretar las preferencias del usuario y devolver un objeto JSON con los filtros que se usarán "
+            "para generar una recomendación personalizada. "
+            "Si el usuario no es claro, hacé preguntas aclaratorias (máximo 5). "
+            "No es necesario completar todos los filtros: usá solo los más importantes según el mensaje."
+        ),
+        "parameters": {
+            "type": "object",
+            "properties": {
+                "genre": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": (
+                        "Lista de géneros que el usuario quiere ver. Ejemplos: ['Comedia'], ['Suspenso', 'Ciencia Ficción']. "
+                        "Si el usuario menciona más de uno, incluir todos. "
+                        "Si no menciona ninguno, dejar vacío. "
+                        "Los géneros deben estar en mayúscula inicial (por ejemplo: 'Comedia')."
+                    )
+                },
+                "min_release_date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": (
+                        "Fecha mínima de estreno en formato ISO (yyyy-mm-dd). "
+                        "Si no se menciona, dejar vacío."
+                    )
+                },
+                "max_release_date": {
+                    "type": "string",
+                    "format": "date",
+                    "description": (
+                        "Fecha máxima de estreno en formato ISO (yyyy-mm-dd). "
+                        "Si no se menciona, dejar vacío."
+                    )
+                },
+                "actors": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": (
+                        "Lista de actores que el usuario quiere ver. Ejemplo: ['Tom Hanks']. "
+                        "Si el usuario menciona más de uno, incluir todos. "
+                        "Intentá inferir nombres incluso si el usuario no los dice explícitamente. "
+                        "Formato: 'Nombre Apellido'."
+                    )
+                },
+                "directors": {
+                    "type": "array",
+                    "items": {"type": "string"},
+                    "description": (
+                        "Lista de directores preferidos. Ejemplo: ['Christopher Nolan']. "
+                        "Si no se menciona ninguno, dejar vacío. "
+                        "Podés inferir nombres si el usuario hace referencias indirectas."
+                    )
+                },
+                "original_language": {
+                    "type": "string",
+                    "description": (
+                        "Código del idioma original de la película (por ejemplo, 'es' para español, 'en' para inglés). "
+                        "Si no se menciona, dejar vacío."
+                    )
+                },
+                "min_runtime": {
+                    "type": "integer",
+                    "description": (
+                        "Duración mínima en minutos. Si no se menciona, dejar vacío."
+                    )
+                },
+                "max_runtime": {
+                    "type": "integer",
+                    "description": (
+                        "Duración máxima en minutos. Si no se menciona, dejar vacío."
+                    )
+                }
+            }
         }
     }
 }
+
+
