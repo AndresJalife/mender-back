@@ -34,8 +34,11 @@ def get_filtered_movies_ids(db, filters: dto.PostFilters, movie_ids):
 
     # Genre
     if filters.genres:
-        genre_filters = [EntityGenre.name.ilike(f"%{genre}%") for genre in filters.genres]
-        query = query.filter(or_(*genre_filters))
+        sql_filters = [EntityGenre.name.ilike(f"%{genre}%") for genre in filters.genres]
+        if len(sql_filters) == 1:
+            query = query.filter(sql_filters[0])
+        elif len(sql_filters) > 1:
+            query = query.filter(or_(*sql_filters))
     # Release date
     if filters.min_release_date:
         query = query.filter(Entity.release_date >= filters.min_release_date)
@@ -48,17 +51,23 @@ def get_filtered_movies_ids(db, filters: dto.PostFilters, movie_ids):
 
     # # Actor
     if filters.actors:
-        actor_filters = [Actor.name.ilike(f"%{actor}%") for actor in filters.actors]
-        query = query.filter(or_(*actor_filters))
+        sql_filters = [Actor.name.ilike(f"%{actor}%") for actor in filters.actors]
+        if len(sql_filters) == 1:
+            query = query.filter(sql_filters[0])
+        elif len(sql_filters) > 1:
+            query = query.filter(or_(*sql_filters))
     # Director
     if filters.directors:
-        director_filters = [Entity.director.ilike(f"%{director}%") for director in filters.directors]
-        query = query.filter(or_(*director_filters))
+        sql_filters = [Entity.director.ilike(f"%{director}%") for director in filters.directors]
+        if len(sql_filters) == 1:
+            query = query.filter(sql_filters[0])
+        elif len(sql_filters) > 1:
+            query = query.filter(or_(*sql_filters))
 
     # Language
     if filters.original_language:
         query = query.filter(Entity.original_language == filters.original_language)
-        
+
     # Runtime
     if filters.min_runtime:
         query = query.filter(Entity.runtime >= filters.min_runtime)
