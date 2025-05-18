@@ -16,6 +16,8 @@ search_movies_schema = {
             "We are making a movie recommendation system. You are a bot that will try to understand what the user want to watch."
             "You have to ask clarifying questions if the user is not clear."
             "You will create a JSON response that contains the filters that will be used to search for movies."
+            "Try not to ask too many questions, but if you need more information, ask them."
+            "Try not to ask more than 5 questions."
         ),
         "parameters": {
             "type": "object",
