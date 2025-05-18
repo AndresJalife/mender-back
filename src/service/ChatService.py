@@ -7,6 +7,7 @@ from src.model import dto
 from src.models import ChatHistory
 from src.service.Logger import logger
 from src.service.chatbot.GroqService import GroqService
+from src.util.util import str_to_date
 
 
 class ChatService:
@@ -56,6 +57,20 @@ class ChatService:
 
         return next_message.order + 1, next_message.chat_id
 
+    from datetime import datetime, timedelta
+
+    def _get_chat_id(self, last_message: ChatHistory):
+        last_30_minutes = datetime.now() - timedelta(minutes=30)
+
+        created = last_message.created_date
+        if isinstance(created, str):
+            created = str_to_date(created)
+
+        if created < last_30_minutes:
+            return last_message.chat_id + 1
+
+        return last_message.chat_id
+
     def _get_last_message(self, user):
         return self.db.query(ChatHistory).filter(ChatHistory.user_id == user.user_id).order_by(
             ChatHistory.order.desc()).first()
@@ -96,11 +111,3 @@ class ChatService:
             {"role": "assistant" if r.bot_made else "user", "content": r.message}
             for r in reversed(rows)
         ]
-
-    def _get_chat_id(self, last_message: ChatHistory):
-        last_30_minutes = datetime.now() - timedelta(minutes=30)
-        if last_message.created_date < last_30_minutes:
-            return last_message.chat_id + 1
-
-        return last_message.chat_id
-
