@@ -115,8 +115,8 @@ class PostFilters(BaseModel):
     genre: Optional[str] = None
     min_release_date: Optional[str] = None
     max_release_date: Optional[str] = None
-    min_rating: Optional[float] = None
-    max_rating: Optional[float] = None
+    actor: Optional[str] = None
+    director: Optional[str] = None
     avoid_imdb_ids: Optional[List[str]] = None
 
     model_config = ConfigDict()
