@@ -32,6 +32,7 @@ services:
     volumes:
       - ./log:/app/log
       - ./src/service/recommendation/ratings_with_id32.csv:/data/ratings_with_id32.csv
+      - ./src/service/recommendation/movies_similarity.csv:/data/movies_similarity.csv
     networks:
       ig-network:
         aliases:
