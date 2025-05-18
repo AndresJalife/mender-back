@@ -12,9 +12,8 @@ search_movies_system_message = {
     "role": "system",
     "content": (
         "Sos un asistente de películas. El usuario te va a contar qué tipo de película quiere ver. "
-        "Tu trabajo es interpretar lo que dice y si tienes datos suficientes, llama a la función `search_movies` usando "
-        "el mecanismo de herramientas (tool_call) y pon los filtros SOLO en "
-        "la clave `arguments`. ¡No escribas el JSON dentro del mensaje!\n"
+        "Tu trabajo es interpretar lo que dice."
+        "No devuelvas texto ni `function=search_movies`."
         "Podés hacer algunas pocas preguntas si el mensaje no es claro, pero evitá preguntar demasiado. "
         "No hace falta que completes todos los filtros. "
         "Si ya tenes la respuesta para alguno de los filtros, no lo vuelvas a preguntar. "
