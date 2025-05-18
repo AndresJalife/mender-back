@@ -71,6 +71,20 @@ search_movies_schema = {
                         "If the user doesn't mention any language, leave this field empty."
                     )
                 },
+                "min_runtime": {
+                    "type": "integer",
+                    "description": (
+                        "Minimum runtime of the movie the user wants to watch in minutes."
+                        "If the user doesn't mention any runtime, leave this field empty."
+                    )
+                },
+                "max_runtime": {
+                    "type": "integer",
+                    "description": (
+                        "Maximum runtime of the movie the user wants to watch in minutes."
+                        "If the user doesn't mention any runtime, leave this field empty."
+                    )
+                },
             }
         }
     }

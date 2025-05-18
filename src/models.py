@@ -162,6 +162,7 @@ class ChatHistory(Base):
     bot_made = Column(Boolean, default=False)
     order = Column(Integer, nullable=False)
     message = Column(String, nullable=False)
+    chat_id = Column(Integer, nullable=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
     user = relationship("User", back_populates="chat_history")

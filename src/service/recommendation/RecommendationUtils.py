@@ -1,3 +1,5 @@
+from operator import or_
+
 from src.model import dto
 from src.models import UserPostInfo, Entity, CalculatedRating, EntityGenre, Actor
 
@@ -32,10 +34,8 @@ def get_filtered_movies_ids(db, filters: dto.PostFilters, movie_ids):
 
     # Genre
     if filters.genres:
-        sql_filters = []
-        for genre in filters.genres:
-            sql_filters.append(EntityGenre.name.ilike(f"%{genre}%"))
-        query = query.filter(*sql_filters)
+        genre_filters = [EntityGenre.name.ilike(f"%{genre}%") for genre in filters.genres]
+        query = query.filter(or_(*genre_filters))
     # Release date
     if filters.min_release_date:
         query = query.filter(Entity.release_date >= filters.min_release_date)
@@ -48,20 +48,23 @@ def get_filtered_movies_ids(db, filters: dto.PostFilters, movie_ids):
 
     # # Actor
     if filters.actors:
-        sql_filters = []
-        for actor in filters.actors:
-            sql_filters.append(Actor.name.ilike(f"%{actor}%"))
-        query = query.filter(*sql_filters)
+        actor_filters = [Actor.name.ilike(f"%{actor}%") for actor in filters.actors]
+        query = query.filter(or_(*actor_filters))
     # Director
     if filters.directors:
-        sql_filters = []
-        for director in filters.directors:
-            sql_filters.append(Entity.director.ilike(f"%{director}%"))
-        query = query.filter(*sql_filters)
+        director_filters = [Entity.director.ilike(f"%{director}%") for director in filters.directors]
+        query = query.filter(or_(*director_filters))
 
     # Language
     if filters.original_language:
         query = query.filter(Entity.original_language == filters.original_language)
+        
+    # Runtime
+    if filters.min_runtime:
+        query = query.filter(Entity.runtime >= filters.min_runtime)
+
+    if filters.max_runtime:
+        query = query.filter(Entity.runtime <= filters.max_runtime)
 
     results = (
         query

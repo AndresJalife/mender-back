@@ -1,3 +1,6 @@
+from datetime import datetime, timedelta
+from typing import Type
+
 from src import models
 from src.config.database import Database
 from src.model import dto
@@ -30,32 +33,35 @@ class ChatService:
 
     async def send_message(self, user, message):
         logger.info(f"Sending message from user {user.user_id}")
-        next_order = self._save_message(user, message)
-        return await self._get_bot_message(user, message, next_order)
+        next_order, chat_id = self._save_message(user, message)
+        return await self._get_bot_message(user, message, next_order, chat_id)
 
     def _save_message(self, user, message):
         last_message = self._get_last_message(user)
         order = 1
+        chat_id = 1
         if last_message:
             order = last_message.order + 1
+            chat_id = self._get_chat_id(last_message)
 
         next_message = ChatHistory(
             user_id=user.user_id,
             message=message.message,
             order=order,
+            chat_id=chat_id,
             bot_made=False
         )
 
         self.db.add(next_message)
 
-        return next_message.order + 1
+        return next_message.order + 1, next_message.chat_id
 
     def _get_last_message(self, user):
         return self.db.query(ChatHistory).filter(ChatHistory.user_id == user.user_id).order_by(
             ChatHistory.order.desc()).first()
 
-    async def _get_bot_message(self, user, message, next_order):
-        history = self._load_history(user)
+    async def _get_bot_message(self, user, message, next_order, chat_id):
+        history = self._load_history(user, chat_id)
         return_message = await self.groq_service.generate(user, history, message.message)
         message = dto.Message(
             bot_made=True,
@@ -66,25 +72,35 @@ class ChatService:
             user_id=user.user_id,
             message=return_message,
             order=next_order,
+            chat_id=chat_id,
             bot_made=True
         ))
 
         self.db.commit()
         return message
 
-    def _load_history(self, user, limit: int = 10) -> list[dict]:
+    def _load_history(self, user, chat_id) -> list[dict]:
         """
         Returns the last *limit* messages in OpenAI format:
         [{"role":"system","content":...}, {"role":"user",...}, ...]
         """
-        rows = (
+        rows : list[Type[ChatHistory]] = (
             self.db.query(ChatHistory)
-            .filter(ChatHistory.user_id == user.user_id)
+            .filter(ChatHistory.user_id == user.user_id,
+                    ChatHistory.chat_id == chat_id)
             .order_by(ChatHistory.order.desc())
-            .limit(limit)
             .all()
         )
+
         return [
             {"role": "assistant" if r.bot_made else "user", "content": r.message}
             for r in reversed(rows)
         ]
+
+    def _get_chat_id(self, last_message: ChatHistory):
+        last_30_minutes = datetime.now() - timedelta(minutes=30)
+        if last_message.created_date < last_30_minutes:
+            return last_message.chat_id + 1
+
+        return last_message.chat_id
+

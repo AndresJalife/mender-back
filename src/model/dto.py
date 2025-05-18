@@ -119,5 +119,7 @@ class PostFilters(BaseModel):
     directors: Optional[list[str]] = None
     avoid_tmdb_ids: Optional[List[int]] = None
     original_language: Optional[str] = None
+    min_runtime: Optional[int] = None
+    max_runtime: Optional[int] = None
 
     model_config = ConfigDict()
