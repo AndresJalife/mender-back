@@ -18,7 +18,7 @@ certs/
 test.env
 
 ## Large csv files ##
-ratings_with_id32.csv
+src/service/recommendation/data/
 
 ### Intellij ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
