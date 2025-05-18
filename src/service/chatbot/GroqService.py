@@ -52,9 +52,17 @@ class GroqService:
         )
 
         final = await self._create(
-                messages=history + [choice.message, {"role": "tool", "name": "search_movies", "content": summary}],
+                messages=history + [
+                    choice.message,
+                    {
+                        "role": "tool",
+                        "tool_call_id": choice.message.tool_calls[0].id,
+                        "name": "search_movies",
+                        "content": summary
+                    }
+                ],
                 tools=[],
-                tool_choice="auto",
+                tool_choice="none",
                 temp=0.7,
         )
 
