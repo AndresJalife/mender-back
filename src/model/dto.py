@@ -117,6 +117,6 @@ class PostFilters(BaseModel):
     max_release_date: Optional[str] = None
     actor: Optional[str] = None
     director: Optional[str] = None
-    avoid_imdb_ids: Optional[List[str]] = None
+    avoid_imdb_ids: Optional[List[int]] = None
 
     model_config = ConfigDict()
