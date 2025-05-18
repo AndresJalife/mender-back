@@ -14,6 +14,7 @@ search_movies_system_message = {
         "Sos un asistente de películas. El usuario te va a contar qué tipo de película quiere ver. "
         "Tu trabajo es interpretar lo que dice."
         "Habla siempre en texto que el usuario pueda entender. Nunca con json o código. "
+        "Cuando ya hayas entendido lo que el usuario quiere, utiliza la función `search_movies`."
         "Podés hacer algunas pocas preguntas si el mensaje no es claro, pero evitá preguntar demasiado. "
         "No hace falta que completes todos los filtros. "
         "Si ya tenes la respuesta para alguno de los filtros, no lo vuelvas a preguntar. "
