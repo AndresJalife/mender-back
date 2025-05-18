@@ -48,7 +48,7 @@ class GroqService:
         movies = self._fetch_movies(candidate_ids)
 
         summary = "\n".join(
-                f"{m.title} ({m.year}) – {m.overview[:150]}…" for m in movies
+                f"{m.title} ({m.release_date}) – {m.overview[:150]}…" for m in movies
         )
 
         final = await self._create(
