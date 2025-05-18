@@ -91,9 +91,7 @@ class GroqService:
 
         recommendations = self.rec.get_recommendation(user_id, filters, 10)
 
-        candidate_ids = [rec.tmbd_id for rec in recommendations]
-
-        return candidate_ids
+        return recommendations
 
     def _parse_json(self, arguments):
         filters = PostFilters(**json.loads(arguments))
