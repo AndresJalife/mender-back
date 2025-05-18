@@ -21,13 +21,13 @@ search_movies_schema = {
             "type": "object",
             "properties": {
                 "genre": {
-                    "type": "list",
+                    "type": "array",
                     "description": (
                         "The main genre of the movie the user wants, e.g. ['Comedy'], "
                         "['Thriller', 'Science Fiction']."
                         "If the user wants to see more than one genre, separate them with commas."
                         "If the user doesn't mention any genre, leave this field empty."
-                        "The format of the genre should be a list of strings capitalized."
+                        "The format of the genre should be a array of strings capitalized."
                     )
                 },
                 "min_release_date": {
@@ -41,7 +41,7 @@ search_movies_schema = {
                     "description": "Latest release date of the movie (dd/mm/yyyy)."
                 },
                 "actors": {
-                    "type": "list",
+                    "type": "array",
                     "description": (
                         "List of names of the actors the user wants to see in the movie, e.g. ['Tom Hanks']."
                         "If the user wants to see more than one actor, separate them with commas."
@@ -51,7 +51,7 @@ search_movies_schema = {
                     )
                 },
                 "directors": {
-                    "type": "list",
+                    "type": "array",
                     "description": (
                         "List of names of the directors the user wants to see in the movie, e.g. ['Steven Spielberg']."
                         "If the user wants to see more than one director, separate them with commas."
