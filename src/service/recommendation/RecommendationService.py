@@ -1,4 +1,5 @@
 import os
+from operator import contains
 
 import pandas as pd
 import numpy as np
@@ -7,7 +8,7 @@ from sklearn.neighbors import NearestNeighbors
 
 from src.config.database import Database, get_db
 from src.model import dto
-from src.models import UserPostInfo, Entity, CalculatedRating, EntityGenre
+from src.models import UserPostInfo, Entity, CalculatedRating, EntityGenre, Actor
 from src.service.ImplicitService import ImplicitService
 from src.service.Logger import logger
 
@@ -49,11 +50,17 @@ def get_user_implicit_ratings(db, user_id):
     return [(rating[1], rating[0]) for rating in implicit_ratings]
 
 def get_filtered_movies_ids(db, filters: dto.PostFilters, movie_ids):
-    query = db.query(Entity).join(EntityGenre).filter(Entity.tmbd_id.in_(movie_ids))
+    query = (db.query(Entity)
+             .join(EntityGenre)
+             .join(Actor)
+             .filter(Entity.tmbd_id.in_(movie_ids)))
 
     # Genre
-    if filters.genre:
-        query = query.filter(EntityGenre.name == filters.genre)
+    if filters.genres:
+        sql_filters = []
+        for genre in filters.genres:
+            sql_filters.append(contains(EntityGenre.name, genre))
+        query = query.filter(*sql_filters)
     # Release date
     if filters.min_release_date:
         query = query.filter(Entity.release_date >= filters.min_release_date)
@@ -65,21 +72,26 @@ def get_filtered_movies_ids(db, filters: dto.PostFilters, movie_ids):
             query = query.filter(Entity.tmbd_id.notin_(ids))
 
     # # Actor
-    # if filters.actor:
-    #     sql_filters.append(Entity.actors == filters.actor)
-    # # Director
-    # if filters.director:
-    #     sql_filters.append(Entity.director == filters.director)
+    if filters.actors:
+        sql_filters = []
+        for actor in filters.actors:
+            sql_filters.append(contains(Actor.name, actor))
+        query = query.filter(*sql_filters)
+    # Director
+    if filters.directors:
+        sql_filters = []
+        for director in filters.directors:
+            sql_filters.append(contains(Entity.director, director))
+        query = query.filter(*sql_filters)
+
+    # Language
+    if filters.original_language:
+        query = query.filter(Entity.original_language == filters.original_language)
 
     results = (
         query
         .all()
     )
-    #
-    # if filters.avoid_imdb_ids:
-    #     movie_ids = [entity.tmbd_id for entity in results if id not in filters.avoid_imdb_ids]
-    # else:
-    #     movie_ids = [entity.tmbd_id for entity in results]
 
     return [entity.tmbd_id for entity in results]
 

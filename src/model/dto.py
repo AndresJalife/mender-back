@@ -112,11 +112,12 @@ class Message(BaseModel):
 
 
 class PostFilters(BaseModel):
-    genre: Optional[str] = None
+    genres: Optional[list[str]] = None
     min_release_date: Optional[str] = None
     max_release_date: Optional[str] = None
-    actor: Optional[str] = None
-    director: Optional[str] = None
+    actors: Optional[list[str]] = None
+    directors: Optional[list[str]] = None
     avoid_tmdb_ids: Optional[List[int]] = None
+    original_language: Optional[str] = None
 
     model_config = ConfigDict()
