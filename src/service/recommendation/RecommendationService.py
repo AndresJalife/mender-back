@@ -53,20 +53,20 @@ def get_filtered_movies_ids(db, filters: dto.PostFilters, movie_ids):
 
     # Genre
     if filters.genre:
-        query.filter(EntityGenre.name == filters.genre)
+        query = query.filter(EntityGenre.name == filters.genre)
     # Release date
     if filters.min_release_date:
-        query.filter(Entity.release_date >= filters.min_release_date)
+        query = query.filter(Entity.release_date >= filters.min_release_date)
     if filters.max_release_date:
-        query.filter(Entity.release_date <= filters.max_release_date)
+        query = query.filter(Entity.release_date <= filters.max_release_date)
     # Rating
     if filters.min_rating:
-        query.filter(Entity.vote_average/2 >= filters.min_rating)
+        query = query.filter(Entity.vote_average/2 >= filters.min_rating)
     if filters.max_rating:
-        query.filter(Entity.vote_average/2 <= filters.max_rating)
+        query = query.filter(Entity.vote_average/2 <= filters.max_rating)
 
     if filters.avoid_imdb_ids:
-        query.filter(Entity.tmbd_id.notin_(filters.avoid_imdb_ids))
+        query = query.filter(Entity.tmbd_id.notin_(filters.avoid_imdb_ids))
     # # Actor
     # if filters.actor:
     #     sql_filters.append(Entity.actors == filters.actor)
