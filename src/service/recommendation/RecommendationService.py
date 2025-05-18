@@ -48,8 +48,8 @@ def get_user_implicit_ratings(db, user_id):
 
     return [(rating[1], rating[0]) for rating in implicit_ratings]
 
-def get_filtered_movies_ids(db, filters: dto.PostFilters):
-    query = db.query(Entity).join(EntityGenre)
+def get_filtered_movies_ids(db, filters: dto.PostFilters, movie_ids):
+    query = db.query(Entity).join(EntityGenre).filter(Entity.tmbd_id.in_(movie_ids))
 
     # Genre
     if filters.genre:
@@ -193,7 +193,7 @@ class RecommendationService:
         # Remove movies the user has already seen
         movie_predictions = movie_predictions[~movie_predictions.index.isin(seen_movies)]
         # Apply filters
-        movie_predictions = movie_predictions[movie_predictions.index.isin(get_filtered_movies_ids(self.db, filters))]
+        movie_predictions = movie_predictions[movie_predictions.index.isin(get_filtered_movies_ids(self.db, filters, movie_predictions.index))]
 
         # Return top recommendations with predicted ratings
         return movie_predictions.sort_values('predicted_rating', ascending=False).head(k).index.to_list()
