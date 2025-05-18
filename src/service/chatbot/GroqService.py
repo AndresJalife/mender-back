@@ -3,7 +3,7 @@ import json
 from src.model.dto import PostFilters
 from src.models import Entity
 from src.service.Logger import logger
-from src.service.chatbot.llm import search_movies_schema, get_llm
+from src.service.chatbot.llm import search_movies_schema, get_llm, search_movies_system_message
 from src.service.recommendation.RecommendationService import recommendation_service
 
 
@@ -16,7 +16,7 @@ class GroqService:
         self.model = "llama3-8b-8192"
 
     async def generate(self, user, history, text: str) -> str:
-        history.insert(0, self._get_system_msg())
+        history.insert(0, search_movies_system_message())
 
         logger.info(f"Generating response for user {user.user_id} with message: {text}")
         logger.info(f"History: {history}")
@@ -71,16 +71,6 @@ class GroqService:
         logger.info(f"Final finish_reason: {final.choices[0].finish_reason}")
 
         return final.choices[0].message.content
-
-    def _get_system_msg(self):
-        return {
-          "role": "system",
-          "content": (
-            "You are a helpful movie assistant. The user will describe the type of movie "
-            "they want to watch. Return a JSON object with appropriate search filters using "
-            "the `search_movies` function. If the user's message is unclear, ask a clarifying question instead."
-          )
-        }
 
 
     async def _create(self, messages, tools, tool_choice, temp=0.0):

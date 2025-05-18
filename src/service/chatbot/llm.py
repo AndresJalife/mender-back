@@ -8,84 +8,90 @@ def get_llm():
             api_key=os.getenv("GROQ_API_KEY"),
     )
 
+search_movies_system_message = {
+    "role": "system",
+    "content": (
+        "Sos un asistente de películas. El usuario te va a contar qué tipo de película quiere ver. "
+        "Tu tarea es devolver un objeto JSON con los filtros usando la función `search_movies`. "
+        "Si no entendés del todo, podés hacer preguntas aclaratorias. Pero no hagas más de 5 preguntas. "
+        "No hace falta que completes todos los filtros, con los más importantes es suficiente. "
+        "Si ya hiciste 5 preguntas o tenés suficiente información, devolvé directamente los filtros."
+    )
+}
+
 search_movies_schema = {
-    "type": "function",
-    "function": {
-        "name": "search_movies",
-        "description": (
-            "We are making a movie recommendation system. You are a bot that will try to understand what the user want to watch."
-            "You have to ask clarifying questions if the user is not clear."
-            "You will create a JSON response that contains the filters that will be used to search for movies."
-            "Try not to ask too many questions, but if you need more information, ask them."
-            "Try not to ask more than 5 questions."
-            "You dont need to get all the filters, but you can get the most important ones."
-            "If you already asked 5 questions, just return the filters you have."
-        ),
-        "parameters": {
-            "type": "object",
-            "properties": {
-                "genre": {
-                    "type": "array",
-                    "description": (
-                        "The main genre of the movie the user wants, e.g. ['Comedy'], "
-                        "['Thriller', 'Science Fiction']."
-                        "If the user wants to see more than one genre, separate them with commas."
-                        "If the user doesn't mention any genre, leave this field empty."
-                        "The format of the genre should be a array of strings capitalized."
-                    )
-                },
-                "min_release_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "Earliest release date of the movie (dd/mm/yyyy)."
-                },
-                "max_release_date": {
-                    "type": "string",
-                    "format": "date",
-                    "description": "Latest release date of the movie (dd/mm/yyyy)."
-                },
-                "actors": {
-                    "type": "array",
-                    "description": (
-                        "List of names of the actors the user wants to see in the movie, e.g. ['Tom Hanks']."
-                        "If the user wants to see more than one actor, separate them with commas."
-                        "If the user doesn't mention any actor, leave this field empty."
-                        "You can try to guess the actor's name from the user's message."
-                        "The format of the name should be 'First Last'."
-                    )
-                },
-                "directors": {
-                    "type": "array",
-                    "description": (
-                        "List of names of the directors the user wants to see in the movie, e.g. ['Steven Spielberg']."
-                        "If the user wants to see more than one director, separate them with commas."
-                        "If the user doesn't mention any director, leave this field empty."
-                        "You can try to guess the director's name from the user's message."
-                        "The format of the name should be 'First Last'."
-                    )
-                },
-                "original_language": {
-                    "type": "string",
-                    "description": (
-                        "The original language of the movie the user wants to watch, e.g. 'en', 'sp'."
-                        "If the user doesn't mention any language, leave this field empty."
-                    )
-                },
-                "min_runtime": {
-                    "type": "integer",
-                    "description": (
-                        "Minimum runtime of the movie the user wants to watch in minutes."
-                        "If the user doesn't mention any runtime, leave this field empty."
-                    )
-                },
-                "max_runtime": {
-                    "type": "integer",
-                    "description": (
-                        "Maximum runtime of the movie the user wants to watch in minutes."
-                        "If the user doesn't mention any runtime, leave this field empty."
-                    )
-                },
-            }
+    "name": "search_movies",
+    "description": (
+        "Estás construyendo un sistema de recomendación de películas. "
+        "Sos un asistente que intenta entender qué tipo de película quiere ver el usuario. "
+        "Debés devolver un JSON con los filtros más relevantes para hacer recomendaciones. "
+        "Si el mensaje es vago, hacé preguntas aclaratorias (máximo 5). "
+        "No es necesario obtener todos los filtros; con los más importantes alcanza."
+    ),
+    "parameters": {
+        "type": "object",
+        "properties": {
+            "genre": {
+                "type": "array",
+                "description": (
+                    "Géneros principales que quiere ver el usuario, por ejemplo: ['Comedia'], ['Suspenso', 'Ciencia Ficción']. "
+                    "Si el usuario menciona más de un género, incluirlos todos en el array. "
+                    "Si no menciona ningún género, dejar vacío. "
+                    "Usar strings con mayúscula inicial."
+                )
+            },
+            "min_release_date": {
+                "type": "string",
+                "format": "date",
+                "description": "Fecha mínima de estreno (formato: dd/mm/yyyy)."
+            },
+            "max_release_date": {
+                "type": "string",
+                "format": "date",
+                "description": "Fecha máxima de estreno (formato: dd/mm/yyyy)."
+            },
+            "actors": {
+                "type": "array",
+                "description": (
+                    "Lista de actores que el usuario quiere ver. Ejemplo: ['Tom Hanks']. "
+                    "Si el usuario menciona más de uno, agregarlos todos. "
+                    "Si no menciona actores, dejar vacío. "
+                    "Intentá deducir el nombre del actor si el usuario lo sugiere implícitamente. "
+                    "Formato esperado: 'Nombre Apellido'."
+                )
+            },
+            "directors": {
+                "type": "array",
+                "description": (
+                    "Lista de directores preferidos. Ejemplo: ['Steven Spielberg']. "
+                    "Si hay más de uno, incluir todos. "
+                    "Si no se menciona ninguno, dejar vacío. "
+                    "Podés inferir el nombre si el usuario lo sugiere. "
+                    "Formato: 'Nombre Apellido'."
+                )
+            },
+            "original_language": {
+                "type": "string",
+                "description": (
+                    "Idioma original de la película que quiere ver el usuario. "
+                    "Ejemplo: 'es' para español, 'en' para inglés. "
+                    "Si no se menciona, dejar vacío."
+                )
+            },
+            "min_runtime": {
+                "type": "integer",
+                "description": (
+                    "Duración mínima en minutos de la película. "
+                    "Si no se menciona, dejar vacío."
+                )
+            },
+            "max_runtime": {
+                "type": "integer",
+                "description": (
+                    "Duración máxima en minutos de la película. "
+                    "Si no se menciona, dejar vacío."
+                )
+            },
         }
     }
 }
