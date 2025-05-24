@@ -39,6 +39,11 @@ class RecommendationService:
 
         # Init for content-based-recommendation
         self.movies_similarity = pd.read_csv(os.getenv("MOVIES_PATH"))
+
+        self.movies_similarity['release_date'] = pd.to_datetime(
+                self.movies_similarity['release_date'], errors='coerce'
+        ).dt.date
+
         self.movies_similarity.set_index('index', inplace=True)
         self.movies_similarity.index.name = None
         self.movies_similarity['genres'] = self.movies_similarity['genres'].apply(ast.literal_eval)
