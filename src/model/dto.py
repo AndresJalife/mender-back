@@ -1,6 +1,7 @@
+from datetime import date, datetime
 from typing import Optional, List
 
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, field_validator
 
 from src.enums.Countries import Countries
 from src.enums.user.UserSex import UserSex
@@ -123,3 +124,15 @@ class PostFilters(BaseModel):
     max_runtime: Optional[int] = None
 
     model_config = ConfigDict()
+
+    # Acepta "DD/MM/YYYY" o "YYYY-MM-DD" y lo convierte a date
+    @field_validator('min_release_date', 'max_release_date', mode='before')
+    def _parse_date(cls, v):
+        if v is None or isinstance(v, date):
+            return v
+        for fmt in ("%d/%m/%Y", "%Y-%m-%d"):
+            try:
+                return datetime.strptime(v, fmt).date()
+            except ValueError:
+                pass
+        raise ValueError("Fecha no reconocida, usa DD/MM/YYYY o YYYY-MM-DD")
