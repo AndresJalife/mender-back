@@ -114,8 +114,8 @@ class Message(BaseModel):
 
 class PostFilters(BaseModel):
     genres: Optional[list[str]] = None
-    min_release_date: Optional[str] = None
-    max_release_date: Optional[str] = None
+    min_release_date: Optional[date] = None
+    max_release_date: Optional[date] = None
     actors: Optional[list[str]] = None
     directors: Optional[list[str]] = None
     avoid_tmdb_ids: Optional[List[int]] = None
