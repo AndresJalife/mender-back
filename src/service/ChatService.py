@@ -19,14 +19,6 @@ class ChatService:
         self.db = db
         self.groq_service = GrokServiceV2(db, RecommendationService(db))
 
-    def get_chats(self, user):
-        logger.info(f"Getting chats for user {user.user_id}")
-        chats = self.db.query(ChatHistory).filter(ChatHistory.user_id == user.user_id).all()
-        if not chats:
-            return []
-
-        return chats
-
     def get_chat(self, user):
         logger.info(f"Getting chat for user {user.user_id}")
         chat = self.db.query(ChatHistory).filter(ChatHistory.user_id == user.user_id).all()
