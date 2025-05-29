@@ -9,7 +9,7 @@ from src.models import ChatHistory
 from src.service.Logger import logger
 from src.service.chatbot.GrokServiceV2 import GrokServiceV2
 from src.service.chatbot.GroqService import GroqService
-from src.service.recommendation.RecommendationService import RecommendationService
+from src.service.recommendation.RecommendationService import RecommendationService, recommendation_service
 from src.util.util import str_to_datetime
 
 
@@ -17,7 +17,7 @@ class ChatService:
 
     def __init__(self, db: Database):
         self.db = db
-        self.groq_service = GrokServiceV2(db, RecommendationService(db))
+        self.groq_service = GrokServiceV2(db, recommendation_service)
 
     def get_chat(self, user):
         logger.info(f"Getting chat for user {user.user_id}")
