@@ -1,10 +1,12 @@
 import os
 import ast
+from functools import partial
 
 import pandas as pd
 import numpy as np
 from scipy.sparse import csr_matrix
 from sklearn.neighbors import NearestNeighbors
+from starlette.concurrency import run_in_threadpool
 
 from src.config.database import Database, get_db
 from src.model import dto
@@ -208,6 +210,13 @@ class RecommendationService:
         content_k = k - len(recommendations)
         recommendations += (self.get_content_based_recommendation(user_ratings, seen_movies, filters, recommendations, content_k))
         return recommendations
+
+    async def get_recommendations_async(self, user_id: int,  filters: dto.PostFilters, k: int = 10) -> list[int]:
+        # Partial binds the positional/keyword args once
+        fn = partial(self.get_recommendation, user_id, filters, k)
+        # run_in_threadpool → default ThreadPoolExecutor shared by Starlette
+        return await run_in_threadpool(fn)
+
 
 db_instance = next(get_db())
 recommendation_service = RecommendationService(db_instance)

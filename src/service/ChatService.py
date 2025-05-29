@@ -1,11 +1,15 @@
 from datetime import datetime, timedelta
 from typing import Type
 
+from starlette.concurrency import run_in_threadpool
+
 from src.config.database import Database
 from src.model import dto
 from src.models import ChatHistory
 from src.service.Logger import logger
+from src.service.chatbot.GrokServiceV2 import GrokServiceV2
 from src.service.chatbot.GroqService import GroqService
+from src.service.recommendation.RecommendationService import RecommendationService
 from src.util.util import str_to_datetime
 
 
@@ -13,7 +17,7 @@ class ChatService:
 
     def __init__(self, db: Database):
         self.db = db
-        self.groq_service = GroqService(db)
+        self.groq_service = GrokServiceV2(db, RecommendationService(db))
 
     def get_chats(self, user):
         logger.info(f"Getting chats for user {user.user_id}")
@@ -31,10 +35,10 @@ class ChatService:
 
         return chat
 
-    async def send_message(self, user, message):
-        logger.info(f"Sending message from user {user.user_id}")
-        next_order, chat_id = self._save_message(user, message)
-        return await self._get_bot_message(user, message, next_order, chat_id)
+    # async def send_message(self, user, message):
+    #     logger.info(f"Sending message from user {user.user_id}")
+    #     next_order, chat_id = self._save_message(user, message)
+    #     return await self._get_bot_message(user, message, next_order, chat_id)
 
     def _save_message(self, user, message):
         last_message = self._get_last_message(user)
@@ -110,3 +114,27 @@ class ChatService:
             {"role": "assistant" if r.bot_made else "user", "content": r.message}
             for r in reversed(rows)
         ]
+
+    async def send_message(self, user, message):
+        # run blocking DB work in default thread-pool
+        next_order, chat_id = await run_in_threadpool(self._save_message, user, message)
+        history = await run_in_threadpool(self._load_history, user, chat_id)
+
+        # call Grok → recommender
+        bot_reply = await self.groq_service.generate(user=user, history=history, text=message.message)
+
+        # persist bot message (still off the main loop)
+        await run_in_threadpool(self._save_bot_reply, user, bot_reply, next_order, chat_id)
+
+        return dto.Message(bot_made=True, order=next_order, message=bot_reply)
+
+    # helper extracted for clarity
+    def _save_bot_reply(self, user, reply, order, chat_id):
+        self.db.add(ChatHistory(
+            user_id=user.user_id,
+            message=reply,
+            order=order,
+            chat_id=chat_id,
+            bot_made=True
+        ))
+        self.db.commit()
