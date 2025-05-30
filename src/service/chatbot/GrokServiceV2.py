@@ -1,7 +1,6 @@
 from __future__ import annotations
 
 import json
-import logging
 import os
 from typing import Any, Dict, List, MutableSequence, Sequence
 
@@ -12,6 +11,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from src.config.database import Database
 from src.model.dto import PostFilters
 from src.models import Entity, User
+from src.service.Logger import logger
 from src.service.recommendation.RecommendationService import (
     RecommendationService,
 )
@@ -20,9 +20,6 @@ from src.util.util import str_to_date
 ###############################################################################
 # Configuration & singletons
 ###############################################################################
-
-logger = logging.getLogger("grok-service")
-logger.setLevel(logging.INFO)
 
 GROK_MODEL = os.getenv("GROK_MODEL", "grok-3-mini")
 GROK_API_KEY = os.getenv("GROQ_API_KEY")
@@ -205,7 +202,7 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
         messages.append({"role": "user", "content": req.text})
 
         while True:
-            logger.debug("Calling Grok – messages=%s", messages[-3:])
+            logger.info("Calling Grok – messages=%s", messages[-3:])
             try:
                 llm_resp = await GROK_CLIENT.chat(
                     model=GROK_MODEL,
@@ -216,11 +213,11 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
                     temperature=TEMPERATURE,
                 )
             except Exception as exc:  # noqa: BLE001
-                logger.exception("Grok API failure: %s", exc)
+                logger.info("Grok API failure: %s", exc)
                 return "Lo siento, hubo un error técnico. Intentá de nuevo más tarde."
 
             choice = llm_resp.choices[0]
-            logger.debug("Grok choice finish_reason=%s", choice.finish_reason)
+            logger.info("Grok choice finish_reason=%s", choice.finish_reason)
 
             # a) LLM quiere usar la herramienta
             if choice.finish_reason == "tool_calls":
@@ -229,7 +226,7 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
 
                 # 👉 2. procesar la llamada y responder con JSON
                 reply_json = await self._handle_tool_call(choice.message.tool_calls, user)
-                logger.debug("Function output=%s", reply_json)
+                logger.info("Function output=%s", reply_json)
 
                 messages.append({"role": "function", "name": "search_movies", "content": reply_json})
                 continue  # vuelve a comenzar el loop
@@ -240,7 +237,7 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
                 final_text = (
                     "No encontré nada que se ajuste exactamente. ¿Querés intentar con otros filtros?"
                 )
-            logger.debug("Grok final reply=%s", final_text)
+            logger.info("Grok final reply=%s", final_text)
             return final_text
 
     # ------------------------------------------------------------------
@@ -250,20 +247,20 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
 
         call = calls[0]
         if call.function.name != "search_movies":
-            logger.warning("Unknown tool name %s", call.function.name)
+            logger.info("Unknown tool name %s", call.function.name)
             return json.dumps({"error": "unknown_tool"})
 
         try:
             filters = PostFilters(**json.loads(call.function.arguments or "{}"))
-            logger.debug("Parsed filters=%s", filters)
+            logger.info("Parsed filters=%s", filters)
         except Exception as exc:  # noqa: BLE001
-            logger.warning("Invalid tool arguments: %s", exc)
+            logger.info("Invalid tool arguments: %s", exc)
             return json.dumps({"error": "invalid_arguments"})
 
         try:
             candidate_ids = await self._rec.get_recommendations_async(user.user_id, filters, k=RECOMMENDATION_K)
         except Exception as exc:  # noqa: BLE001
-            logger.exception("Recommendation failure: %s", exc)
+            logger.info("Recommendation failure: %s", exc)
             return json.dumps({"error": "rec_failure"})
 
         if not candidate_ids:
