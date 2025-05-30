@@ -202,7 +202,7 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
         messages.append({"role": "user", "content": req.text})
 
         while True:
-            logger.info("Calling Grok – messages=%s", messages[-3:])
+            logger.info(f"Calling Grok – messages={messages[-3:]}")
             try:
                 llm_resp = await GROK_CLIENT.chat(
                     model=GROK_MODEL,
@@ -213,11 +213,11 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
                     temperature=TEMPERATURE,
                 )
             except Exception as exc:  # noqa: BLE001
-                logger.info("Grok API failure: %s", exc)
+                logger.info(f"Grok API failure: {exc}")
                 return "Lo siento, hubo un error técnico. Intentá de nuevo más tarde."
 
             choice = llm_resp.choices[0]
-            logger.info("Grok choice finish_reason=%s", choice.finish_reason)
+            logger.info(f"Grok choice finish_reason={choice.finish_reason}")
 
             # a) LLM quiere usar la herramienta
             if choice.finish_reason == "tool_calls":
@@ -226,7 +226,7 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
 
                 # 👉 2. procesar la llamada y responder con JSON
                 reply_json = await self._handle_tool_call(choice.message.tool_calls, user)
-                logger.info("Function output=%s", reply_json)
+                logger.info(f"Function output={reply_json}")
 
                 messages.append({"role": "function", "name": "search_movies", "content": reply_json})
                 continue  # vuelve a comenzar el loop
@@ -237,7 +237,7 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
                 final_text = (
                     "No encontré nada que se ajuste exactamente. ¿Querés intentar con otros filtros?"
                 )
-            logger.info("Grok final reply=%s", final_text)
+            logger.info(f"Grok final reply={final_text}")
             return final_text
 
     # ------------------------------------------------------------------
@@ -247,20 +247,20 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
 
         call = calls[0]
         if call.function.name != "search_movies":
-            logger.info("Unknown tool name %s", call.function.name)
+            logger.info(f"Unknown tool name {call.function.name}", )
             return json.dumps({"error": "unknown_tool"})
 
         try:
             filters = PostFilters(**json.loads(call.function.arguments or "{}"))
-            logger.info("Parsed filters=%s", filters)
+            logger.info(f"Parsed filters={filters}", filters)
         except Exception as exc:  # noqa: BLE001
-            logger.info("Invalid tool arguments: %s", exc)
+            logger.info(f"Invalid tool arguments: {exc}")
             return json.dumps({"error": "invalid_arguments"})
 
         try:
             candidate_ids = await self._rec.get_recommendations_async(user.user_id, filters, k=RECOMMENDATION_K)
         except Exception as exc:  # noqa: BLE001
-            logger.info("Recommendation failure: %s", exc)
+            logger.info(f"Recommendation failure: {exc}", )
             return json.dumps({"error": "rec_failure"})
 
         if not candidate_ids:
