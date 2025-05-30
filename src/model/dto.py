@@ -109,6 +109,7 @@ class Message(BaseModel):
     bot_made: Optional[bool] = None
     order: Optional[int] = None
     message: str
+    created_date: Optional[str] = None
     model_config = ConfigDict(from_attributes=True)
 
 
