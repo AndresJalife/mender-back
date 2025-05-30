@@ -26,7 +26,7 @@ GROK_API_KEY = os.getenv("GROQ_API_KEY")
 GROK_ENDPOINT = os.getenv("GROK_ENDPOINT", "https://api.x.ai/v1")
 
 RECOMMENDATION_K = int(os.getenv("REC_K", 10))
-MAX_TOKENS = int(os.getenv("GROK_MAX_TOKENS", 800))
+MAX_TOKENS = int(os.getenv("GROK_MAX_TOKENS", 256))
 TEMPERATURE = float(os.getenv("GROK_TEMPERATURE", 0.3))
 
 # One shared async HTTP client per process.
@@ -217,6 +217,10 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
                 return "Lo siento, hubo un error técnico. Intentá de nuevo más tarde."
 
             choice = llm_resp.choices[0]
+            logger.info(
+                f"Tokens: prompt={getattr(llm_resp.usage, 'prompt_tokens', -1)}, "
+                f"completion={getattr(llm_resp.usage, 'completion_tokens', -1)}"
+            )
             logger.info(f"Grok choice finish_reason={choice.finish_reason}")
 
             # a) LLM quiere usar la herramienta
