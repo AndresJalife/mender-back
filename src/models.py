@@ -10,6 +10,7 @@ ARG_TZ = pytz.timezone("America/Argentina/Buenos_Aires")
 
 class FormattedDate(TypeDecorator):
     impl = Date
+    cache_ok = True
 
     def process_bind_param(self, value, dialect):
         if isinstance(value, str):

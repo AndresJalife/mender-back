@@ -7,9 +7,8 @@ from src.config.database import Database
 from src.model import dto
 from src.models import ChatHistory
 from src.service.Logger import logger
-from src.service.chatbot.GrokServiceV2 import GrokServiceV2
-from src.service.chatbot.GroqService import GroqService
-from src.service.recommendation.RecommendationService import RecommendationService, recommendation_service
+from src.service.chatbot.GrokServiceV3 import GrokServiceV2
+from src.service.recommendation.RecommendationService import recommendation_service
 from src.util.util import str_to_datetime
 
 
