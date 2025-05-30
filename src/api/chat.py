@@ -23,7 +23,7 @@ def get_chat_service(db: Database = Depends(get_db)) -> ChatService:
 #                     chat_service: ChatService = Depends(get_chat_service)):
 #     return chat_service.get_chats(user)
 
-@chat_router.get("/", description="Gets the bot chat", response_model=List[dto.Message])
+@chat_router.get("", description="Gets the bot chat", response_model=List[dto.Message])
 async def get_chat(user: User = Depends(authenticate_and_get_user),
                    chat_service: ChatService = Depends(get_chat_service)):
     return chat_service.get_chat(user)

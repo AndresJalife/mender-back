@@ -70,24 +70,24 @@ class ChatService:
         return self.db.query(ChatHistory).filter(ChatHistory.user_id == user.user_id).order_by(
             ChatHistory.order.desc()).first()
 
-    async def _get_bot_message(self, user, message, next_order, chat_id):
-        history = self._load_history(user, chat_id)
-        return_message = await self.groq_service.generate(user, history, message.message)
-        message = dto.Message(
-            bot_made=True,
-            order=next_order,
-            message=return_message
-        )
-        self.db.add(ChatHistory(
-            user_id=user.user_id,
-            message=return_message,
-            order=next_order,
-            chat_id=chat_id,
-            bot_made=True
-        ))
-
-        self.db.commit()
-        return message
+    # async def _get_bot_message(self, user, message, next_order, chat_id):
+    #     history = self._load_history(user, chat_id)
+    #     return_message = await self.groq_service.generate(user, history, message.message)
+    #     message = dto.Message(
+    #         bot_made=True,
+    #         order=next_order,
+    #         message=return_message
+    #     )
+    #     self.db.add(ChatHistory(
+    #         user_id=user.user_id,
+    #         message=return_message,
+    #         order=next_order,
+    #         chat_id=chat_id,
+    #         bot_made=True
+    #     ))
+    #
+    #     self.db.commit()
+    #     return message
 
     def _load_history(self, user, chat_id) -> list[dict]:
         """
@@ -115,7 +115,8 @@ class ChatService:
         # call Grok → recommender
         bot_reply = await self.groq_service.generate(user=user, history=history, text=message.message)
 
-        # persist bot message (still off the main loop)
+        logger.info(f"Bot reply: {bot_reply}")
+
         await run_in_threadpool(self._save_bot_reply, user, bot_reply, next_order, chat_id)
 
         return dto.Message(bot_made=True, order=next_order, message=bot_reply)

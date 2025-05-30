@@ -24,12 +24,13 @@ from src.util.util import str_to_date
 logger = logging.getLogger("grok-service")
 logger.setLevel(logging.INFO)
 
-GROK_MODEL = os.getenv("GROK_MODEL", "llama-3.1-8b-instant")
+GROK_MODEL = os.getenv("GROK_MODEL", "grok-3-mini")
 GROK_API_KEY = os.getenv("GROQ_API_KEY")
 GROK_ENDPOINT = os.getenv("GROK_ENDPOINT", "https://api.x.ai/v1")
 
 RECOMMENDATION_K = int(os.getenv("REC_K", 10))
 MAX_TOKENS = int(os.getenv("GROK_MAX_TOKENS", 800))
+TEMPERATURE = float(os.getenv("GROK_TEMPERATURE", 0.3))
 
 # One shared async HTTP client per process.
 HTTP_CLIENT = httpx.AsyncClient(timeout=15)
@@ -40,10 +41,13 @@ HTTP_CLIENT = httpx.AsyncClient(timeout=15)
 ###############################################################################
 
 class GrokClient:
-    """Thin wrapper that exposes the OpenAI‑compatible Grok endpoint with sane defaults."""
+    """Wrap de `openai.AsyncOpenAI` con verificación de clave."""
 
-    def __init__(self, api_key: str, base_url: str):
-        from openai import AsyncOpenAI  # lazy import
+    def __init__(self, api_key: str | None, base_url: str):
+        if not api_key:
+            raise RuntimeError(
+                "GROK_API_KEY / OPENAI_API_KEY no configurado – exportá la clave antes de iniciar.")
+        from openai import AsyncOpenAI
 
         self._client = AsyncOpenAI(api_key=api_key, base_url=base_url, http_client=HTTP_CLIENT)
 
@@ -186,9 +190,9 @@ class _ChatRequest(BaseModel):
 ###############################################################################
 
 class GrokServiceV2:  # pylint: disable=too-few-public-methods
-    """High‑level façade consumed by FastAPI routes."""
+    """Orquestador de chat ↔ LLM ↔ recomendador."""
 
-    def __init__(self, db: Database, rec: RecommendationService):
+    def __init__(self, db: AsyncSession, rec: RecommendationService):
         self._db = db
         self._rec = rec
 
@@ -196,40 +200,48 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
     async def generate(self, *, user: User, history: Sequence[Dict[str, str]], text: str) -> str:
         req = _ChatRequest(user=user, history=list(history), text=text)
 
-        messages: MutableSequence[Dict[str, str]] = [_SYSTEM_PROMPT]
+        messages: MutableSequence[Dict[str, Any]] = [_SYSTEM_PROMPT]
         messages.extend(req.history)
         messages.append({"role": "user", "content": req.text})
 
         while True:
+            logger.debug("Calling Grok – messages=%s", messages[-3:])
             try:
                 llm_resp = await GROK_CLIENT.chat(
-                        model=GROK_MODEL,
-                        messages=messages,
-                        tools=TOOLS,
-                        tool_choice="auto",
-                        max_tokens=MAX_TOKENS,
-                        temperature=0.3,
+                    model=GROK_MODEL,
+                    messages=messages,
+                    tools=TOOLS,
+                    tool_choice="auto",
+                    max_tokens=MAX_TOKENS,
+                    temperature=TEMPERATURE,
                 )
             except Exception as exc:  # noqa: BLE001
                 logger.exception("Grok API failure: %s", exc)
-                return "Lo siento, estoy teniendo problemas técnicos. ¡Intenta más tarde!"
+                return "Lo siento, hubo un error técnico. Intentá de nuevo más tarde."
 
             choice = llm_resp.choices[0]
+            logger.debug("Grok choice finish_reason=%s", choice.finish_reason)
 
-            # a) LLM quiere invocar una herramienta -----------------------
+            # a) LLM quiere usar la herramienta
             if choice.finish_reason == "tool_calls":
-                reply_json = await self._handle_tool_call(choice.message.tool_calls, user)
-                messages.append(
-                        {
-                            "role": "function",
-                            "name": "search_movies",
-                            "content": reply_json,
-                        }
-                )
-                continue  # re‑evalúa con la función "rellena"
+                # 👉 1. guardar el mensaje de la llamada para que Grok lo vea en el segundo paso
+                messages.append(choice.message)
 
-            # b) LLM ya tiene respuesta final -----------------------------
-            return choice.message.content.strip()
+                # 👉 2. procesar la llamada y responder con JSON
+                reply_json = await self._handle_tool_call(choice.message.tool_calls, user)
+                logger.debug("Function output=%s", reply_json)
+
+                messages.append({"role": "function", "name": "search_movies", "content": reply_json})
+                continue  # vuelve a comenzar el loop
+
+            # b) LLM ya tiene respuesta definitiva
+            final_text = (choice.message.content or "").strip()
+            if not final_text:
+                final_text = (
+                    "No encontré nada que se ajuste exactamente. ¿Querés intentar con otros filtros?"
+                )
+            logger.debug("Grok final reply=%s", final_text)
+            return final_text
 
     # ------------------------------------------------------------------
     async def _handle_tool_call(self, calls: Sequence[Any], user: User) -> str:
@@ -238,33 +250,29 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
 
         call = calls[0]
         if call.function.name != "search_movies":
-            logger.warning("Unknown tool requested: %s", call.function.name)
+            logger.warning("Unknown tool name %s", call.function.name)
             return json.dumps({"error": "unknown_tool"})
 
         try:
             filters = PostFilters(**json.loads(call.function.arguments or "{}"))
+            logger.debug("Parsed filters=%s", filters)
         except Exception as exc:  # noqa: BLE001
-            logger.warning("Bad tool arguments: %s", exc)
+            logger.warning("Invalid tool arguments: %s", exc)
             return json.dumps({"error": "invalid_arguments"})
 
-        # Ejecuta el recomendador en un hilo para no bloquear。
         try:
-            candidate_ids = await self._rec.get_recommendations_async(
-                    user.user_id, filters, k=RECOMMENDATION_K
-            )
+            candidate_ids = await self._rec.get_recommendations_async(user.user_id, filters, k=RECOMMENDATION_K)
         except Exception as exc:  # noqa: BLE001
             logger.exception("Recommendation failure: %s", exc)
             return json.dumps({"error": "rec_failure"})
 
         if not candidate_ids:
-            return json.dumps({"error": "no_results"})
+            return json.dumps({"movies": [], "status": "no_results"})
 
-        movies_q = await self._db.execute(
-                Entity.__table__.select().where(Entity.tmbd_id.in_(candidate_ids))
-        )
+        movies_q = await self._db.execute(Entity.__table__.select().where(Entity.tmbd_id.in_(candidate_ids)))
         rows = movies_q.fetchall()
         summary = [
             f"- {row.title} ({str_to_date(row.release_date).year if row.release_date else '?'})"
             for row in rows
         ]
-        return json.dumps({"movies": summary})
+        return json.dumps({"movies": summary, "status": "ok"})
