@@ -209,7 +209,6 @@ class GrokServiceV2:  # pylint: disable=too-few-public-methods
                     messages=messages,
                     tools=TOOLS,
                     tool_choice="auto",
-                    max_tokens=MAX_TOKENS,
                     temperature=TEMPERATURE,
                 )
             except Exception as exc:  # noqa: BLE001
