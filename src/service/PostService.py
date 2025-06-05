@@ -182,7 +182,7 @@ class PostService:
 
         self.db.commit()
 
-    def search_posts(self, q):
+    def search_posts(self, q, k):
         #  Se debería hacer una mongo con el título, el director y el post_id para que esto sea rápido.
         logger.info(f"Searched for posts: {q}")
         posts = (
@@ -192,6 +192,7 @@ class PostService:
                 (Entity.title.ilike(f"%{q}%")) |
                 (Entity.director.ilike(f"%{q}%"))
             )
+            .limit(k)
             .all()
         )
 
