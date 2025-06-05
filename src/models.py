@@ -254,6 +254,7 @@ class Entity(Base):
     trailer = Column(String)
     director = Column(String)
     image_key = Column(String)
+    poster_key = Column(String)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
     post = relationship("Post", back_populates="entity")
