@@ -60,6 +60,8 @@ class Entity(BaseModel):
     tagline: Optional[str] = None
     trailer: Optional[str] = None
     director: Optional[str] = None
+    image_key: Optional[str] = None
+    poster_key: Optional[str] = None
 
     genres: Optional[List[Genre]] = None
     actors: Optional[List[Actor]] = None
