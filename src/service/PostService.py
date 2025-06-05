@@ -152,7 +152,7 @@ class PostService:
         self.db.commit()
 
         # Send a background task to update the implicit data comments
-        self.background_tasks.add_task(self._update_implicit_data_comments, post_id, user.user_id)
+        self._update_implicit_data_comments(post_id, user.user_id)
 
     def _update_implicit_data_comments(self, post_id, user_id):
         implicit_data = self.db.query(ImplicitData).filter(ImplicitData.post_id == post_id, ImplicitData.user_id == user_id).first()
