@@ -1,6 +1,7 @@
-import logging
+import time
 
-from fastapi import FastAPI
+from fastapi import FastAPI,Request
+from sqlalchemy import text
 from starlette.middleware.cors import CORSMiddleware
 
 from src.config.scheduler import scheduler
@@ -13,6 +14,7 @@ from src.api.playlist import playlist_router
 from src.config.database import engine, get_db, get_context_db
 
 from src.exception_handler import setup_exception_handlers
+from src.service.Logger import logger
 from src.service.MailService import MailService
 
 ############# Initialize FastAPI ############
@@ -45,6 +47,14 @@ setup_exception_handlers(app)
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
 
+@app.middleware("http")
+async def log_request_time(request: Request, call_next):
+    start = time.perf_counter()
+    response = await call_next(request)
+    duration = (time.perf_counter() - start) * 1000
+    logger.info(f"⏱️ Request: {request.method} {request.url.path} took {duration:.2f} ms")
+    return response
+
 
 ############# Initialize Database ############
 
@@ -57,6 +67,13 @@ models.Base.metadata.create_all(bind=engine, checkfirst=True)
 async def start_scheduler():
     if not scheduler.running:
         scheduler.start()
+
+SIM_LIMIT = 0.3
+
+@app.on_event("startup")
+async def startup():
+    with engine.begin() as conn:
+        conn.execute(text(f"SET pg_trgm.similarity_threshold = {SIM_LIMIT}"))
 
 
 @app.on_event("shutdown")

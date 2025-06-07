@@ -1,6 +1,6 @@
 from typing import List
 
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, BackgroundTasks
 
 from ..config.database import Database, get_db
 from ..model import dto
@@ -14,8 +14,8 @@ chat_router = APIRouter(
 )
 
 
-def get_chat_service(db: Database = Depends(get_db)) -> ChatService:
-    return ChatService(db)
+def get_chat_service(background_tasks: BackgroundTasks, db: Database = Depends(get_db)) -> ChatService:
+    return ChatService(db, background_tasks)
 
 
 # @chat_router.get("/list", description="Gets the list of chats", response_model=dto.ChatList)

@@ -8,11 +8,10 @@ from typing import Any, Dict, List, MutableSequence, Optional, Sequence
 
 import httpx
 from pydantic import BaseModel, Field, field_validator
-from sqlalchemy.ext.asyncio import AsyncSession
 
 from src.config.database import Database
 from src.model.dto import PostFilters
-from src.models import Entity, User
+from src.models import Entity, User, Post
 from src.service.Logger import logger
 from src.service.recommendation.RecommendationService import RecommendationService
 from src.util.util import str_to_date
@@ -122,7 +121,7 @@ class GrokServiceV2:
         self.db = db
         self._rec = rec
 
-    async def generate(self, *, user: User, history: Sequence[Dict[str, str]], text: str) -> str:
+    async def generate(self, *, user: User, history: Sequence[Dict[str, str]], text: str) -> (str, list[Entity]):
         req = _ChatRequest(user=user, history=list(history), text=text)
 
         base_messages: MutableSequence[Dict[str, Any]] = [_SYSTEM_PROMPT]
@@ -153,7 +152,7 @@ class GrokServiceV2:
                 llm_resp = await GROK_CLIENT.chat(**chat_kwargs)
             except Exception as exc:
                 logger.exception("Grok API failure")
-                return "Lo siento, hubo un error técnico. Intentá de nuevo más tarde."
+                return "Lo siento, hubo un error técnico. Intentá de nuevo más tarde.", None
 
             choice = llm_resp.choices[0]
 
@@ -162,7 +161,6 @@ class GrokServiceV2:
                     f"completion={getattr(llm_resp.usage, 'completion_tokens', '?')}"
             )
 
-            # ✅ Handle tool call
             if choice.message.tool_calls:
                 try:
                     tc = choice.message.tool_calls[0]
@@ -174,43 +172,43 @@ class GrokServiceV2:
                     return await self._reply_with_recommendations(user, filters)
                 except Exception as exc:
                     logger.info(f"Invalid tool_call arguments: {exc}")
-                    return self.FALLBACK_MSG
+                    return self.FALLBACK_MSG, None
 
-            # ✅ Handle repregunta
             content = (choice.message.content or "").strip()
             if content.endswith("?"):
                 logger.info("Bot repregunta")
-                return content
+                return content, None
 
-            # ❌ If it's the second attempt, give up
             if attempt == "required":
                 logger.info("Second attempt failed, giving up.")
-                return self.FALLBACK_MSG
+                return self.FALLBACK_MSG, None
 
-            # 🌀 Otherwise: try again with `required`
             logger.info("No tool_call or repregunta; retrying with required...")
 
-        return self.FALLBACK_MSG
+        return self.FALLBACK_MSG, None
 
     # ------------------------------------------------------------------
-    async def _reply_with_recommendations(self, user: User, filters: SearchMoviesArgs) -> str:
+    async def _reply_with_recommendations(self, user: User, filters: SearchMoviesArgs) -> (str, list[Entity]):
         try:
             candidate_ids = await self._rec.get_recommendations_async(
                 user.user_id, PostFilters(**filters.dict(exclude_none=True)), k=RECOMMENDATION_K)
         except Exception:
             logger.exception("Recommendation failure")
-            return self.FALLBACK_MSG
+            return self.FALLBACK_MSG, None
 
         if not candidate_ids:
-            return self.FALLBACK_MSG
+            return self.FALLBACK_MSG, None
 
-        rows = self.db.query(Entity).filter(
-            Entity.tmbd_id.in_(candidate_ids)
-        ).all()
+        rows = (
+            self.db.query(Entity.title, Entity.release_date, Post.post_id)
+            .join(Post, Post.entity_id == Entity.entity_id)
+            .filter(Entity.tmbd_id.in_(candidate_ids))
+            .all()
+        )
 
         summary = "\n".join(
-            f"- {row.title} ({str_to_date(row.release_date).year if row.release_date else '?'})"
-            for row in rows
+                f"- {title} ({str_to_date(release_date).year if release_date else '?'})"
+                for title, release_date, post_id in rows
         )
 
         MOVIES_PROMPT = {
@@ -227,4 +225,4 @@ class GrokServiceV2:
                 temperature=0.3
         )
         logger.info(f"Bot reply: {response.choices[0].message.content.strip()}")
-        return response.choices[0].message.content.strip()
+        return response.choices[0].message.content.strip(), rows

@@ -212,11 +212,11 @@ class RecommendationService:
         return recommendations
 
     async def get_recommendations_async(self, user_id: int,  filters: dto.PostFilters, k: int = 10) -> list[int]:
-        # Partial binds the positional/keyword args once
         fn = partial(self.get_recommendation, user_id, filters, k)
-        # run_in_threadpool → default ThreadPoolExecutor shared by Starlette
         return await run_in_threadpool(fn)
 
 
 db_instance = next(get_db())
-recommendation_service = RecommendationService(db_instance)
+# recommendation_service = RecommendationService(db_instance)
+
+recommendation_service = None

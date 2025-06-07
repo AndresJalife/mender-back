@@ -1,15 +1,17 @@
+import time
+
 from fastapi import HTTPException, BackgroundTasks
 from sqlalchemy.orm import joinedload, contains_eager
+from sqlalchemy import func, select
 
 from src.config.database import Database
 from src.model import dto
-from src.models import Post, UserPostInfo, Comments, Entity, ImplicitData
+from src.models import Post, UserPostInfo, Comments, Entity, ImplicitData, Actor
 from src.service.ImplicitService import ImplicitService
 from src.service.Logger import logger
 
 from src.service.UserService import UserService
 from src.service.recommendation.RecommendationService import recommendation_service
-
 
 class PostService:
 
@@ -64,7 +66,7 @@ class PostService:
         post = (
             self.db.query(Post)
             .outerjoin(UserPostInfo, (Post.post_id == UserPostInfo.post_id) & (
-                        UserPostInfo.user_id == user.user_id))
+                    UserPostInfo.user_id == user.user_id))
             .options(contains_eager(Post.user_post_info))
             .filter(Post.post_id == post_id)
             .first()
@@ -78,19 +80,20 @@ class PostService:
 
         if post is None:
             raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
-        
+
         self.background_tasks.add_task(self._update_user_post_click, post_id, user.user_id)
         self.background_tasks.add_task(self.implicit_service.post_clicked, post_id, user.user_id)
-        
+
         return post
 
     def _update_user_post_click(self, post_id, user_id):
-        implicit_data = self.db.query(ImplicitData).filter(ImplicitData.post_id == post_id, ImplicitData.user_id == user_id).first()
+        implicit_data = self.db.query(ImplicitData).filter(ImplicitData.post_id == post_id,
+                                                           ImplicitData.user_id == user_id).first()
         if implicit_data is None:
             implicit_data = ImplicitData(post_id=post_id, user_id=user_id, clicked=True)
             self.db.add(implicit_data)
         else:
-           implicit_data.clicked = True
+            implicit_data.clicked = True
         self.db.commit()
 
     def like_post(self, post_id, user):
@@ -155,8 +158,9 @@ class PostService:
         self._update_implicit_data_comments(post_id, user.user_id)
 
     def _update_implicit_data_comments(self, post_id, user_id):
-        implicit_data = self.db.query(ImplicitData).filter(ImplicitData.post_id == post_id, ImplicitData.user_id == user_id).first()
-        
+        implicit_data = self.db.query(ImplicitData).filter(ImplicitData.post_id == post_id,
+                                                           ImplicitData.user_id == user_id).first()
+
         if implicit_data is None:
             # Create a new ImplicitData entry if it doesn't exist
             implicit_data = ImplicitData(post_id=post_id, user_id=user_id, comments=1)
@@ -164,7 +168,7 @@ class PostService:
         else:
             # Increment the comments count
             implicit_data.comments = implicit_data.comments + 1 if implicit_data.comments else 1
-        
+
         self.db.commit()
 
     def _rate_user_post(self, post_id, user, rating):
@@ -182,19 +186,54 @@ class PostService:
 
         self.db.commit()
 
-    def search_posts(self, q, k):
-        #  Se debería hacer una mongo con el título, el director y el post_id para que esto sea rápido.
-        logger.info(f"Searched for posts: {q}")
+    def search_posts(self, q: str, q_type: str, k: int):
+        logger.info(f"🔍 Searching posts with query: '{q}', type: '{q_type}', limit: {k}")
+        start = time.perf_counter()
+
+        imm = func.immutable_unaccent
+        q_lit = q.lower()
+
+        # Trigram similarity filters
+        title_filter = imm(func.lower(Entity.title)).op('%')(q_lit)
+        director_filter = imm(func.lower(Entity.director)).op('%')(q_lit)
+        actor_filter = imm(func.lower(Actor.name)).op('%')(q_lit)
+
+        # Subquery construction
+        if q_type == "title":
+            subquery = self.db.query(Entity.entity_id).filter(title_filter)
+        elif q_type == "director":
+            subquery = self.db.query(Entity.entity_id).filter(director_filter)
+        elif q_type == "actor":
+            subquery = self.db.query(Actor.entity_id).filter(actor_filter)
+        else:
+            title_q = self.db.query(Entity.entity_id.label("entity_id")).filter(title_filter)
+            director_q = self.db.query(Entity.entity_id.label("entity_id")).filter(director_filter)
+            actor_q = self.db.query(Actor.entity_id.label("entity_id")).filter(actor_filter)
+            subquery = title_q.union(director_q, actor_q)
+
+        subquery = subquery.distinct().limit(k).subquery()
+
+        t1 = (time.perf_counter() - start) * 1000
+        logger.info(f"🧱 Subquery built in: {t1:.2f} ms")
+
         posts = (
             self.db.query(Post)
             .join(Entity, Post.entity_id == Entity.entity_id)
-            .filter(
-                (Entity.title.ilike(f"%{q}%")) |
-                (Entity.director.ilike(f"%{q}%"))
+            .filter(Post.entity_id.in_(select(subquery.c.entity_id)))
+            .options(
+                    joinedload(Post.entity).joinedload(Entity.genres),
+                    joinedload(Post.entity).joinedload(Entity.actors),
+                    joinedload(Post.entity).joinedload(Entity.watch_providers),
+                    joinedload(Post.user_post_info)
             )
+            .order_by(Post.post_id.desc())
             .limit(k)
             .all()
         )
+
+        t2 = (time.perf_counter() - start) * 1000
+        logger.info(f"📦 Posts fetched in: {t2 - t1:.2f} ms")
+        logger.info(f"⏱️ Total search time: {t2:.2f} ms")
 
         return posts
 
@@ -202,4 +241,3 @@ class PostService:
         logger.info(f"Getting comments for post: {post_id}")
         comments = self.db.query(Comments).filter(Comments.post_id == post_id).all()
         return comments
-

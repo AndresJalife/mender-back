@@ -23,6 +23,7 @@ scipy = "^1.15.2"
 scikit-learn = "^1.6.1"
 groq = "^0.24.0"
 openai = "^1.82.1"
+asyncpg = "^0.30.0"
 
 
 [build-system]

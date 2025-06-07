@@ -151,6 +151,7 @@ class ImplicitData(Base):
     clicked = Column(Boolean, default=False)
     miliseconds_seen = Column(BigInteger, default=0)
     comments = Column(Integer, default=0)
+    chat_recommended = Column(Boolean, default=False)
     created_date = Column(FormattedDate, name="created_date", default=date.today())
 
     user = relationship("User", back_populates="implicit_data")

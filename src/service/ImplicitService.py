@@ -17,7 +17,7 @@ class ImplicitService:
                 models.ImplicitData.post_id == post_id,
                 models.ImplicitData.user_id == seen_dto.user_id).first()
         if implicit_data is None:
-            implicit_data = self._create_implicit_data(post_id, seen_dto)
+            implicit_data = self._create_implicit_data(post_id, seen_dto.user_id)
 
         implicit_data.time_seen = seen_dto.time_seen
         self._save_calculated_rating(implicit_data)
@@ -32,9 +32,38 @@ class ImplicitService:
             implicit_data = self._create_implicit_data(post_id, user_id)
 
         implicit_data.clicked = True
+        self._save_calculated_rating(implicit_data)
         self.db.commit()
 
-    def calculate_implicit_rating(self, user_id, post: models.Post):
+
+    def chat_recommendations_given(self, user, recommendations: tuple[str, str, int]):
+        for _, __, post_id in recommendations:
+            implicit_data = self.db.query(models.ImplicitData).filter(
+                    models.ImplicitData.post_id == post_id,
+                    models.ImplicitData.user_id == user.user_id).first()
+            if implicit_data is None:
+                implicit_data = self._create_implicit_data(post_id, user.user_id)
+
+            implicit_data.recommendation_given = True
+            self._save_calculated_rating(implicit_data)
+        self.db.commit()
+
+    def _save_calculated_rating(self, implicit_data):
+        logger.info(f"Saving calculated rating for post {implicit_data.post_id} seen by user {implicit_data.user_id}")
+
+        rating = self._calculate_implicit_rating(implicit_data.user_id, implicit_data.post)
+
+        calculated_rating = self.db.query(models.CalculatedRating).filter(
+                models.CalculatedRating.post_id == implicit_data.post_id,
+                models.CalculatedRating.user_id == implicit_data.user_id).first()
+
+        if calculated_rating is None:
+            calculated_rating = models.CalculatedRating(post_id=implicit_data.post_id, user_id=implicit_data.user_id)
+            self.db.add(calculated_rating)
+
+        calculated_rating.rating = rating
+
+    def _calculate_implicit_rating(self, user_id, post: models.Post):
         logger.info(f"Calculating implicit rating for user {user_id} on post {post.post_id}")
         implicit_data = self.db.query(models.ImplicitData).filter(
                 models.ImplicitData.post_id == post.post_id,
@@ -56,9 +85,9 @@ class ImplicitService:
         logger.info(f"Calculating rating: liked={liked}, seen={seen}, clicked={clicked}, seconds_rating={seconds_rating}")
         return min(5, (1 if seen else 0) + (3 if liked else 0) + seconds_rating + (2 if clicked else 0))
 
-    def _create_implicit_data(self, post_id, seen_dto):
-        logger.info(f"Creating implicit data for post {post_id} seen by user {seen_dto.user_id}")
-        implicit_data = models.ImplicitData(post_id=post_id, user_id=seen_dto.user_id)
+    def _create_implicit_data(self, post_id, user_id):
+        logger.info(f"Creating implicit data for post {post_id} seen by user {user_id}")
+        implicit_data = models.ImplicitData(post_id=post_id, user_id=user_id)
         self.db.add(implicit_data)
         self.db.commit()
         return implicit_data
@@ -72,18 +101,3 @@ class ImplicitService:
             return 2
         else:
             return 3
-
-    def _save_calculated_rating(self, implicit_data):
-        logger.info(f"Saving calculated rating for post {implicit_data.post_id} seen by user {implicit_data.user_id}")
-
-        rating = self.calculate_implicit_rating(implicit_data.user_id, implicit_data.post)
-
-        calculated_rating = self.db.query(models.CalculatedRating).filter(
-                models.CalculatedRating.post_id == implicit_data.post_id,
-                models.CalculatedRating.user_id == implicit_data.user_id).first()
-
-        if calculated_rating is None:
-            calculated_rating = models.CalculatedRating(post_id=implicit_data.post_id, user_id=implicit_data.user_id)
-            self.db.add(calculated_rating)
-
-        calculated_rating.rating = rating

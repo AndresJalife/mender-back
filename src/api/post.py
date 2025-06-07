@@ -34,10 +34,11 @@ async def create_post(request: dto.Post,
 @post_router.get("/search", description="Searches for posts",
                  response_model=List[dto.Post])
 async def search_posts(q: str = Query(...),
+                       q_type: str = Query("all", regex="^(title|description|all|director|actor)$"),
                        k: int = Query(15, gt=0, lt=30),
                        user: User = Depends(authenticate_and_get_user),
                        post_service: PostService = Depends(get_post_service)):
-    return post_service.search_posts(q, k)
+    return post_service.search_posts(q, q_type, k)
 
 @post_router.get("/{post_id}", description="Gets details of a post", response_model=dto.Post)
 async def get_post(post_id: str, user: User = Depends(authenticate_and_get_user),
