@@ -68,7 +68,7 @@ async def start_scheduler():
     if not scheduler.running:
         scheduler.start()
 
-SIM_LIMIT = 0.3
+SIM_LIMIT = 0.5
 
 @app.on_event("startup")
 async def startup():
