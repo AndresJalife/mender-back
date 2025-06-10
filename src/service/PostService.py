@@ -24,9 +24,10 @@ class PostService:
         self.implicit_service = ImplicitService(db)
 
     def get_posts(self, user, k, filters):
+        tmbd_ids = self.recommendation_service.get_recommendation(user.user_id, filters, k)
         logger.info(f"Getting post recommendations for user: {user.user_id}")
         logger.info(f"Filters: {filters}")
-        tmbd_ids = self.recommendation_service.get_recommendation(user.user_id, filters, k)
+        logger.info(f"Recommendations: {tmbd_ids}")
         if not tmbd_ids:
             return []
 

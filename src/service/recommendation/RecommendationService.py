@@ -55,6 +55,7 @@ class RecommendationService:
         logger.info(f"RecommendationService initialized")
 
     def get_ibcf_recommendation(self, user_ratings, filters, seen_movies, k=10):
+        logger.info("Get IBCF recommendation")
         num_items = self.item_similarity.shape[0]
         user_vector = np.zeros((1, num_items))
 
@@ -73,7 +74,7 @@ class RecommendationService:
 
         # Get allowed ids according to filters
         rated_movies = [movie_id for movie_id, _ in user_ratings]
-        allowed_ids = get_filtered_df(self.movies_similarity[~self.movies_similarity.index.isin(rated_movies)], filters, seen_movies, recommendations=[])
+        allowed_ids = get_filtered_df(self.movies_similarity[~self.movies_similarity.index.isin(rated_movies)], filters, seen_movies, recommendations=[]).index.to_list()
 
         # Set non available ids prediction to 0
         for i in range(predicted_scores.shape[1]):
@@ -84,9 +85,10 @@ class RecommendationService:
         top_k_idx = np.argpartition(-predicted_scores.toarray()[0], k)[:k]
         top_k_idx = top_k_idx[np.argsort(-predicted_scores.toarray()[0][top_k_idx])]
 
-        return [self.movie_inv_mapper[i] for i in top_k_idx]
+        return [int(self.movie_inv_mapper[i]) for i in top_k_idx]
 
     def get_content_based_recommendation(self, user_ratings, filters, seen_movies, recommendations, k=10):
+        logger.info("Get CB recommendation")
         # 1. Find the highest rating in the user_ratings
         max_rating = max(rating for _, rating in user_ratings)
 
@@ -146,6 +148,7 @@ class RecommendationService:
         return recommended_movies
 
     def get_random_popular_movie(self, user_ratings, filters, seen_movies, recommendations, k=10):
+        logger.info("Get Random recommendation")
         rated_movies = [movie_id for movie_id, _ in user_ratings]
         df = get_filtered_df(self.movies_similarity[~self.movies_similarity.index.isin(rated_movies)], filters, seen_movies, recommendations)
 
@@ -165,14 +168,18 @@ class RecommendationService:
         seen_movies = get_seen_movies(self.db, user_id)
         # Possibly reserve 1 slot for a random recommendation
         reserve_random = random.random() > 0.5
-        recommendation_count = k - 1 if reserve_random else k
+        if reserve_random:
+            k -= 1
         recommendations = []
         collaborative_k = int(k*0.7)
-        recommendations += (self.get_ibcf_recommendation(user_ratings, filters, seen_movies, collaborative_k))
+        recommendations += self.get_ibcf_recommendation(user_ratings, filters, seen_movies, collaborative_k)
+        logger.info(f"Recommendation: {recommendations}")
         content_k = k - len(recommendations)
-        recommendations += (self.get_content_based_recommendation(user_ratings, filters, seen_movies, recommendations, content_k))
+        recommendations += self.get_content_based_recommendation(user_ratings, filters, seen_movies, recommendations, content_k)
+        logger.info(f"Recommendation: {recommendations}")
         if reserve_random:
-            recommendations.append(self.get_random_popular_movie(user_ratings, filters, seen_movies, recommendations, 1))
+            recommendations += self.get_random_popular_movie(user_ratings, filters, seen_movies, recommendations, 1)
+            logger.info(f"Recommendation: {recommendations}")
         return recommendations
 
     async def get_recommendations_async(self, user_id: int,  filters: dto.PostFilters, k: int = 10) -> list[int]:
