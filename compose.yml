@@ -33,6 +33,11 @@ services:
       - ./log:/app/log
       - ./src/service/recommendation/ratings_with_id32.csv:/data/ratings_with_id32.csv
       - ./src/service/recommendation/movies_similarity.csv:/data/movies_similarity.csv
+      - ./src/service/recommendation/sparse_item_similarity.npz:/data/sparse_item_similarity.npz
+      - ./src/service/recommendation/sparse_X.npz:/data/sparse_X.npz
+      - ./src/service/recommendation/user_inv_mapper.pkl:/data/user_inv_mapper.pkl
+      - ./src/service/recommendation/movie_inv_mapper.pkl:/data/movie_inv_mapper.pkl
+      - ./src/service/recommendation/movie_mapper.pkl:/data/movie_mapper.pkl
     networks:
       ig-network:
         aliases:
