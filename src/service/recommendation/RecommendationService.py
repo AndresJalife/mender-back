@@ -181,6 +181,6 @@ class RecommendationService:
 
 
 db_instance = next(get_db())
-# recommendation_service = RecommendationService(db_instance)
+recommendation_service = RecommendationService(db_instance)
 
-recommendation_service = None
+# recommendation_service = None
