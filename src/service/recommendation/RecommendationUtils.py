@@ -26,62 +26,28 @@ def get_user_implicit_ratings(db, user_id):
 
     return [(rating[1], rating[0]) for rating in implicit_ratings]
 
-def get_filtered_movies_ids(db, filters: dto.PostFilters, movie_ids):
-    query = (db.query(Entity)
-             .join(EntityGenre)
-             .join(Actor)
-             .filter(Entity.tmbd_id.in_(movie_ids)))
+def get_filtered_df(df, filters, seen_movies, recommendations):
+    knn_df = df[(~df.index.isin(seen_movies)) &
+                (~df.index.isin(recommendations))].copy()
 
-    # Genre
+    # Apply filters
     if filters.genres:
-        sql_filters = [EntityGenre.name.ilike(f"%{genre}%") for genre in filters.genres]
-        if len(sql_filters) == 1:
-            query = query.filter(sql_filters[0])
-        elif len(sql_filters) > 1:
-            query = query.filter(or_(*sql_filters))
-    # Release date
+        knn_df = knn_df[knn_df.genres.apply(
+            lambda genres: any(genre in filters.genres for genre in genres)
+        )]
     if filters.min_release_date:
-        query = query.filter(Entity.release_date >= filters.min_release_date)
+        knn_df = knn_df[knn_df.release_date >= filters.min_release_date]
     if filters.max_release_date:
-        query = query.filter(Entity.release_date <= filters.max_release_date)
-    if filters.avoid_tmdb_ids:
-        ids = [id_ for id_ in filters.avoid_tmdb_ids if id_]  # remove empty strings
-        if ids:
-            query = query.filter(Entity.tmbd_id.notin_(ids))
-
-    # # Actor
+        knn_df = knn_df[knn_df.release_date <= filters.max_release_date]
     if filters.actors:
-        sql_filters = [Actor.name.ilike(f"%{actor}%") for actor in filters.actors]
-        if len(sql_filters) == 1:
-            query = query.filter(sql_filters[0])
-        elif len(sql_filters) > 1:
-            query = query.filter(or_(*sql_filters))
-    # Director
+        knn_df = knn_df[knn_df.actors.apply(
+            lambda actors: any(actor in filters.actors for actor in actors)
+        )]
     if filters.directors:
-        sql_filters = [Entity.director.ilike(f"%{director}%") for director in filters.directors]
-        if len(sql_filters) == 1:
-            query = query.filter(sql_filters[0])
-        elif len(sql_filters) > 1:
-            query = query.filter(or_(*sql_filters))
-
-    # Language
-    if filters.original_language:
-        query = query.filter(Entity.original_language == filters.original_language)
-
-    # Runtime
-    if filters.min_runtime:
-        query = query.filter(Entity.runtime >= filters.min_runtime)
-
-    if filters.max_runtime:
-        query = query.filter(Entity.runtime <= filters.max_runtime)
-
-    results = (
-        query
-        .all()
-    )
-
-    return [entity.tmbd_id for entity in results]
-
+        knn_df = knn_df[knn_df.director.isin(filters.directors)]
+    if filters.avoid_tmdb_ids:
+        knn_df = knn_df[~knn_df.index.isin(filters.avoid_tmdb_ids)]
+    return knn_df
 
 def get_user_ratings(db, user_id):
     ratings_and_ids = (
