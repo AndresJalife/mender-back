@@ -17,14 +17,15 @@ from src.model import dto
 from src.service.ImplicitService import ImplicitService
 from src.service.Logger import logger
 from src.service.recommendation.RecommendationUtils import get_user_implicit_ratings, get_user_ratings, get_seen_movies, get_filtered_df
+from src.service.recommendation.RecommendationStrategy import RandomRecommendationStrategy, ContentBasedRecommendationStrategy, BestModelStrategy
 
 
 class RecommendationService:
 
     def __init__(self, db: Database):
         logger.info(f"Initializing RecommendationService")
-        self.db = db
         self.implicit_service = ImplicitService(db)
+        self.db = db
 
         with open(os.getenv("MOVIE_MAPPER_PATH"), "rb") as f:
             self.movie_mapper = pickle.load(f)
@@ -70,20 +71,20 @@ class RecommendationService:
             return []
 
         user_vector = csr_matrix(user_vector)
-        predicted_scores = user_vector.dot(self.item_similarity)  # shape (1, num_items)
+        predicted_scores = user_vector.dot(self.item_similarity).toarray()[0]
 
         # Get allowed ids according to filters
         rated_movies = [movie_id for movie_id, _ in user_ratings]
         allowed_ids = get_filtered_df(self.movies_similarity[~self.movies_similarity.index.isin(rated_movies)], filters, seen_movies, recommendations=[]).index.to_list()
+        allowed_indices = set(self.movie_mapper[movie_id] for movie_id in allowed_ids if movie_id in self.movie_mapper)
 
         # Set non available ids prediction to 0
-        for i in range(predicted_scores.shape[1]):
-            movie_id = self.movie_inv_mapper[i]
-            if movie_id not in allowed_ids:
-                predicted_scores[0, i] = 0
+        for i in range(len(predicted_scores)):
+            if i not in allowed_indices:
+                predicted_scores[i] = 0
 
-        top_k_idx = np.argpartition(-predicted_scores.toarray()[0], k)[:k]
-        top_k_idx = top_k_idx[np.argsort(-predicted_scores.toarray()[0][top_k_idx])]
+        top_k_idx = np.argpartition(-predicted_scores, k)[:k]
+        top_k_idx = top_k_idx[np.argsort(-predicted_scores[top_k_idx])]
 
         return [int(self.movie_inv_mapper[i]) for i in top_k_idx]
 
@@ -162,25 +163,22 @@ class RecommendationService:
         recommended = df.sample(n=k, weights=prob, replace=False).index.tolist()
         return recommended
 
-    def get_recommendation(self, user_id, filters, k=10):
+    def get_recommendation(self, user_id: int, filters: dto.PostFilters, k: int=10) -> list[int]:
         implicit_ratings = get_user_implicit_ratings(self.db, user_id)
-        user_ratings = get_user_ratings(self.db, user_id)
+        # user_ratings = get_user_ratings(self.db, user_id)
         seen_movies = get_seen_movies(self.db, user_id)
-        # Possibly reserve 1 slot for a random recommendation
-        reserve_random = random.random() > 0.5
-        if reserve_random:
-            k -= 1
-        recommendations = []
-        collaborative_k = int(k*0.7)
-        recommendations += self.get_ibcf_recommendation(user_ratings, filters, seen_movies, collaborative_k)
-        logger.info(f"Recommendation: {recommendations}")
-        content_k = k - len(recommendations)
-        recommendations += self.get_content_based_recommendation(user_ratings, filters, seen_movies, recommendations, content_k)
-        logger.info(f"Recommendation: {recommendations}")
-        if reserve_random:
-            recommendations += self.get_random_popular_movie(user_ratings, filters, seen_movies, recommendations, 1)
-            logger.info(f"Recommendation: {recommendations}")
-        return recommendations
+
+        if len(implicit_ratings) < 10:
+            logger.info("Using Random recommendation")
+            strategy = RandomRecommendationStrategy()
+        elif len(implicit_ratings) < 20:
+            logger.info("Using Content Based recommendation")
+            strategy = ContentBasedRecommendationStrategy()
+        else:
+            logger.info("Using best model recommendation")
+            strategy = BestModelStrategy()
+
+        return strategy.recommend(implicit_ratings, filters, seen_movies, self, k)
 
     async def get_recommendations_async(self, user_id: int,  filters: dto.PostFilters, k: int = 10) -> list[int]:
         fn = partial(self.get_recommendation, user_id, filters, k)
