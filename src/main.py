@@ -11,6 +11,7 @@ from src.api.general import genera_router
 from src.api.post import post_router
 from src.api.chat import chat_router
 from src.api.playlist import playlist_router
+from src.api.implicit import implicit_router
 from src.config.database import engine, get_db, get_context_db
 
 from src.exception_handler import setup_exception_handlers
@@ -25,6 +26,7 @@ app.include_router(genera_router)
 app.include_router(post_router)
 app.include_router(chat_router)
 app.include_router(playlist_router)
+app.include_router(implicit_router)
 
 origins = [
     "http://localhost",
