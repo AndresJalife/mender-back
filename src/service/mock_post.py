@@ -51,7 +51,7 @@ mock_posts = [
                     "name": "Richard Attenborough"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [
                 {
                     "watch_provider_id": 3795,
@@ -70,12 +70,12 @@ mock_posts = [
                     "provider_name": "MovistarTV"
                 }
             ],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -138,7 +138,7 @@ mock_posts = [
                     "name": "Alessandro Nivola"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [
                 {
                     "watch_provider_id": 57169,
@@ -157,12 +157,12 @@ mock_posts = [
                     "provider_name": "Disney Plus"
                 }
             ],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -205,14 +205,14 @@ mock_posts = [
                     "name": "Pony Frenzel"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -279,14 +279,14 @@ mock_posts = [
                     "name": "Celine Filion"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -337,14 +337,14 @@ mock_posts = [
                     "name": "Mark A.Z. Dippé"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -403,14 +403,14 @@ mock_posts = [
                     "name": "Jeff Kirkendall"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -469,7 +469,7 @@ mock_posts = [
                     "name": "Richard Attenborough"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [
                 {
                     "watch_provider_id": 46510,
@@ -488,12 +488,12 @@ mock_posts = [
                     "provider_name": "MovistarTV"
                 }
             ],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -552,14 +552,14 @@ mock_posts = [
                     "name": "Ruben Pla"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -569,7 +569,7 @@ mock_posts = [
             "entity_id": 72360,
             "entity_type": "m",
             "tmbd_id": 1020335,
-            "imdb_id": null,
+            "imdb_id": None,
             "title": "Jurassic Rise",
             "vote_average": 0.0,
             "release_date": "02/09/2022",
@@ -577,7 +577,7 @@ mock_posts = [
             "runtime": 76,
             "overview": "A young scientist and her team arrive at a mysterious island, looking for answers as to what happened to her father who disappeared there years ago. What they find is beyond what any of them expected.",
             "popularity": 0.638,
-            "tagline": null,
+            "tagline": None,
             "trailer": "https://www.youtube.com/watch?v=QMdjPKcOrU0",
             "director": "Xiefang Nie",
             "image_key": "/79V2SH4MNqZgUCjFZ2TE3ktj0gs.jpg",
@@ -602,14 +602,14 @@ mock_posts = [
                     "name": "Su Linlin"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "zh"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -660,14 +660,14 @@ mock_posts = [
                     "name": "Bryce Cone"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -685,7 +685,7 @@ mock_posts = [
             "runtime": 90,
             "overview": "Scientists working at a government research facility use prehistoric DNA to resurrect a T-Rex who escapes from the lab to terrorize a nearby town.",
             "popularity": 2.808,
-            "tagline": null,
+            "tagline": None,
             "trailer": "https://www.youtube.com/watch?v=xkn1A2-QJLw",
             "director": "Andrew Jones",
             "image_key": "/hLKcpdVYvuvnlJ17Khiwrw2yTYe.jpg",
@@ -726,14 +726,14 @@ mock_posts = [
                     "name": "Jason Homewood"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -796,7 +796,7 @@ mock_posts = [
                     "name": "Bryce Dallas Howard"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [
                 {
                     "watch_provider_id": 925,
@@ -815,12 +815,12 @@ mock_posts = [
                     "provider_name": "Disney Plus"
                 }
             ],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -879,14 +879,14 @@ mock_posts = [
                     "name": "Jhey Castles"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -945,14 +945,14 @@ mock_posts = [
                     "name": "Ryan Budds"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     },
     {
@@ -1007,14 +1007,14 @@ mock_posts = [
                     "name": "Ricardo Freitas"
                 }
             ],
-            "production_companies": null,
+            "production_companies": None,
             "watch_providers": [],
-            "rating": null,
+            "rating": None,
             "original_language": "en"
         },
         "likes": 0,
         "comments": 0,
-        "user_post_info": null,
+        "user_post_info": None,
         "created_date": "30/03/2025"
     }
 ]
