@@ -1,5 +1,6 @@
 from src import models
 from src.config.database import Database
+from src.models import User
 from src.service.Logger import logger
 
 
@@ -8,9 +9,16 @@ class ImplicitService:
     def __init__(self, db: Database):
         self.db = db
 
-    def post_seen(self, post_id, seen_dto, background_tasks):
+    def post_seen(self, user, post_id, seen_dto, background_tasks):
         logger.info(f"Post {post_id} seen by user {seen_dto.time_seen}")
         background_tasks.add_task(self._post_seen, post_id, seen_dto)
+        background_tasks.addd_task(self._set_new_user_as_not_new, user)
+
+    def _set_new_user_as_not_new(self, user: User):
+        if user.new:
+            logger.info(f"Setting user: {user.user_id} as not new")
+            user.new = False
+            self.db.commit()
 
     def _post_seen(self, post_id, seen_dto):
         implicit_data = self.db.query(models.ImplicitData).filter(

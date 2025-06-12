@@ -21,4 +21,4 @@ async def post_seen(post_id: str, seen_dto: dto.PostSeen,
                     background_tasks: BackgroundTasks,
                     user: User = Depends(authenticate_and_get_user),
                     implicit_service: ImplicitService = Depends(get_implicit_service)):
-    return implicit_service.post_seen(post_id, seen_dto, background_tasks)
+    return implicit_service.post_seen(user, post_id, seen_dto, background_tasks)
