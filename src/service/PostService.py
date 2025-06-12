@@ -3,6 +3,7 @@ import time
 from fastapi import HTTPException, BackgroundTasks
 from sqlalchemy.orm import joinedload, contains_eager
 from sqlalchemy import func, select
+from sqlalchemy.sql import literal, union_all, select
 
 from src.config.database import Database
 from src.model import dto
@@ -189,54 +190,55 @@ class PostService:
 
     def search_posts(self, q: str, q_type: str, k: int):
         logger.info(f"🔍 Searching posts with query: '{q}', type: '{q_type}', limit: {k}")
-        start = time.perf_counter()
 
         imm = func.immutable_unaccent
         q_lit = q.lower()
 
-        # Trigram similarity filters
-        title_filter = imm(func.lower(Entity.title)).op('%')(q_lit)
-        director_filter = imm(func.lower(Entity.director)).op('%')(q_lit)
-        actor_filter = imm(func.lower(Actor.name)).op('%')(q_lit)
+        # Similarity expressions
+        title_sim = func.similarity(imm(func.lower(Entity.title)), literal(q_lit))
+        director_sim = func.similarity(imm(func.lower(Entity.director)), literal(q_lit))
+        actor_sim = func.similarity(imm(func.lower(Actor.name)), literal(q_lit))
 
-        # Subquery construction
         if q_type == "title":
-            subquery = self.db.query(Entity.entity_id).filter(title_filter)
+            base_q = self.db.query(Entity.entity_id, title_sim.label("sim")).filter(title_sim > 0.2)
         elif q_type == "director":
-            subquery = self.db.query(Entity.entity_id).filter(director_filter)
+            base_q = self.db.query(Entity.entity_id, director_sim.label("sim")).filter(director_sim > 0.2)
         elif q_type == "actor":
-            subquery = self.db.query(Actor.entity_id).filter(actor_filter)
+            base_q = self.db.query(Actor.entity_id, actor_sim.label("sim")).filter(actor_sim > 0.2)
         else:
-            title_q = self.db.query(Entity.entity_id.label("entity_id")).filter(title_filter)
-            director_q = self.db.query(Entity.entity_id.label("entity_id")).filter(director_filter)
-            actor_q = self.db.query(Actor.entity_id.label("entity_id")).filter(actor_filter)
-            subquery = title_q.union(director_q, actor_q)
+            # Combine and alias all with scores
+            title_q = self.db.query(Entity.entity_id.label("entity_id"), title_sim.label("sim")).filter(title_sim > 0.2)
+            director_q = self.db.query(Entity.entity_id.label("entity_id"), director_sim.label("sim")).filter(
+                director_sim > 0.2)
+            actor_q = self.db.query(Actor.entity_id.label("entity_id"), actor_sim.label("sim")).filter(actor_sim > 0.2)
 
-        subquery = subquery.distinct().limit(k).subquery()
+            base_q = union_all(title_q, director_q, actor_q)
 
-        t1 = (time.perf_counter() - start) * 1000
-        logger.info(f"🧱 Subquery built in: {t1:.2f} ms")
+        # Wrap similarity results in a subquery with row numbers
+        similar_q = (
+            self.db.query(base_q.c.entity_id, base_q.c.sim)
+            .order_by(base_q.c.sim.desc())
+            .limit(k)
+            .subquery()
+        )
 
+        # Now use similarity score to sort final posts
         posts = (
             self.db.query(Post)
-            .join(Entity, Post.entity_id == Entity.entity_id)
-            .filter(Post.entity_id.in_(select(subquery.c.entity_id)))
+            .join(similar_q, Post.entity_id == similar_q.c.entity_id)
             .options(
                     joinedload(Post.entity).joinedload(Entity.genres),
                     joinedload(Post.entity).joinedload(Entity.actors),
                     joinedload(Post.entity).joinedload(Entity.watch_providers),
                     joinedload(Post.user_post_info)
             )
-            .order_by(Post.post_id.desc())
+            .order_by(similar_q.c.sim.desc())
             .limit(k)
             .all()
         )
 
-        t2 = (time.perf_counter() - start) * 1000
-        logger.info(f"📦 Posts fetched in: {t2 - t1:.2f} ms")
-        logger.info(f"⏱️ Total search time: {t2:.2f} ms")
-
         return posts
+
 
     def get_comments(self, post_id):
         logger.info(f"Getting comments for post: {post_id}")
