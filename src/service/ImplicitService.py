@@ -84,8 +84,8 @@ class ImplicitService:
         liked = user_post_info.liked if user_post_info else False
         seen = user_id.seen if user_post_info else False
         clicked = implicit_data.clicked if implicit_data else False
-        seconds_seen = implicit_data.miliseconds_seen if implicit_data else 0
-        seconds_rating = self._calculate_seconds_rating(seconds_seen)
+        miliseconds = implicit_data.miliseconds_seen if implicit_data else 0
+        seconds_rating = self._calculate_seconds_rating(miliseconds)
 
         return self._calculate_rating(liked, seen, clicked, seconds_rating)
 
@@ -100,7 +100,8 @@ class ImplicitService:
         self.db.commit()
         return implicit_data
 
-    def _calculate_seconds_rating(self, seconds_seen):
+    def _calculate_seconds_rating(self, miliseconds):
+        seconds_seen = round(miliseconds / 1000)
         if seconds_seen < 2:
             return 0
         elif seconds_seen < 4:
