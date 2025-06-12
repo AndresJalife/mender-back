@@ -10,7 +10,7 @@ from src.model import dto
 from src.models import Post, UserPostInfo, Comments, Entity, ImplicitData, Actor
 from src.service.ImplicitService import ImplicitService
 from src.service.Logger import logger
-
+from src.service.mock_post import mock_posts
 from src.service.UserService import UserService
 from src.service.recommendation.RecommendationService import recommendation_service
 
@@ -23,6 +23,12 @@ class PostService:
         self.recommendation_service = recommendation_service
         self.background_tasks = background_tasks
         self.implicit_service = ImplicitService(db)
+
+    def get_cold_start_posts(self):
+        """Returns a list of mock posts for cold start"""
+        logger.info("Getting cold start posts")
+        posts = mock_posts
+        return posts
 
     def get_posts(self, user, k, filters):
         tmbd_ids = self.recommendation_service.get_recommendation(user.user_id, filters, k)

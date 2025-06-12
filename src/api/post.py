@@ -85,3 +85,9 @@ async def get_comments(post_id: str,
                        user: User = Depends(authenticate_and_get_user),
                        post_service: PostService = Depends(get_post_service)):
     return post_service.get_comments(post_id)
+
+
+@post_router.get("/cold_start", description="Returns a list of mock posts for cold start",
+                 response_model=List[dto.Post])
+async def get_cold_start_posts(post_service: PostService = Depends(get_post_service)):
+    return post_service.get_cold_start_posts()
