@@ -40,6 +40,12 @@ async def search_posts(q: str = Query(...),
                        post_service: PostService = Depends(get_post_service)):
     return post_service.search_posts(q, q_type, k)
 
+@post_router.get("/cold_start", description="Returns a list of mock posts for cold start",
+                 response_model=List[dto.Post])
+async def get_cold_start_posts(post_service: PostService = Depends(get_post_service)):
+    return post_service.get_cold_start_posts()
+
+
 @post_router.get("/{post_id}", description="Gets details of a post", response_model=dto.Post)
 async def get_post(post_id: str, user: User = Depends(authenticate_and_get_user),
                    post_service: PostService = Depends(get_post_service)):
@@ -85,9 +91,3 @@ async def get_comments(post_id: str,
                        user: User = Depends(authenticate_and_get_user),
                        post_service: PostService = Depends(get_post_service)):
     return post_service.get_comments(post_id)
-
-
-@post_router.get("/cold_start", description="Returns a list of mock posts for cold start",
-                 response_model=List[dto.Post])
-async def get_cold_start_posts(post_service: PostService = Depends(get_post_service)):
-    return post_service.get_cold_start_posts()
