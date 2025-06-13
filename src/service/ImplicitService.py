@@ -12,7 +12,7 @@ class ImplicitService:
     def post_seen(self, user, post_id, seen_dto, background_tasks):
         logger.info(f"Post {post_id} seen by user {seen_dto.time_seen}")
         background_tasks.add_task(self._post_seen, post_id, seen_dto)
-        background_tasks.addd_task(self._set_new_user_as_not_new, user)
+        background_tasks.add_task(self._set_new_user_as_not_new, user)
 
     def _set_new_user_as_not_new(self, user: User):
         if user.new:
