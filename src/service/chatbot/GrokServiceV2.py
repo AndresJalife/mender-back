@@ -30,7 +30,7 @@ GROK_ENDPOINT = os.getenv("GROK_ENDPOINT", "https://api.x.ai/v1")
 
 RECOMMENDATION_K = int(os.getenv("REC_K", 10))
 MAX_TOKENS = int(os.getenv("GROK_MAX_TOKENS", 0)) or None
-TEMPERATURE = float(os.getenv("GROK_TEMPERATURE", 0.3))
+TEMPERATURE = float(os.getenv("GROK_TEMPERATURE", 0.4))
 
 HTTP_CLIENT = httpx.AsyncClient(timeout=15)
 
@@ -81,8 +81,15 @@ _SYSTEM_PROMPT = {
     "role": "system",
     "content": (
         "Sos un asistente de películas. Habla en español. "
+        "Intenta hacer alguna repregunta para obtener más información, pero no muchas."
         "Cuando tengas filtros suficientes, llama a la función `search_movies`. "
         "Podés hacer hasta 3 repreguntas si falta info."
+        "### EJEMPLO 1"
+        "User: Recomendame algo."
+        "Assistant: ¿Preferís comedia, drama o sorpresa total?"
+        "### EJEMPLO 2"
+        "User: Dame una de Tarantino"
+        "Assistant: ¿Te importa la duración? Puedo buscarte algo < 2 h o dejarlas todas."
     ),
 }
 
