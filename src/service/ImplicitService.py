@@ -52,7 +52,7 @@ class ImplicitService:
             if implicit_data is None:
                 implicit_data = self._create_implicit_data(post_id, user.user_id)
 
-            implicit_data.recommendation_given = True
+            implicit_data.chat_recommended = True
             self._save_calculated_rating(implicit_data)
         self.db.commit()
 
