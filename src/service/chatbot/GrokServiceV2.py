@@ -137,69 +137,54 @@ class GrokServiceV2:
         base_messages.extend(req.history)
         base_messages.append({"role": "user", "content": req.text})
 
-        for attempt in ("auto", "required"):
-            messages = list(base_messages)
+        # for attempt in ("auto", "required"):
+        messages = list(base_messages)
 
-            tool_choice = (
-                "auto"
-                if attempt == "auto"
-                else {"type": "function", "function": {"name": "search_movies"}}
-            )
+        try:
+            chat_kwargs = {
+                "model": GROK_MODEL,
+                "messages": messages,
+                "tools": TOOLS,
+                "tool_choice": "auto",
+                "temperature": TEMPERATURE,
+            }
+            if MAX_TOKENS:
+                chat_kwargs["max_tokens"] = MAX_TOKENS
 
-            logger.info(f"Calling Grok – tool_choice={tool_choice}")
+            llm_resp = await GROK_CLIENT.chat(**chat_kwargs)
+        except Exception as exc:
+            logger.exception("Grok API failure")
+            return "Lo siento, hubo un error técnico. Intentá de nuevo más tarde.", None
+
+        choice = llm_resp.choices[0]
+
+        logger.info(
+                f"Tokens: prompt={getattr(llm_resp.usage, 'prompt_tokens', '?')}, "
+                f"completion={getattr(llm_resp.usage, 'completion_tokens', '?')}"
+        )
+        logger.info(f"Bot choice: {choice.message.content.strip()}")
+
+        if choice.message.tool_calls:
             try:
-                chat_kwargs = {
-                    "model": GROK_MODEL,
-                    "messages": messages,
-                    "tools": TOOLS,
-                    "tool_choice": tool_choice,
-                    "temperature": TEMPERATURE,
-                }
-                if MAX_TOKENS:
-                    chat_kwargs["max_tokens"] = MAX_TOKENS
-
-                llm_resp = await GROK_CLIENT.chat(**chat_kwargs)
+                tc = choice.message.tool_calls[0]
+                logger.info(f"tool_call: {tc.function.name} args={tc.function.arguments}")
+                args = tc.function.arguments
+                if isinstance(args, str):
+                    args = json.loads(args)
+                filters = SearchMoviesArgs(**args)
+                return await self._reply_with_recommendations(user, filters)
             except Exception as exc:
-                logger.exception("Grok API failure")
-                return "Lo siento, hubo un error técnico. Intentá de nuevo más tarde.", None
+                logger.info(f"Invalid tool_call arguments: {exc}")
+                return self.FALLBACK_MSG, None
 
-            choice = llm_resp.choices[0]
+        content = (choice.message.content or "").strip()
 
-            logger.info(
-                    f"Tokens: prompt={getattr(llm_resp.usage, 'prompt_tokens', '?')}, "
-                    f"completion={getattr(llm_resp.usage, 'completion_tokens', '?')}"
-            )
-            logger.info(f"Bot choice: {choice.message.content.strip()}")
+        if content.startswith("NEED_MORE_INFO:"):
+            question = content[len("NEED_MORE_INFO:"):].strip()
+            logger.info(f"NEED_MORE_INFO: <> {question}")
+            return question, None
 
-            if choice.message.tool_calls:
-                try:
-                    tc = choice.message.tool_calls[0]
-                    logger.info(f"tool_call: {tc.function.name} args={tc.function.arguments}")
-                    args = tc.function.arguments
-                    if isinstance(args, str):
-                        args = json.loads(args)
-                    filters = SearchMoviesArgs(**args)
-                    return await self._reply_with_recommendations(user, filters)
-                except Exception as exc:
-                    logger.info(f"Invalid tool_call arguments: {exc}")
-                    return self.FALLBACK_MSG, None
-
-            content = (choice.message.content or "").strip()
-
-            if content.startswith("NEED_MORE_INFO:"):
-                # ↳ pass the question straight back to the user
-                question = content[len("NEED_MORE_INFO:"):].strip()
-                return question, None
-
-            # if content.endswith("?"):
-            #     logger.info("Bot repregunta")
-            #     return content, None
-            #
-            # if attempt == "required":
-            #     logger.info("Second attempt failed, giving up.")
-            #     return self.FALLBACK_MSG, None
-
-            # logger.info("No tool_call or repregunta; retrying with required...")
+        logger.info(f"Bot reply: {content}")
         return content, None
 
         # return self.FALLBACK_MSG, None
