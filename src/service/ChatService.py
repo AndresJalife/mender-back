@@ -39,14 +39,10 @@ class ChatService:
 
         await run_in_threadpool(self._save_bot_reply, user, bot_reply, next_order, chat_id)
 
-        self.implicit_service.chat_recommendations_given(
-            user, entities_tuple
-        )
-
-        # self.background_tasks.add_task(
-        #     self.implicit_service.chat_recommendations_given,
-        #     user, entities_tuple
-        # )
+        if entities_tuple:
+            self.implicit_service.chat_recommendations_given(
+                user, entities_tuple
+            )
 
         return dto.Message(bot_made=True, order=next_order, message=bot_reply)
 
