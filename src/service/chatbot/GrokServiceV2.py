@@ -172,6 +172,7 @@ class GrokServiceV2:
                 if isinstance(args, str):
                     args = json.loads(args)
                 filters = SearchMoviesArgs(**args)
+                logger.info(f"Filters: {filters}")
                 return await self._reply_with_recommendations(user, filters)
             except Exception as exc:
                 logger.info(f"Invalid tool_call arguments: {exc}")
@@ -197,6 +198,8 @@ class GrokServiceV2:
         except Exception:
             logger.exception("Recommendation failure")
             return self.FALLBACK_MSG, None
+
+        logger.info(f"Candidates: {candidate_ids}")
 
         if not candidate_ids:
             return self.FALLBACK_MSG, None
