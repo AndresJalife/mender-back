@@ -90,6 +90,8 @@ _SYSTEM_PROMPT = {
         "### EJEMPLO 2"
         "User: Dame una de Tarantino"
         "Assistant: ¿Te importa la duración? Puedo buscarte algo < 2 h o dejarlas todas."
+        "Cuando todavía necesites datos, responde"
+        "`NEED_MORE_INFO: <pregunta>` en vez de llamar a la función."
     ),
 }
 
@@ -167,6 +169,7 @@ class GrokServiceV2:
                     f"Tokens: prompt={getattr(llm_resp.usage, 'prompt_tokens', '?')}, "
                     f"completion={getattr(llm_resp.usage, 'completion_tokens', '?')}"
             )
+            logger.info(f"Bot choice: {choice.message.content.strip()}")
 
             if choice.message.tool_calls:
                 try:
@@ -182,17 +185,24 @@ class GrokServiceV2:
                     return self.FALLBACK_MSG, None
 
             content = (choice.message.content or "").strip()
-            if content.endswith("?"):
-                logger.info("Bot repregunta")
-                return content, None
 
-            if attempt == "required":
-                logger.info("Second attempt failed, giving up.")
-                return self.FALLBACK_MSG, None
+            if content.startswith("NEED_MORE_INFO:"):
+                # ↳ pass the question straight back to the user
+                question = content[len("NEED_MORE_INFO:"):].strip()
+                return question, None
 
-            logger.info("No tool_call or repregunta; retrying with required...")
+            # if content.endswith("?"):
+            #     logger.info("Bot repregunta")
+            #     return content, None
+            #
+            # if attempt == "required":
+            #     logger.info("Second attempt failed, giving up.")
+            #     return self.FALLBACK_MSG, None
 
-        return self.FALLBACK_MSG, None
+            # logger.info("No tool_call or repregunta; retrying with required...")
+        return content, None
+
+        # return self.FALLBACK_MSG, None
 
     # ------------------------------------------------------------------
     async def _reply_with_recommendations(self, user: User, filters: SearchMoviesArgs) -> (str, list[Entity]):
