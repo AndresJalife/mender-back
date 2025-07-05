@@ -12,7 +12,7 @@ USER = os.environ.get('POSTGRES_USER')
 PASSWORD = os.environ.get('POSTGRES_PASSWORD')
 POSTGRE_SQL_URL = f"postgresql://{USER}:{PASSWORD}@{HOST}:{PORT}/mender"
 
-engine = create_engine(POSTGRE_SQL_URL, echo=True, isolation_level="AUTOCOMMIT")
+engine = create_engine(POSTGRE_SQL_URL, isolation_level="AUTOCOMMIT")
 
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 Base = declarative_base()
