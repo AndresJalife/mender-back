@@ -56,13 +56,13 @@ class ImplicitService:
                 implicit_data = self._create_implicit_data(post_id, user.user_id)
 
             implicit_data.chat_recommended = True
-            self._save_calculated_rating(implicit_data)
+            # self._save_calculated_rating(implicit_data)
         self.db.commit()
 
     def _save_calculated_rating(self, implicit_data):
         logger.info(f"Saving calculated rating for post {implicit_data.post_id} seen by user {implicit_data.user_id}")
 
-        rating = self._calculate_implicit_rating(implicit_data.user_id, implicit_data.post)
+        rating = self._calculate_implicit_rating(implicit_data, implicit_data.user_id, implicit_data.post)
 
         calculated_rating = self.db.query(models.CalculatedRating).filter(
                 models.CalculatedRating.post_id == implicit_data.post_id,
@@ -74,11 +74,8 @@ class ImplicitService:
 
         calculated_rating.rating = rating
 
-    def _calculate_implicit_rating(self, user_id, post: models.Post):
+    def _calculate_implicit_rating(self, implicit_data, user_id, post: models.Post):
         logger.info(f"Calculating implicit rating for user {user_id} on post {post.post_id}")
-        implicit_data = self.db.query(models.ImplicitData).filter(
-                models.ImplicitData.post_id == post.post_id,
-                models.ImplicitData.user_id == user_id).first()
 
         user_post_info = self.db.query(models.UserPostInfo).filter(
                 models.UserPostInfo.post_id == post.post_id,
