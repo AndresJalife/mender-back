@@ -49,13 +49,13 @@ setup_exception_handlers(app)
 # logging.basicConfig()
 # logging.getLogger('sqlalchemy.engine').setLevel(logging.DEBUG)
 
-@app.middleware("http")
-async def log_request_time(request: Request, call_next):
-    start = time.perf_counter()
-    response = await call_next(request)
-    duration = (time.perf_counter() - start) * 1000
-    logger.info(f"⏱️ Request: {request.method} {request.url.path} took {duration:.2f} ms")
-    return response
+# @app.middleware("http")
+# async def log_request_time(request: Request, call_next):
+#     start = time.perf_counter()
+#     response = await call_next(request)
+#     duration = (time.perf_counter() - start) * 1000
+#     logger.info(f"⏱️ Request: {request.method} {request.url.path} took {duration:.2f} ms")
+#     return response
 
 
 ############# Initialize Database ############
