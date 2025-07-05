@@ -11,7 +11,7 @@ class ImplicitService:
 
     def post_seen(self, user, post_id, seen_dto, background_tasks):
         logger.info(f"Post {post_id} seen by user {seen_dto.time_seen}")
-        background_tasks.add_task(self._post_seen, post_id, seen_dto)
+        background_tasks.add_task(self._post_seen, post_id, user.user_id, seen_dto)
         background_tasks.add_task(self._set_new_user_as_not_new, user)
 
     def _set_new_user_as_not_new(self, user: User):
@@ -20,14 +20,17 @@ class ImplicitService:
             user.new = False
             self.db.commit()
 
-    def _post_seen(self, post_id, seen_dto):
+    def _post_seen(self, post_id, user_id, seen_dto):
         implicit_data = self.db.query(models.ImplicitData).filter(
                 models.ImplicitData.post_id == post_id,
-                models.ImplicitData.user_id == seen_dto.user_id).first()
+                models.ImplicitData.user_id == user_id).first()
         if implicit_data is None:
-            implicit_data = self._create_implicit_data(post_id, seen_dto.user_id)
+            implicit_data = self._create_implicit_data(post_id, user_id)
 
         implicit_data.time_seen = seen_dto.time_seen
+        if tme_seen < 1000:
+            logger.info(f"Post {post_id} not seen enough time")
+            return
         self._save_calculated_rating(implicit_data)
         self.db.commit()
 

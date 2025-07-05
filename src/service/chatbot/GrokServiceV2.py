@@ -153,7 +153,7 @@ class GrokServiceV2:
 
             llm_resp = await GROK_CLIENT.chat(**chat_kwargs)
         except Exception as exc:
-            logger.exception("Grok API failure")
+            logger.error(f"Grok API failure {exc}")
             return "Lo siento, hubo un error técnico. Intentá de nuevo más tarde.", None
 
         choice = llm_resp.choices[0]
@@ -195,8 +195,8 @@ class GrokServiceV2:
         try:
             candidate_ids = await self._rec.get_recommendations_async(
                 user.user_id, PostFilters(**filters.dict(exclude_none=True)), k=RECOMMENDATION_K)
-        except Exception:
-            logger.exception("Recommendation failure")
+        except Exception as e:
+            logger.error(f"Recommendation failure {e}")
             return self.FALLBACK_MSG, None
 
         logger.info(f"Candidates: {candidate_ids}")
