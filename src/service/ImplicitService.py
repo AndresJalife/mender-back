@@ -28,7 +28,7 @@ class ImplicitService:
             implicit_data = self._create_implicit_data(post_id, user_id)
 
         implicit_data.time_seen = seen_dto.time_seen
-        if tme_seen < 1000:
+        if seen_dto.time_seen < 1000:
             logger.info(f"Post {post_id} not seen enough time")
             return
         self._save_calculated_rating(implicit_data)
