@@ -15,6 +15,7 @@ class ImplicitService:
         background_tasks.add_task(self._set_new_user_as_not_new, user)
 
     def _set_new_user_as_not_new(self, user: User):
+        logger.info(f"user is new?: {user}")
         if user.new:
             logger.info(f"Setting user: {user.user_id} as not new")
             user.new = False
