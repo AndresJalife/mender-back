@@ -63,7 +63,14 @@ class ImplicitService:
     def _save_calculated_rating(self, implicit_data):
         logger.info(f"Saving calculated rating for post {implicit_data.post_id} seen by user {implicit_data.user_id}")
 
-        rating = self._calculate_implicit_rating(implicit_data, implicit_data.user_id, implicit_data.post)
+        user_post_info = self.db.query(models.UserPostInfo).filter(
+                models.UserPostInfo.post_id == implicit_data.post_id,
+                models.UserPostInfo.user_id == implicit_data.user_id).first()
+
+        if user_post_info is not None and user_post_info.user_rating is not None:
+            rating = user_post_info.user_rating
+        else:
+            rating = self._calculate_implicit_rating(implicit_data, implicit_data.user_id, implicit_data.post)
 
         calculated_rating = self.db.query(models.CalculatedRating).filter(
                 models.CalculatedRating.post_id == implicit_data.post_id,
@@ -92,7 +99,7 @@ class ImplicitService:
 
     def _calculate_rating(self, liked, seen, clicked, seconds_rating):
         logger.info(f"Calculating rating: liked={liked}, seen={seen}, clicked={clicked}, seconds_rating={seconds_rating}")
-        return min(5, (1 if seen else 0) + (3 if liked else 0) + seconds_rating + (2 if clicked else 0))
+        return min(5, (1 if seen else 0) + (3 if liked else 0) + seconds_rating + (4 if clicked else 0))
 
     def _create_implicit_data(self, post_id, user_id):
         logger.info(f"Creating implicit data for post {post_id} seen by user {user_id}")

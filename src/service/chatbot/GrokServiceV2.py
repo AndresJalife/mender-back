@@ -180,7 +180,7 @@ class GrokServiceV2:
 
         content = (choice.message.content or "").strip()
 
-        if content.startswith("NEED_MORE_INFO:"):
+        if "NEED_MORE_INFO:" in content:
             question = content[len("NEED_MORE_INFO:"):].strip()
             logger.info(f"NEED_MORE_INFO: <> {question}")
             return question, None
