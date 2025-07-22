@@ -59,15 +59,16 @@ class RatingCalculator:
         additions: List[float] = []
 
         for fb in feedbacks:
-            base_add = self._weights_for(fb)
-            if base_add is None:
+            weights = self._weights_for(fb)
+            if weights is None:
                 continue  # feedback ignorado (ej.: <2 s)
 
-            base, add = base_add
+            base, add = weights
             bases.append(base)
             additions.append(add)
 
         if not bases:
+            logger.info("No bases")
             return None
 
         rating = max(bases) + sum(additions)
@@ -82,6 +83,9 @@ class RatingCalculator:
             return self._watch_weights(fb.value)
         if fb.value != 1:
             return None
+        logger.info(f"-- Watching {fb.kind}")
+        logger.info(f"Watching {fb.value}")
+        logger.info(f"Watching {self._WEIGHTS.get(fb.kind)}--")
         return self._WEIGHTS.get(fb.kind)
 
     def _watch_weights(self, miliseconds: Optional[int | float]) -> Optional[tuple[float, float]]:
@@ -90,5 +94,5 @@ class RatingCalculator:
         for lo, hi, weights in self._WATCH_RANGES:
             if lo <= miliseconds < hi:
                 return weights
-        return None
+        return 3.25, 0.75
 

@@ -69,7 +69,6 @@ class ImplicitService:
         if implicit_data is None:
             implicit_data = self._create_implicit_data(post_id, user_id)
 
-        implicit_data.liked = True
         self._save_calculated_rating(implicit_data)
         self.db.commit()
 
