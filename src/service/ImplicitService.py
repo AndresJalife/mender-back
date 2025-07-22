@@ -86,7 +86,7 @@ class ImplicitService:
 
         rating = self._calculate_implicit_rating(implicit_data, user_post_info)
 
-        if rating is None:
+        if rating is None or rating == 0:
             logger.error(f"Rating is None for post {implicit_data.post_id} seen by user {implicit_data.user_id}")
             return
 
