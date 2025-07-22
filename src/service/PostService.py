@@ -89,20 +89,9 @@ class PostService:
         if post is None:
             raise HTTPException(status_code=404, detail="El Post no se ha encontrado.")
 
-        self.background_tasks.add_task(self._update_user_post_click, post_id, user.user_id)
         self.background_tasks.add_task(self.implicit_service.post_clicked, post_id, user.user_id)
 
         return post
-
-    def _update_user_post_click(self, post_id, user_id):
-        implicit_data = self.db.query(ImplicitData).filter(ImplicitData.post_id == post_id,
-                                                           ImplicitData.user_id == user_id).first()
-        if implicit_data is None:
-            implicit_data = ImplicitData(post_id=post_id, user_id=user_id, clicked=True)
-            self.db.add(implicit_data)
-        else:
-            implicit_data.clicked = True
-        self.db.commit()
 
     def like_post(self, post_id, user):
         logger.info(f"Liking post: {post_id} for user: {user.user_id}")

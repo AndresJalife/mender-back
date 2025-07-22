@@ -29,7 +29,7 @@ class ImplicitService:
         if implicit_data is None:
             implicit_data = self._create_implicit_data(post_id, user_id)
 
-        implicit_data.time_seen = seen_dto.time_seen
+        implicit_data.miliseconds_seen = seen_dto.time_seen
         if seen_dto.time_seen < 1000:
             logger.info(f"Post {post_id} not seen enough time")
             return
@@ -105,7 +105,7 @@ class ImplicitService:
 
         return RatingCalculator().calculate(feedbacks=[
                 Feedback(FeedbackType.LIKE, value=1 if user_post_info.liked else 0),
-                Feedback(FeedbackType.WATCH_SECONDS, value=implicit_data.time_seen),
+                Feedback(FeedbackType.WATCH_SECONDS, value=implicit_data.miliseconds_seen),
                 Feedback(FeedbackType.MORE_INFO, value=1 if implicit_data.clicked else 0),
                 Feedback(FeedbackType.SAW_MOVIE, value=1 if user_post_info.seen else 0),
                 Feedback(FeedbackType.CHATBOT_REC, value=1 if implicit_data.chat_recommended else 0),

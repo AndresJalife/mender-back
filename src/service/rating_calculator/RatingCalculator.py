@@ -50,6 +50,8 @@ class RatingCalculator:
     ]
 
     def calculate(self, feedbacks: List[Feedback], explicit_rating: Optional[float] = None) -> Optional[float]:
+        logger.info("Feedbacks: " + ", ".join(str(fb) for fb in feedbacks))
+        logger.info("Explicit rating: " + str(explicit_rating))
         if explicit_rating is not None:
             return explicit_rating
 
@@ -71,7 +73,6 @@ class RatingCalculator:
         rating = max(bases) + sum(additions)
 
         logger.info(f"Calculating implicit rating: bases={bases}, additions={additions}")
-        logger.info("Feedbacks: " + ", ".join(str(fb) for fb in feedbacks))
         logger.info("Rating: " + str(min(rating, 5.0)))
         return min(rating, 5.0)
 
