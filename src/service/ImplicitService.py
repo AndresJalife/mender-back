@@ -68,6 +68,10 @@ class ImplicitService:
                 models.UserPostInfo.post_id == implicit_data.post_id,
                 models.UserPostInfo.user_id == implicit_data.user_id).first()
 
+        if user_post_info is None:
+            user_post_info = models.UserPostInfo(post_id=implicit_data.post_id, user_id=implicit_data.user_id)
+            self.db.add(user_post_info)
+
         rating = self._calculate_implicit_rating(implicit_data, implicit_data.user_id, implicit_data.post, user_post_info.user_rating)
 
         if rating is None:
