@@ -174,6 +174,8 @@ class PostService:
     def _rate_user_post(self, post_id, user, rating):
         user_post_info = self.get_or_create_post_info(post_id, user)
         user_post_info.user_rating = rating
+
+        self.implicit_service.post_rated(post_id, user.user_id)
         self.db.commit()
 
     def _see_user_post(self, post_id, user):
