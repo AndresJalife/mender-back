@@ -101,6 +101,8 @@ class RatingCalculator:
         """Devuelve tupla (base, addition) o None si el feedback debe ignorarse."""
         if fb.kind == FeedbackType.WATCH_SECONDS:
             return self._watch_weights(fb.value)
+        if fb.value != 1:
+            return None
         return self._WEIGHTS.get(fb.kind)
 
     def _watch_weights(self, miliseconds: Optional[int | float]) -> Optional[tuple[float, float]]:
