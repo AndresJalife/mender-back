@@ -52,7 +52,7 @@ class RatingCalculator:
     def calculate(self, feedbacks: List[Feedback], explicit_rating: Optional[float] = None) -> Optional[float]:
         logger.info("Feedbacks: " + ", ".join(str(fb) for fb in feedbacks))
         logger.info("Explicit rating: " + str(explicit_rating))
-        if explicit_rating is not None:
+        if explicit_rating is not None and explicit_rating > 0:
             return explicit_rating
 
         bases: List[float] = []
