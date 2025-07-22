@@ -36,9 +36,9 @@ def get_filtered_df(df, filters, seen_movies, recommendations):
             lambda genres: any(genre in filters.genres for genre in genres)
         )]
     if filters.min_release_date:
-        knn_df = knn_df[knn_df.release_date >= filters.min_release_date]
+        knn_df = knn_df[knn_df.release_date >= filters.min_release_date.strftime("%Y-%m-%d")]
     if filters.max_release_date:
-        knn_df = knn_df[knn_df.release_date <= filters.max_release_date]
+        knn_df = knn_df[knn_df.release_date <= filters.max_release_date.strftime("%Y-%m-%d")]
     if filters.actors:
         knn_df = knn_df[knn_df.actors.apply(
             lambda actors: any(actor in filters.actors for actor in actors)
