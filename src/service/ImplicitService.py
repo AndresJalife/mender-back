@@ -2,6 +2,7 @@ from src import models
 from src.config.database import Database
 from src.models import User
 from src.service.Logger import logger
+from src.service.rating_calculator.RatingCalculator import RatingCalculator, Feedback, FeedbackType
 
 
 class ImplicitService:
@@ -67,10 +68,11 @@ class ImplicitService:
                 models.UserPostInfo.post_id == implicit_data.post_id,
                 models.UserPostInfo.user_id == implicit_data.user_id).first()
 
-        if user_post_info is not None and user_post_info.user_rating is not None:
-            rating = user_post_info.user_rating
-        else:
-            rating = self._calculate_implicit_rating(implicit_data, implicit_data.user_id, implicit_data.post)
+        rating = self._calculate_implicit_rating(implicit_data, implicit_data.user_id, implicit_data.post, user_post_info.user_rating)
+
+        if rating is None:
+            logger.error(f"Rating is None for post {implicit_data.post_id} seen by user {implicit_data.user_id}")
+            return
 
         calculated_rating = self.db.query(models.CalculatedRating).filter(
                 models.CalculatedRating.post_id == implicit_data.post_id,
@@ -82,24 +84,21 @@ class ImplicitService:
 
         calculated_rating.rating = rating
 
-    def _calculate_implicit_rating(self, implicit_data, user_id, post: models.Post):
+    def _calculate_implicit_rating(self, implicit_data, user_id, post: models.Post, explicit_rating):
         logger.info(f"Calculating implicit rating for user {user_id} on post {post.post_id}")
 
         user_post_info = self.db.query(models.UserPostInfo).filter(
                 models.UserPostInfo.post_id == post.post_id,
                 models.UserPostInfo.user_id == user_id).first()
 
-        liked = user_post_info.liked if user_post_info else False
-        seen = user_id.seen if user_post_info else False
-        clicked = implicit_data.clicked if implicit_data else False
-        miliseconds = implicit_data.miliseconds_seen if implicit_data else 0
-        seconds_rating = self._calculate_seconds_rating(miliseconds)
+        return RatingCalculator().calculate(feedbacks=[
+                Feedback(FeedbackType.LIKE, value=1 if implicit_data.liked else 0),
+                Feedback(FeedbackType.WATCH_SECONDS, value=implicit_data.time_seen),
+                Feedback(FeedbackType.MORE_INFO, value=1 if implicit_data.clicked else 0),
+                Feedback(FeedbackType.SAW_MOVIE, value=1 if user_post_info is not None else 0),
+                Feedback(FeedbackType.CHATBOT_REC, value=1 if implicit_data.chat_recommended else 0),
+            ], explicit_rating=explicit_rating)
 
-        return self._calculate_rating(liked, seen, clicked, seconds_rating)
-
-    def _calculate_rating(self, liked, seen, clicked, seconds_rating):
-        logger.info(f"Calculating rating: liked={liked}, seen={seen}, clicked={clicked}, seconds_rating={seconds_rating}")
-        return min(5, (1 if seen else 0) + (3 if liked else 0) + seconds_rating + (4 if clicked else 0))
 
     def _create_implicit_data(self, post_id, user_id):
         logger.info(f"Creating implicit data for post {post_id} seen by user {user_id}")
@@ -107,14 +106,3 @@ class ImplicitService:
         self.db.add(implicit_data)
         self.db.commit()
         return implicit_data
-
-    def _calculate_seconds_rating(self, miliseconds):
-        seconds_seen = round(miliseconds / 1000)
-        if seconds_seen < 2:
-            return 0
-        elif seconds_seen < 4:
-            return 1
-        elif seconds_seen < 8:
-            return 2
-        else:
-            return 3
