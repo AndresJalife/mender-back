@@ -57,18 +57,18 @@ class Feedback:
 
 class RatingCalculator:
     _WEIGHTS = {
-        FeedbackType.LIKE: (4.0, 0.75),
-        FeedbackType.MORE_INFO: (3.5, 0.5),
-        FeedbackType.SAW_MOVIE: (3.0, 0.25),
-        FeedbackType.CHATBOT_REC: (3.0, 0.25),
+        FeedbackType.LIKE: (3.25, 0.75),
+        FeedbackType.MORE_INFO: (3, 0.5),
+        FeedbackType.SAW_MOVIE: (2.75, 0.25),
+        FeedbackType.CHATBOT_REC: (2.75, 0.25),
     }
 
     # Rangos de segundos vistos → (base, addition)
     _WATCH_RANGES = [
         (0, 2000, None), # ignorar < 2 s
-        (2000, 5000, (3.0, 0.25)),
-        (5000, 30000, (3.5, 0.5)),
-        (30000, float("inf"), (4.0, 0.75)),
+        (2000, 5000, (2.75, 0.25)),
+        (5000, 30000, (3, 0.5)),
+        (30000, float("inf"), (3.25, 0.75)),
     ]
 
     def calculate(self, feedbacks: List[Feedback], explicit_rating: Optional[float] = None) -> Optional[float]:
