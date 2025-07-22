@@ -138,6 +138,9 @@ class PostService:
 
         self._sum_to_post_likes(post_id, user_post_info.liked)
 
+        if user_post_info.liked:
+            self.background_tasks.add_task(self.implicit_service.post_liked, post_id, user.user_id)
+
         self.db.commit()
 
     def get_or_create_post_info(self, post_id, user):

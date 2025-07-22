@@ -61,6 +61,18 @@ class ImplicitService:
             # self._save_calculated_rating(implicit_data)
         self.db.commit()
 
+    def post_liked(self, post_id, user_id):
+        logger.info(f"Post {post_id} liked by user {user_id}")
+        implicit_data = self.db.query(models.ImplicitData).filter(
+                models.ImplicitData.post_id == post_id,
+                models.ImplicitData.user_id == user_id).first()
+        if implicit_data is None:
+            implicit_data = self._create_implicit_data(post_id, user_id)
+
+        implicit_data.liked = True
+        self._save_calculated_rating(implicit_data)
+        self.db.commit()
+
     def _save_calculated_rating(self, implicit_data):
         logger.info(f"Saving calculated rating for post {implicit_data.post_id} seen by user {implicit_data.user_id}")
 
