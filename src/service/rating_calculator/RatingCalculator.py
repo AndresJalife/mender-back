@@ -1,25 +1,3 @@
-# rating_calculator.py
-"""Implicit rating calculator.
-
-Diseñado para ser extensible: si mañana se agrega un nuevo tipo de feedback
-(badge, share en redes, etc.) solo hay que extender `_WEIGHTS` o crear una
-subclase con reglas distintas.
-
->> Ejemplo de uso
-
-```
-from rating_calculator import RatingCalculator, Feedback, FB
-
-fb = [
-    Feedback(FB.LIKE),
-    Feedback(FB.WATCH_SECONDS, value=18),
-    Feedback(FB.MORE_INFO),
-]
-
-print(RatingCalculator().calculate(feedbacks=fb))  # 4.25
-```
-"""
-
 from __future__ import annotations
 
 from dataclasses import dataclass
