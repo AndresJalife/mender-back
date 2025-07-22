@@ -72,7 +72,7 @@ class ImplicitService:
             user_post_info = models.UserPostInfo(post_id=implicit_data.post_id, user_id=implicit_data.user_id)
             self.db.add(user_post_info)
 
-        rating = self._calculate_implicit_rating(implicit_data, implicit_data.user_id, implicit_data.post, user_post_info.user_rating)
+        rating = self._calculate_implicit_rating(implicit_data, user_post_info)
 
         if rating is None:
             logger.error(f"Rating is None for post {implicit_data.post_id} seen by user {implicit_data.user_id}")
@@ -88,20 +88,16 @@ class ImplicitService:
 
         calculated_rating.rating = rating
 
-    def _calculate_implicit_rating(self, implicit_data, user_id, post: models.Post, explicit_rating):
-        logger.info(f"Calculating implicit rating for user {user_id} on post {post.post_id}")
-
-        user_post_info = self.db.query(models.UserPostInfo).filter(
-                models.UserPostInfo.post_id == post.post_id,
-                models.UserPostInfo.user_id == user_id).first()
+    def _calculate_implicit_rating(self, implicit_data, user_post_info):
+        logger.info(f"Calculating implicit rating for user {implicit_data.user_id} on post {implicit_data.post.post_id}")
 
         return RatingCalculator().calculate(feedbacks=[
-                Feedback(FeedbackType.LIKE, value=1 if implicit_data.liked else 0),
+                Feedback(FeedbackType.LIKE, value=1 if user_post_info.liked else 0),
                 Feedback(FeedbackType.WATCH_SECONDS, value=implicit_data.time_seen),
                 Feedback(FeedbackType.MORE_INFO, value=1 if implicit_data.clicked else 0),
-                Feedback(FeedbackType.SAW_MOVIE, value=1 if user_post_info is not None else 0),
+                Feedback(FeedbackType.SAW_MOVIE, value=1 if user_post_info.seen else 0),
                 Feedback(FeedbackType.CHATBOT_REC, value=1 if implicit_data.chat_recommended else 0),
-            ], explicit_rating=explicit_rating)
+            ], explicit_rating=user_post_info.user_rating)
 
 
     def _create_implicit_data(self, post_id, user_id):
