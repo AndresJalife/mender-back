@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Improved GrokServiceV2 – with better function-calling handling, retries, and logging."""
+"""GrokServiceV2 – versión extendida con tool_call "ask_user" para repreguntas."""
 from __future__ import annotations
 
 import json
@@ -17,7 +17,7 @@ from src.service.recommendation.RecommendationService import RecommendationServi
 from src.util.util import str_to_date
 
 ###############################################################################
-# Configuration
+# Configuración
 ###############################################################################
 
 GROK_MODEL = os.getenv("GROK_MODEL", "grok-3-mini-fast")
@@ -51,8 +51,11 @@ class GrokClient:
 GROK_CLIENT = GrokClient(GROK_API_KEY, GROK_ENDPOINT)
 
 ###############################################################################
-# Tool schema
+# Tool schemas
 ###############################################################################
+
+class AskUserArgs(BaseModel):
+    question: str = Field(..., description="Pregunta concreta para el usuario, en español")
 
 class SearchMoviesArgs(BaseModel):
     genres: Optional[List[str]] = Field(None, description="Géneros en inglés, capitalizados")
@@ -64,34 +67,36 @@ class SearchMoviesArgs(BaseModel):
     min_runtime: Optional[int] = Field(None, description="Duración mínima en minutos")
     max_runtime: Optional[int] = Field(None, description="Duración máxima en minutos")
 
-SCHEMA: Dict[str, Any] = SearchMoviesArgs.model_json_schema()
-
-TOOLS = [
+TOOLS: List[Dict[str, Any]] = [
+    {
+        "type": "function",
+        "function": {
+            "name": "ask_user",
+            "description": "Solicita al usuario un dato faltante y cierra el turno",
+            "parameters": AskUserArgs.model_json_schema(),
+        },
+    },
     {
         "type": "function",
         "function": {
             "name": "search_movies",
             "description": "Filtra películas según los criterios del usuario",
-            "parameters": SCHEMA,
+            "parameters": SearchMoviesArgs.model_json_schema(),
         },
-    }
+    },
 ]
+
+###############################################################################
+# Prompts
+###############################################################################
 
 _SYSTEM_PROMPT = {
     "role": "system",
     "content": (
         "Sos un asistente de películas. Habla en español. "
-        "Intenta hacer alguna repregunta para obtener más información, pero no muchas."
-        "Cuando tengas filtros suficientes, llama a la función `search_movies`. "
-        "Podés hacer hasta 3 repreguntas si falta info."
-        "### EJEMPLO 1"
-        "User: Recomendame algo."
-        "Assistant: ¿Preferís comedia, drama o sorpresa total?"
-        "### EJEMPLO 2"
-        "User: Dame una de Tarantino"
-        "Assistant: ¿Te importa la duración? Puedo buscarte algo < 2 h o dejarlas todas."
-        "Cuando todavía necesites datos, responde"
-        "`NEED_MORE_INFO: <pregunta>` en vez de llamar a la función."
+        "Cuando necesites datos extra llamá a la función `ask_user` con un parámetro `question`. "
+        "Una vez que tengas filtros suficientes llamá a `search_movies`. "
+        "Podés encadenar como máximo tres repreguntas antes de decidirte."
     ),
 }
 
@@ -99,13 +104,12 @@ _FINAL_SYSTEM_PROMPT = {
     "role": "system",
     "content": (
         "Sos un asistente de películas que responde con entusiasmo en español. "
-        "Te dan una lista de películas recomendadas y vos redactás una respuesta en base a las películas."
-        "No debería ser una respuesta muy larga. Un resumen de las películas a recomendar y el listado de películas en formato markdown."
-    )
+        "Te dan una lista de películas recomendadas y vos redactás una respuesta breve y amigable."
+    ),
 }
 
 ###############################################################################
-# DTO
+# DTO interno
 ###############################################################################
 
 class _ChatRequest(BaseModel):
@@ -120,7 +124,7 @@ class _ChatRequest(BaseModel):
         return list(v)
 
 ###############################################################################
-# Main service
+# Servicio principal
 ###############################################################################
 
 class GrokServiceV2:
@@ -130,76 +134,84 @@ class GrokServiceV2:
         self.db = db
         self._rec = rec
 
-    async def generate(self, *, user: User, history: Sequence[Dict[str, str]], text: str) -> (str, list[Entity]):
+    async def generate(self, *, user: User, history: Sequence[Dict[str, str]], text: str):
+        """Procesa un turno del chat y devuelve `(respuesta, entidades)`.
+        Si la respuesta es una repregunta, `entidades` es `None`."""
         req = _ChatRequest(user=user, history=list(history), text=text)
 
-        base_messages: MutableSequence[Dict[str, Any]] = [_SYSTEM_PROMPT]
-        base_messages.extend(req.history)
-        base_messages.append({"role": "user", "content": req.text})
+        messages: MutableSequence[Dict[str, Any]] = [_SYSTEM_PROMPT]
+        messages.extend(req.history)
+        messages.append({"role": "user", "content": req.text})
 
-        # for attempt in ("auto", "required"):
-        messages = list(base_messages)
+        chat_kwargs = {
+            "model": GROK_MODEL,
+            "messages": messages,
+            "tools": TOOLS,
+            "tool_choice": "auto",
+            "temperature": TEMPERATURE,
+        }
+        if MAX_TOKENS:
+            chat_kwargs["max_tokens"] = MAX_TOKENS
 
         try:
-            chat_kwargs = {
-                "model": GROK_MODEL,
-                "messages": messages,
-                "tools": TOOLS,
-                "tool_choice": "auto",
-                "temperature": TEMPERATURE,
-            }
-            if MAX_TOKENS:
-                chat_kwargs["max_tokens"] = MAX_TOKENS
-
             llm_resp = await GROK_CLIENT.chat(**chat_kwargs)
         except Exception as exc:
             logger.error(f"Grok API failure {exc}")
-            return "Lo siento, hubo un error técnico. Intentá de nuevo más tarde.", None
+            return self.FALLBACK_MSG, None
 
         choice = llm_resp.choices[0]
-
         logger.info(
-                f"Tokens: prompt={getattr(llm_resp.usage, 'prompt_tokens', '?')}, "
-                f"completion={getattr(llm_resp.usage, 'completion_tokens', '?')}"
+            f"Tokens: prompt={getattr(llm_resp.usage, 'prompt_tokens', '?')}, "
+            f"completion={getattr(llm_resp.usage, 'completion_tokens', '?')}"
         )
-        logger.info(f"Bot choice: {choice.message.content.strip()}")
 
+        # ------------------------------------------------------------------
+        # ── tool_call ──────────────────────────────────────────────────────
+        # ------------------------------------------------------------------
         if choice.message.tool_calls:
+            tc = choice.message.tool_calls[0]
+            name = tc.function.name
+            args_raw = tc.function.arguments
+            logger.info(f"tool_call: {name} args={args_raw}")
+
             try:
-                tc = choice.message.tool_calls[0]
-                logger.info(f"tool_call: {tc.function.name} args={tc.function.arguments}")
-                args = tc.function.arguments
-                if isinstance(args, str):
-                    args = json.loads(args)
+                args = json.loads(args_raw) if isinstance(args_raw, str) else args_raw
+            except TypeError:
+                args = args_raw or {}
+
+            # ▸ repregunta ---------------------------------------------------
+            if name == "ask_user":
+                question = AskUserArgs(**args).question.strip()
+                logger.info(f"ASK_USER → {question}")
+                return question, None
+
+            # ▸ búsqueda -----------------------------------------------------
+            if name == "search_movies":
                 filters = SearchMoviesArgs(**args)
-                logger.info(f"Filters: {filters}")
                 return await self._reply_with_recommendations(user, filters)
-            except Exception as exc:
-                logger.info(f"Invalid tool_call arguments: {exc}")
-                return self.FALLBACK_MSG, None
 
+            # Si llega una tool desconocida devolvemos fallback
+            logger.warning(f"Unknown tool_call: {name}")
+            return self.FALLBACK_MSG, None
+
+        # ------------------------------------------------------------------
+        # ── texto libre (sólo debería ocurrir para mensajes finales) ───────
+        # ------------------------------------------------------------------
         content = (choice.message.content or "").strip()
-
-        if "NEED_MORE_INFO:" in content:
-            question = content[len("NEED_MORE_INFO:"):].strip()
-            logger.info(f"NEED_MORE_INFO: <> {question}")
-            return question, None
-
         logger.info(f"Bot reply: {content}")
         return content, None
 
-        # return self.FALLBACK_MSG, None
-
-    # ------------------------------------------------------------------
-    async def _reply_with_recommendations(self, user: User, filters: SearchMoviesArgs) -> (str, list[Entity]):
+    # ----------------------------------------------------------------------
+    async def _reply_with_recommendations(self, user: User, filters: SearchMoviesArgs):
         try:
             candidate_ids = await self._rec.get_recommendations_async(
-                user.user_id, PostFilters(**filters.dict(exclude_none=True)), k=RECOMMENDATION_K)
+                user.user_id,
+                PostFilters(**filters.dict(exclude_none=True)),
+                k=RECOMMENDATION_K,
+            )
         except Exception as e:
             logger.error(f"Recommendation failure {e}")
             return self.FALLBACK_MSG, None
-
-        logger.info(f"Candidates: {candidate_ids}")
 
         if not candidate_ids:
             return self.FALLBACK_MSG, None
@@ -211,23 +223,23 @@ class GrokServiceV2:
             .all()
         )
 
-        summary = "\n".join(
-                f"- {title} ({str_to_date(release_date).year if release_date else '?'})"
-                for title, release_date, post_id in rows
+        summary = ", ".join(
+            f"{title} ({str_to_date(release_date).year if release_date else '?'})" for title, release_date, _ in rows
         )
 
         MOVIES_PROMPT = {
             "role": "system",
             "content": (
-                f"Estas son las películas recomendadas: {', '.join(summary)}. "
+                f"Estas son las películas recomendadas: {summary}. "
                 "Generá una respuesta natural y entusiasta con eso."
-            )
+            ),
         }
 
         response = await GROK_CLIENT.chat(
-                model=GROK_MODEL,
-                messages=[_FINAL_SYSTEM_PROMPT, MOVIES_PROMPT],
-                temperature=0.3
+            model=GROK_MODEL,
+            messages=[_FINAL_SYSTEM_PROMPT, MOVIES_PROMPT],
+            temperature=0.3,
         )
-        logger.info(f"Bot reply: {response.choices[0].message.content.strip()}")
-        return response.choices[0].message.content.strip(), rows
+        reply = response.choices[0].message.content.strip()
+        logger.info(f"Bot final reply: {reply}")
+        return reply, rows
