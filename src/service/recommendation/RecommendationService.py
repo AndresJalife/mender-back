@@ -117,6 +117,8 @@ class RecommendationService:
         rated_movies = [movie_id for movie_id, _ in user_ratings]
         knn_df = get_filtered_df(self.movies_similarity[~self.movies_similarity.index.isin(rated_movies)], filters, seen_movies, recommendations)
 
+        logger.info(f"KNN df: {knn_df.shape}")
+        logger.info(f"Top movies: {top_movies}")
         for movie_id in top_movies:
             if movie_id not in self.movies_similarity.index:
                 continue
