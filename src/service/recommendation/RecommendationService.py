@@ -91,9 +91,12 @@ class RecommendationService:
     def get_content_based_recommendation(self, user_ratings, filters, seen_movies, recommendations, k=10):
         logger.info("Get CB recommendation")
         # 1. Find the highest rating in the user_ratings
+        logger.info(f"User ratings: {user_ratings}")
         max_rating = max(rating for _, rating in user_ratings)
 
+        logger.info(f"Max rating: {max_rating}")
         if max_rating < 4:
+            logger.info("No movies to recommend")
             return []
 
         # 2. Get all movie_ids with that max rating
@@ -135,6 +138,8 @@ class RecommendationService:
 
         # 3. Sort all candidates by distance ascending (closest first)
         all_candidates.sort(key=lambda x: x[1])
+
+        logger.info(f"All candidates: {all_candidates}")
 
         # 4. Keep unique recommended movies but only top final_k globally by distance
         recommended_movies = []
