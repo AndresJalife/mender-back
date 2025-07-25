@@ -134,6 +134,8 @@ class RecommendationService:
             # Get recommended movie IDs
             recommended_ids = knn_df.iloc[indices[0]].index
 
+            logger.info(f"Recommended ids: {recommended_ids}")
+
             # Store (movie, distance, source movie)
             for rec_id, dist in zip(recommended_ids, distances[0]):
                 all_candidates.append((rec_id, dist, movie_id))
