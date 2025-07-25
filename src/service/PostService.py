@@ -1,5 +1,3 @@
-import time
-
 from fastapi import HTTPException, BackgroundTasks
 from sqlalchemy.orm import joinedload, contains_eager
 from sqlalchemy import func, select
@@ -10,7 +8,6 @@ from src.model import dto
 from src.models import Post, UserPostInfo, Comments, Entity, ImplicitData, Actor
 from src.service.ImplicitService import ImplicitService
 from src.service.Logger import logger
-from src.service.mock_post import mock_posts
 from src.service.UserService import UserService
 from src.service.recommendation.RecommendationService import recommendation_service
 
@@ -27,7 +24,25 @@ class PostService:
     def get_cold_start_posts(self):
         """Returns a list of mock posts for cold start"""
         logger.info("Getting cold start posts")
-        posts = mock_posts
+        cold_start_tmbd_ids = [157336, 429, 58496, 14160, 155, 27205, 346364, 496243, 194, 129]
+        posts = (
+            self.db.query(Post)
+            .join(Entity, Post.entity_id == Entity.entity_id)
+            .outerjoin(UserPostInfo, (Post.post_id == UserPostInfo.post_id))
+            .options(
+                joinedload(Post.entity)
+                .joinedload(Entity.genres),
+                joinedload(Post.entity)
+                .joinedload(Entity.actors),
+                joinedload(Post.entity)
+                .joinedload(Entity.entity_production_companies),
+                joinedload(Post.entity)
+                .joinedload(Entity.watch_providers),
+                contains_eager(Post.user_post_info)
+            )
+            .filter(Entity.tmbd_id.in_(cold_start_tmbd_ids))
+            .all()
+        )
         return posts
 
     def get_posts(self, user, k, filters):
