@@ -102,7 +102,7 @@ class RecommendationService:
         # 2. Get all movie_ids with that max rating
         top_movies = [movie_id for movie_id, rating in user_ratings if rating > max_rating - 0.3]
 
-        top_movies_tmbd_ids = [self.movie_mapper[movie_id] for movie_id in top_movies if movie_id in self.movie_mapper]
+        top_movies_tmbd_ids = [self.movie_inv_mapper[movie_id] for movie_id in top_movies if movie_id in self.movie_inv_mapper]
 
         if len(top_movies_tmbd_ids) * 3 < k:
             top_k_per_movie = math.ceil(k / len(top_movies_tmbd_ids))
