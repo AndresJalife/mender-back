@@ -178,7 +178,10 @@ class RecommendationService:
             logger.info("Using best model recommendation")
             strategy = BestModelStrategy()
 
-        return strategy.recommend(implicit_ratings, filters, seen_movies, self, k)
+        recommendation = strategy.recommend(implicit_ratings, filters, seen_movies, self, k)
+        if len(recommendation) == 0:
+            recommendation = RandomRecommendationStrategy().recommend(implicit_ratings, filters, seen_movies, self, k)
+        return  recommendation
 
     async def get_recommendations_async(self, user_id: int,  filters: dto.PostFilters, k: int = 10) -> list[int]:
         fn = partial(self.get_recommendation, user_id, filters, k)
