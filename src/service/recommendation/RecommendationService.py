@@ -121,6 +121,7 @@ class RecommendationService:
         logger.info(f"Top movies: {top_movies}")
         for movie_id in top_movies:
             if movie_id not in self.movies_similarity.index:
+                logger.info(f"Movie {movie_id} not in similarity df")
                 continue
 
             # Fit the model on available movies
