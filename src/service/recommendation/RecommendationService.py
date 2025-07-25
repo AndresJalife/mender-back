@@ -91,16 +91,21 @@ class RecommendationService:
     def get_content_based_recommendation(self, user_ratings, filters, seen_movies, recommendations, k=10):
         logger.info("Get CB recommendation")
         # 1. Find the highest rating in the user_ratings
+        logger.info(f"User ratings: {user_ratings}")
         max_rating = max(rating for _, rating in user_ratings)
 
+        logger.info(f"Max rating: {max_rating}")
         if max_rating < 4:
+            logger.info("No movies to recommend")
             return []
 
         # 2. Get all movie_ids with that max rating
         top_movies = [movie_id for movie_id, rating in user_ratings if rating > max_rating - 0.3]
 
-        if len(top_movies) * 3 < k:
-            top_k_per_movie = math.ceil(k / len(top_movies))
+        top_movies_tmbd_ids = [self.movie_inv_mapper[movie_id] for movie_id in top_movies if movie_id in self.movie_inv_mapper]
+
+        if len(top_movies_tmbd_ids) * 3 < k:
+            top_k_per_movie = math.ceil(k / len(top_movies_tmbd_ids))
         else:
             top_k_per_movie = 3
 
@@ -114,8 +119,11 @@ class RecommendationService:
         rated_movies = [movie_id for movie_id, _ in user_ratings]
         knn_df = get_filtered_df(self.movies_similarity[~self.movies_similarity.index.isin(rated_movies)], filters, seen_movies, recommendations)
 
-        for movie_id in top_movies:
+        logger.info(f"KNN df: {knn_df.shape}")
+        logger.info(f"Top movies: {top_movies_tmbd_ids}")
+        for movie_id in top_movies_tmbd_ids:
             if movie_id not in self.movies_similarity.index:
+                logger.info(f"Movie {movie_id} not in similarity df")
                 continue
 
             # Fit the model on available movies
@@ -129,12 +137,16 @@ class RecommendationService:
             # Get recommended movie IDs
             recommended_ids = knn_df.iloc[indices[0]].index
 
+            logger.info(f"Recommended ids: {recommended_ids}")
+
             # Store (movie, distance, source movie)
             for rec_id, dist in zip(recommended_ids, distances[0]):
                 all_candidates.append((rec_id, dist, movie_id))
 
         # 3. Sort all candidates by distance ascending (closest first)
         all_candidates.sort(key=lambda x: x[1])
+
+        logger.info(f"All candidates: {all_candidates}")
 
         # 4. Keep unique recommended movies but only top final_k globally by distance
         recommended_movies = []
