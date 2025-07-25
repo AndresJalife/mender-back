@@ -102,8 +102,10 @@ class RecommendationService:
         # 2. Get all movie_ids with that max rating
         top_movies = [movie_id for movie_id, rating in user_ratings if rating > max_rating - 0.3]
 
-        if len(top_movies) * 3 < k:
-            top_k_per_movie = math.ceil(k / len(top_movies))
+        top_movies_tmbd_ids = [self.movie_mapper[movie_id] for movie_id in top_movies if movie_id in self.movie_mapper]
+
+        if len(top_movies_tmbd_ids) * 3 < k:
+            top_k_per_movie = math.ceil(k / len(top_movies_tmbd_ids))
         else:
             top_k_per_movie = 3
 
@@ -118,8 +120,8 @@ class RecommendationService:
         knn_df = get_filtered_df(self.movies_similarity[~self.movies_similarity.index.isin(rated_movies)], filters, seen_movies, recommendations)
 
         logger.info(f"KNN df: {knn_df.shape}")
-        logger.info(f"Top movies: {top_movies}")
-        for movie_id in top_movies:
+        logger.info(f"Top movies: {top_movies_tmbd_ids}")
+        for movie_id in top_movies_tmbd_ids:
             if movie_id not in self.movies_similarity.index:
                 logger.info(f"Movie {movie_id} not in similarity df")
                 continue
