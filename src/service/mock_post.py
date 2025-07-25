@@ -1,73 +1,69 @@
 mock_posts = [
     {
-        "post_id": 2753,
-        "entity_id": 2753,
+        "post_id": 142,
+        "entity_id": 142,
         "entity": {
-            "entity_id": 2753,
+            "entity_id": 142,
             "entity_type": "m",
-            "tmbd_id": 329,
-            "imdb_id": "tt0107290",
-            "title": "Jurassic Park",
-            "vote_average": 7.941,
-            "release_date": "11/06/1993",
-            "revenue": 920100000,
-            "runtime": 127,
-            "overview": "A wealthy entrepreneur secretly creates a theme park featuring living dinosaurs drawn from prehistoric DNA. Before opening day, he invites a team of experts and his two eager grandchildren to experience the park and help calm anxious investors. However, the park is anything but amusing as the security systems go off-line and the dinosaurs escape.",
-            "popularity": 24.213,
-            "tagline": "An adventure 65 million years in the making.",
-            "trailer": "https://www.youtube.com/watch?v=bx46tthKXmc",
-            "director": "Steven Spielberg",
-            "image_key": "/79bJL9ydAMYVltuNTt4VhxORqIz.jpg",
-            "poster_key": "/oU7Oq2kFAAlGqbU4VoAE36g4hoI.jpg",
+            "tmbd_id": 157336,
+            "imdb_id": "tt0816692",
+            "title": "Interstellar",
+            "vote_average": 8.417,
+            "release_date": "05/11/2014",
+            "revenue": 701729206,
+            "runtime": 169,
+            "overview": "The adventures of a group of explorers who make use of a newly discovered wormhole to surpass the limitations on human space travel and conquer the vast distances involved in an interstellar voyage.",
+            "popularity": 140.241,
+            "tagline": "Mankind was born on Earth. It was never meant to die here.",
+            "trailer": "https://www.youtube.com/watch?v=LY19rHKAaAg",
+            "director": "Christopher Nolan",
+            "image_key": "/pbrkL804c8yAv3zBZR4QPEafpAR.jpg",
+            "poster_key": "/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
             "genres": [
                 {
-                    "entity_genre_id": 7612,
+                    "entity_genre_id": 407,
                     "name": "Adventure"
                 },
                 {
-                    "entity_genre_id": 7613,
+                    "entity_genre_id": 408,
+                    "name": "Drama"
+                },
+                {
+                    "entity_genre_id": 409,
                     "name": "Science Fiction"
                 }
             ],
             "actors": [
                 {
-                    "actor_id": 13734,
-                    "name": "Bob Peck"
+                    "actor_id": 707,
+                    "name": "Matthew McConaughey"
                 },
                 {
-                    "actor_id": 13730,
-                    "name": "Sam Neill"
+                    "actor_id": 708,
+                    "name": "Anne Hathaway"
                 },
                 {
-                    "actor_id": 13731,
-                    "name": "Laura Dern"
+                    "actor_id": 709,
+                    "name": "Michael Caine"
                 },
                 {
-                    "actor_id": 13732,
-                    "name": "Jeff Goldblum"
+                    "actor_id": 710,
+                    "name": "Jessica Chastain"
                 },
                 {
-                    "actor_id": 13733,
-                    "name": "Richard Attenborough"
+                    "actor_id": 711,
+                    "name": "Casey Affleck"
                 }
             ],
             "production_companies": None,
             "watch_providers": [
                 {
-                    "watch_provider_id": 3795,
-                    "provider_name": "Amazon Prime Video"
-                },
-                {
-                    "watch_provider_id": 3794,
-                    "provider_name": "Disney Plus"
-                },
-                {
-                    "watch_provider_id": 3797,
-                    "provider_name": "Claro video"
-                },
-                {
-                    "watch_provider_id": 3796,
+                    "watch_provider_id": 169,
                     "provider_name": "MovistarTV"
+                },
+                {
+                    "watch_provider_id": 170,
+                    "provider_name": "Max"
                 }
             ],
             "rating": None,
@@ -79,82 +75,70 @@ mock_posts = [
         "created_date": "30/03/2025"
     },
     {
-        "post_id": 53482,
-        "entity_id": 53482,
+        "post_id": 153,
+        "entity_id": 153,
         "entity": {
-            "entity_id": 53482,
+            "entity_id": 153,
             "entity_type": "m",
-            "tmbd_id": 331,
-            "imdb_id": "tt0163025",
-            "title": "Jurassic Park III",
-            "vote_average": 6.126,
-            "release_date": "18/07/2001",
-            "revenue": 368780809,
-            "runtime": 92,
-            "overview": "In need of funds for research, Dr. Alan Grant accepts a large sum of money to accompany Paul and Amanda Kirby on an aerial tour of the infamous Isla Sorna. It isn't long before all hell breaks loose and the stranded wayfarers must fight for survival as a host of new -- and even more deadly -- dinosaurs try to make snacks of them.",
-            "popularity": 1.49,
-            "tagline": "This time, it's not just a walk in the park!",
-            "trailer": "https://www.youtube.com/watch?v=FBRWNdXpG1g",
-            "director": "Joe Johnston",
-            "image_key": "/hc0rX4AjWy4N39ByuXKbnhjbFia.jpg",
-            "poster_key": "/oQXj4NUfS3r3gHXtDOzcJgj1lLc.jpg",
+            "tmbd_id": 155,
+            "imdb_id": "tt0468569",
+            "title": "The Dark Knight",
+            "vote_average": 8.512,
+            "release_date": "16/07/2008",
+            "revenue": 1004558444,
+            "runtime": 152,
+            "overview": "Batman raises the stakes in his war on crime. With the help of Lt. Jim Gordon and District Attorney Harvey Dent, Batman sets out to dismantle the remaining criminal organizations that plague the streets. The partnership proves to be effective, but they soon find themselves prey to a reign of chaos unleashed by a rising criminal mastermind known to the terrified citizens of Gotham as the Joker.",
+            "popularity": 130.643,
+            "tagline": "Welcome to a world without rules.",
+            "trailer": "https://www.youtube.com/watch?v=LDG9bisJEaI",
+            "director": "Christopher Nolan",
+            "image_key": "/nMKdUUepR0i5zn0y1T4CsSB5chy.jpg",
+            "poster_key": "/qJ2tW6WMUDux911r6m7haRef0WH.jpg",
             "genres": [
                 {
-                    "entity_genre_id": 116527,
-                    "name": "Thriller"
+                    "entity_genre_id": 433,
+                    "name": "Drama"
                 },
                 {
-                    "entity_genre_id": 116528,
-                    "name": "Science Fiction"
-                },
-                {
-                    "entity_genre_id": 116525,
-                    "name": "Adventure"
-                },
-                {
-                    "entity_genre_id": 116526,
+                    "entity_genre_id": 434,
                     "name": "Action"
+                },
+                {
+                    "entity_genre_id": 435,
+                    "name": "Crime"
+                },
+                {
+                    "entity_genre_id": 436,
+                    "name": "Thriller"
                 }
             ],
             "actors": [
                 {
-                    "actor_id": 259999,
-                    "name": "Téa Leoni"
+                    "actor_id": 762,
+                    "name": "Christian Bale"
                 },
                 {
-                    "actor_id": 259998,
-                    "name": "William H. Macy"
+                    "actor_id": 763,
+                    "name": "Heath Ledger"
                 },
                 {
-                    "actor_id": 259997,
-                    "name": "Sam Neill"
+                    "actor_id": 764,
+                    "name": "Michael Caine"
                 },
                 {
-                    "actor_id": 260001,
-                    "name": "Trevor Morgan"
+                    "actor_id": 765,
+                    "name": "Gary Oldman"
                 },
                 {
-                    "actor_id": 260000,
-                    "name": "Alessandro Nivola"
+                    "actor_id": 766,
+                    "name": "Aaron Eckhart"
                 }
             ],
             "production_companies": None,
             "watch_providers": [
                 {
-                    "watch_provider_id": 57169,
-                    "provider_name": "Claro video"
-                },
-                {
-                    "watch_provider_id": 57168,
-                    "provider_name": "MovistarTV"
-                },
-                {
-                    "watch_provider_id": 57167,
-                    "provider_name": "Amazon Prime Video"
-                },
-                {
-                    "watch_provider_id": 57166,
-                    "provider_name": "Disney Plus"
+                    "watch_provider_id": 186,
+                    "provider_name": "Max"
                 }
             ],
             "rating": None,
@@ -166,326 +150,70 @@ mock_posts = [
         "created_date": "30/03/2025"
     },
     {
-        "post_id": 42271,
-        "entity_id": 42271,
+        "post_id": 258,
+        "entity_id": 258,
         "entity": {
-            "entity_id": 42271,
+            "entity_id": 258,
             "entity_type": "m",
-            "tmbd_id": 548617,
-            "imdb_id": "tt8426838",
-            "title": "Jurassic Bark",
-            "vote_average": 2.4,
-            "release_date": "23/08/2019",
-            "revenue": 0,
-            "runtime": 70,
-            "overview": "The Star Paws team is back and this time the entire galaxy is at stake! When an evil cat named Marlon Butterpaws makes plans to destroy the universe, it's up to an elite space dog team known as Star Paws to find and stop Butterpaws and save the world!",
-            "popularity": 2.325,
-            "tagline": "The Fallen Kingdom of Bones",
-            "trailer": "https://www.youtube.com/watch?v=hJmmC8wpb4Y",
-            "director": "Jason Wright",
-            "image_key": "/iCQIbR3vdrcdGHUb0MXLRstJ8dp.jpg",
-            "poster_key": "/15IN57jWYDFLLx4OQq6bjuEYa1e.jpg",
+            "tmbd_id": 14160,
+            "imdb_id": "tt1049413",
+            "title": "Up",
+            "vote_average": 7.949,
+            "release_date": "28/05/2009",
+            "revenue": 735099082,
+            "runtime": 96,
+            "overview": "Carl Fredricksen spent his entire life dreaming of exploring the globe and experiencing life to its fullest. But at age 78, life seems to have passed him by, until a twist of fate (and a persistent 8-year old Wilderness Explorer named Russell) gives him a new lease on life.",
+            "popularity": 90.968,
+            "tagline": "The greatest adventure is just getting back home.",
+            "trailer": "https://www.youtube.com/watch?v=AkdXuDAP2Ts",
+            "director": "Pete Docter",
+            "image_key": "/hGGC9gKo7CFE3fW07RA587e5kol.jpg",
+            "poster_key": "/vpbaStTMt8qqXaEgnOR2EE4DNJk.jpg",
             "genres": [
                 {
-                    "entity_genre_id": 96009,
+                    "entity_genre_id": 712,
                     "name": "Animation"
-                }
-            ],
-            "actors": [
-                {
-                    "actor_id": 207501,
-                    "name": "Luka Pilar"
                 },
                 {
-                    "actor_id": 207499,
-                    "name": "Joachim Cruise"
+                    "entity_genre_id": 713,
+                    "name": "Comedy"
                 },
                 {
-                    "actor_id": 207500,
-                    "name": "Pony Frenzel"
-                }
-            ],
-            "production_companies": None,
-            "watch_providers": [],
-            "rating": None,
-            "original_language": "en"
-        },
-        "likes": 0,
-        "comments": 0,
-        "user_post_info": None,
-        "created_date": "30/03/2025"
-    },
-    {
-        "post_id": 19431,
-        "entity_id": 19431,
-        "entity": {
-            "entity_id": 19431,
-            "entity_type": "m",
-            "tmbd_id": 120846,
-            "imdb_id": "tt2071491",
-            "title": "Jurassic Shark",
-            "vote_average": 2.544,
-            "release_date": "21/09/2012",
-            "revenue": 0,
-            "runtime": 75,
-            "overview": "When an oil company unwittingly unleashes a prehistoric shark from its icy  prison, the Jurassic killer maroons a group of art thieves and a group of  college students on an abandoned island",
-            "popularity": 6.869,
-            "tagline": "Dinosaur from the deep",
-            "trailer": "https://www.youtube.com/watch?v=oehW-BRnbNk",
-            "director": "Brett Kelly",
-            "image_key": "/b4tQEgWzRmrOCjJkG0RO0hgCQ16.jpg",
-            "poster_key": "/8yJVr0cH9w7f5pw5mjmtHMNcpr8.jpg",
-            "genres": [
+                    "entity_genre_id": 714,
+                    "name": "Family"
+                },
                 {
-                    "entity_genre_id": 48273,
+                    "entity_genre_id": 715,
                     "name": "Adventure"
-                },
-                {
-                    "entity_genre_id": 48272,
-                    "name": "Action"
-                },
-                {
-                    "entity_genre_id": 48271,
-                    "name": "Science Fiction"
-                },
-                {
-                    "entity_genre_id": 48270,
-                    "name": "Horror"
-                },
-                {
-                    "entity_genre_id": 48274,
-                    "name": "Thriller"
                 }
             ],
             "actors": [
                 {
-                    "actor_id": 96519,
-                    "name": "Angela Parent"
+                    "actor_id": 1287,
+                    "name": "Ed Asner"
                 },
                 {
-                    "actor_id": 96520,
-                    "name": "Duncan Milloy"
+                    "actor_id": 1288,
+                    "name": "Christopher Plummer"
                 },
                 {
-                    "actor_id": 96516,
-                    "name": "Emanuelle Carriere"
+                    "actor_id": 1289,
+                    "name": "Jordan Nagai"
                 },
                 {
-                    "actor_id": 96517,
-                    "name": "Christine Emes"
+                    "actor_id": 1290,
+                    "name": "Bob Peterson"
                 },
                 {
-                    "actor_id": 96518,
-                    "name": "Celine Filion"
-                }
-            ],
-            "production_companies": None,
-            "watch_providers": [],
-            "rating": None,
-            "original_language": "en"
-        },
-        "likes": 0,
-        "comments": 0,
-        "user_post_info": None,
-        "created_date": "30/03/2025"
-    },
-    {
-        "post_id": 53718,
-        "entity_id": 53718,
-        "entity": {
-            "entity_id": 53718,
-            "entity_type": "m",
-            "tmbd_id": 934627,
-            "imdb_id": "tt15095920",
-            "title": "Jurassic Punk",
-            "vote_average": 6.2,
-            "release_date": "16/12/2022",
-            "revenue": 0,
-            "runtime": 90,
-            "overview": "Steve ‘Spaz’ Williams is a pioneer in computer animation. His digital dinosaurs of Jurassic Park transformed Hollywood in 1993, but an appetite for anarchy and reckless disregard for authority may have cost him the recognition he deserved.",
-            "popularity": 1.477,
-            "tagline": "It took a rebel to change the movies.",
-            "trailer": "https://www.youtube.com/watch?v=XCU-bA1lp5c",
-            "director": "Scott Leberecht",
-            "image_key": "/9P03PTmYb2ilp9XmWEQzRoACYYP.jpg",
-            "poster_key": "/1SHj7YYp2KZzVs7yEI8tXbhXyrL.jpg",
-            "genres": [
-                {
-                    "entity_genre_id": 116942,
-                    "name": "Documentary"
-                }
-            ],
-            "actors": [
-                {
-                    "actor_id": 261059,
-                    "name": "Tom Bertino"
-                },
-                {
-                    "actor_id": 261055,
-                    "name": "Steve 'Spaz' Williams"
-                },
-                {
-                    "actor_id": 261056,
-                    "name": "Phil Tippett"
-                },
-                {
-                    "actor_id": 261057,
-                    "name": "Jamie Hyneman"
-                },
-                {
-                    "actor_id": 261058,
-                    "name": "Mark A.Z. Dippé"
-                }
-            ],
-            "production_companies": None,
-            "watch_providers": [],
-            "rating": None,
-            "original_language": "en"
-        },
-        "likes": 0,
-        "comments": 0,
-        "user_post_info": None,
-        "created_date": "30/03/2025"
-    },
-    {
-        "post_id": 43651,
-        "entity_id": 43651,
-        "entity": {
-            "entity_id": 43651,
-            "entity_type": "m",
-            "tmbd_id": 347064,
-            "imdb_id": "tt3469284",
-            "title": "Jurassic Prey",
-            "vote_average": 3.333,
-            "release_date": "23/06/2015",
-            "revenue": 0,
-            "runtime": 87,
-            "overview": "A woman steals money from her mob boss husband hoping to start a new life with her lover. Meanwhile, a washed-up former child star and his buddies rob a bank with a police detective hot on their trail. Through a twist of fate, these people all find themselves at a remote cabin, unaware that recent construction work has unleashed a ferocious creature which now roams the surrounding area! Who will survive in MEATEATERS!",
-            "popularity": 2.201,
-            "tagline": "Prepare for extinction",
-            "trailer": "https://www.youtube.com/watch?v=VmmAYV5ykhA",
-            "director": "Mark Polonia",
-            "image_key": "/3FvTZR548z8R93PepaDy8MMuxhK.jpg",
-            "poster_key": "/xhVuhDc4RTmV0AcfTaNfLtvCWyp.jpg",
-            "genres": [
-                {
-                    "entity_genre_id": 98616,
-                    "name": "Science Fiction"
-                },
-                {
-                    "entity_genre_id": 98617,
-                    "name": "Action"
-                },
-                {
-                    "entity_genre_id": 98618,
-                    "name": "Horror"
-                }
-            ],
-            "actors": [
-                {
-                    "actor_id": 214054,
-                    "name": "Danielle Donahue"
-                },
-                {
-                    "actor_id": 214058,
-                    "name": "Steve Diasparra"
-                },
-                {
-                    "actor_id": 214057,
-                    "name": "James Carolus"
-                },
-                {
-                    "actor_id": 214056,
-                    "name": "Bob Dennis"
-                },
-                {
-                    "actor_id": 214055,
-                    "name": "Jeff Kirkendall"
-                }
-            ],
-            "production_companies": None,
-            "watch_providers": [],
-            "rating": None,
-            "original_language": "en"
-        },
-        "likes": 0,
-        "comments": 0,
-        "user_post_info": None,
-        "created_date": "30/03/2025"
-    },
-    {
-        "post_id": 43026,
-        "entity_id": 43026,
-        "entity": {
-            "entity_id": 43026,
-            "entity_type": "m",
-            "tmbd_id": 330,
-            "imdb_id": "tt0119567",
-            "title": "The Lost World: Jurassic Park",
-            "vote_average": 6.527,
-            "release_date": "23/05/1997",
-            "revenue": 618638999,
-            "runtime": 129,
-            "overview": "Four years after Jurassic Park's genetically bred dinosaurs ran amok, multimillionaire John Hammond shocks chaos theorist Ian Malcolm by revealing that he has been breeding more beasties at a secret location. Malcolm, his paleontologist ladylove and a wildlife videographer join an expedition to document the lethal lizards' natural behavior in this action-packed thriller.",
-            "popularity": 2.257,
-            "tagline": "Something has survived.",
-            "trailer": "https://www.youtube.com/watch?v=3Z3RwIV7TE4",
-            "director": "Steven Spielberg",
-            "image_key": "/w9eBtIHHpGgGfjqnEAJM3s7mCOa.jpg",
-            "poster_key": "/jElpCJkSaRPYwIMwZY28gOKV7BK.jpg",
-            "genres": [
-                {
-                    "entity_genre_id": 97413,
-                    "name": "Adventure"
-                },
-                {
-                    "entity_genre_id": 97415,
-                    "name": "Science Fiction"
-                },
-                {
-                    "entity_genre_id": 97414,
-                    "name": "Action"
-                }
-            ],
-            "actors": [
-                {
-                    "actor_id": 211078,
-                    "name": "Julianne Moore"
-                },
-                {
-                    "actor_id": 211077,
-                    "name": "Jeff Goldblum"
-                },
-                {
-                    "actor_id": 211079,
-                    "name": "Pete Postlethwaite"
-                },
-                {
-                    "actor_id": 211080,
-                    "name": "Arliss Howard"
-                },
-                {
-                    "actor_id": 211081,
-                    "name": "Richard Attenborough"
+                    "actor_id": 1291,
+                    "name": "Delroy Lindo"
                 }
             ],
             "production_companies": None,
             "watch_providers": [
                 {
-                    "watch_provider_id": 46510,
-                    "provider_name": "Claro video"
-                },
-                {
-                    "watch_provider_id": 46507,
+                    "watch_provider_id": 341,
                     "provider_name": "Disney Plus"
-                },
-                {
-                    "watch_provider_id": 46508,
-                    "provider_name": "Amazon Prime Video"
-                },
-                {
-                    "watch_provider_id": 46509,
-                    "provider_name": "MovistarTV"
                 }
             ],
             "rating": None,
@@ -497,65 +225,128 @@ mock_posts = [
         "created_date": "30/03/2025"
     },
     {
-        "post_id": 4791,
-        "entity_id": 4791,
+        "post_id": 300,
+        "entity_id": 300,
         "entity": {
-            "entity_id": 4791,
+            "entity_id": 300,
             "entity_type": "m",
-            "tmbd_id": 848278,
-            "imdb_id": "tt14442328",
-            "title": "Jurassic Hunt",
-            "vote_average": 5.1,
-            "release_date": "26/08/2021",
-            "revenue": 0,
-            "runtime": 83,
-            "overview": "Female adventurer Parker joins a crew of male trophy hunters in a remote wilderness park. Their goal: slaughter genetically recreated dinosaurs for sport using rifles, arrows, and grenades. After their guide is killed by raptors, the team tries to escape the park – but the hunters quickly become the hunted. Even worse, the park’s manager suspects Parker of being a spy and sends a hit squad after her. This battle’s about to become primitive!",
-            "popularity": 18.129,
-            "tagline": "This time it's mankind that's going extinct.",
-            "trailer": "https://www.youtube.com/watch?v=H9gpZqn-TtU",
-            "director": "Hank Braxtan",
-            "image_key": "/gzppdxEJ6fofhtLzSVSUJZEVxvq.jpg",
-            "poster_key": "/bZnOioDq1ldaxKfUoj3DenHU7mp.jpg",
+            "tmbd_id": 27205,
+            "imdb_id": "tt1375666",
+            "title": "Inception",
+            "vote_average": 8.364,
+            "release_date": "15/07/2010",
+            "revenue": 825532764,
+            "runtime": 148,
+            "overview": "\"Cobb, a skilled thief who commits corporate espionage by infiltrating the subconscious of his targets is offered a chance to regain his old life as payment for a task considered to be impossible: \"\"inception\"\", the implantation of another person's idea into a target's subconscious.\"",
+            "popularity": 83.952,
+            "tagline": "Your mind is the scene of the crime.",
+            "trailer": "https://www.youtube.com/watch?v=cdx31ak4KbQ",
+            "director": "Christopher Nolan",
+            "image_key": "/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg",
+            "poster_key": "/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
             "genres": [
                 {
-                    "entity_genre_id": 13099,
-                    "name": "Thriller"
-                },
-                {
-                    "entity_genre_id": 13097,
+                    "entity_genre_id": 826,
                     "name": "Action"
                 },
                 {
-                    "entity_genre_id": 13098,
+                    "entity_genre_id": 827,
                     "name": "Science Fiction"
+                },
+                {
+                    "entity_genre_id": 828,
+                    "name": "Adventure"
                 }
             ],
             "actors": [
                 {
-                    "actor_id": 23896,
-                    "name": "Courtney Loggins"
+                    "actor_id": 1497,
+                    "name": "Leonardo DiCaprio"
                 },
                 {
-                    "actor_id": 23900,
-                    "name": "Antuone Torbert"
+                    "actor_id": 1498,
+                    "name": "Joseph Gordon-Levitt"
                 },
                 {
-                    "actor_id": 23899,
-                    "name": "Joston Theney"
+                    "actor_id": 1499,
+                    "name": "Ken Watanabe"
                 },
                 {
-                    "actor_id": 23898,
-                    "name": "Tarkan Dospil"
+                    "actor_id": 1500,
+                    "name": "Tom Hardy"
                 },
                 {
-                    "actor_id": 23897,
-                    "name": "Ruben Pla"
+                    "actor_id": 1501,
+                    "name": "Elliot Page"
+                }
+            ],
+            "production_companies": None,
+            "watch_providers": [
+                {
+                    "watch_provider_id": 399,
+                    "provider_name": "Max"
+                }
+            ],
+            "rating": None,
+            "original_language": "en"
+        },
+        "likes": 0,
+        "comments": 0,
+        "user_post_info": None,
+        "created_date": "30/03/2025"
+    },
+    {
+        "post_id": 317,
+        "entity_id": 317,
+        "entity": {
+            "entity_id": 317,
+            "entity_type": "m",
+            "tmbd_id": 429,
+            "imdb_id": "tt0060196",
+            "title": "The Good, the Bad and the Ugly",
+            "vote_average": 8.473,
+            "release_date": "23/12/1966",
+            "revenue": 38900000,
+            "runtime": 161,
+            "overview": "While the Civil War rages on between the Union and the Confederacy, three men – a quiet loner, a ruthless hitman, and a Mexican bandit – comb the American Southwest in search of a strongbox containing $200,000 in stolen gold.",
+            "popularity": 81.717,
+            "tagline": "For three men the Civil War wasn't hell. It was practice.",
+            "trailer": "https://www.youtube.com/watch?v=IFNUGzCOQoI",
+            "director": "Sergio Leone",
+            "image_key": "/eoCSp75lxatmIa6aGqfnzwtbttd.jpg",
+            "poster_key": "/bX2xnavhMYjWDoZp1VM6VnU1xwe.jpg",
+            "genres": [
+                {
+                    "entity_genre_id": 875,
+                    "name": "Western"
+                }
+            ],
+            "actors": [
+                {
+                    "actor_id": 1582,
+                    "name": "Clint Eastwood"
+                },
+                {
+                    "actor_id": 1583,
+                    "name": "Eli Wallach"
+                },
+                {
+                    "actor_id": 1584,
+                    "name": "Lee Van Cleef"
+                },
+                {
+                    "actor_id": 1585,
+                    "name": "Aldo Giuffrè"
+                },
+                {
+                    "actor_id": 1586,
+                    "name": "Luigi Pistilli"
                 }
             ],
             "production_companies": None,
             "watch_providers": [],
             "rating": None,
-            "original_language": "en"
+            "original_language": "it"
         },
         "likes": 0,
         "comments": 0,
@@ -563,256 +354,66 @@ mock_posts = [
         "created_date": "30/03/2025"
     },
     {
-        "post_id": 72360,
-        "entity_id": 72360,
+        "post_id": 373,
+        "entity_id": 373,
         "entity": {
-            "entity_id": 72360,
+            "entity_id": 373,
             "entity_type": "m",
-            "tmbd_id": 1020335,
-            "imdb_id": None,
-            "title": "Jurassic Rise",
-            "vote_average": 0.0,
-            "release_date": "02/09/2022",
-            "revenue": 0,
-            "runtime": 76,
-            "overview": "A young scientist and her team arrive at a mysterious island, looking for answers as to what happened to her father who disappeared there years ago. What they find is beyond what any of them expected.",
-            "popularity": 0.638,
-            "tagline": None,
-            "trailer": "https://www.youtube.com/watch?v=QMdjPKcOrU0",
-            "director": "Xiefang Nie",
-            "image_key": "/79V2SH4MNqZgUCjFZ2TE3ktj0gs.jpg",
-            "poster_key": "/wkMyNKwW4szE1gLiSKgLWw002Ky.jpg",
+            "tmbd_id": 346364,
+            "imdb_id": "tt1396484",
+            "title": "It",
+            "vote_average": 7.242,
+            "release_date": "06/09/2017",
+            "revenue": 701800000,
+            "runtime": 135,
+            "overview": "In a small town in Maine, seven children known as The Losers Club come face to face with life problems, bullies and a monster that takes the shape of a clown called Pennywise.",
+            "popularity": 74.73,
+            "tagline": "You’ll float too",
+            "trailer": "https://www.youtube.com/watch?v=xKJmEC5ieOk",
+            "director": "Andy Muschietti",
+            "image_key": "/tcheoA2nPATCm2vvXw2hVQoaEFD.jpg",
+            "poster_key": "/9E2y5Q7WlCVNEhP5GiVTjhEhx1o.jpg",
             "genres": [
                 {
-                    "entity_genre_id": 147686,
-                    "name": "Adventure"
+                    "entity_genre_id": 1024,
+                    "name": "Horror"
                 },
                 {
-                    "entity_genre_id": 147685,
+                    "entity_genre_id": 1025,
                     "name": "Fantasy"
                 }
             ],
             "actors": [
                 {
-                    "actor_id": 339727,
-                    "name": "Yang Shengye"
+                    "actor_id": 1861,
+                    "name": "Jaeden Martell"
                 },
                 {
-                    "actor_id": 339728,
-                    "name": "Su Linlin"
-                }
-            ],
-            "production_companies": None,
-            "watch_providers": [],
-            "rating": None,
-            "original_language": "zh"
-        },
-        "likes": 0,
-        "comments": 0,
-        "user_post_info": None,
-        "created_date": "30/03/2025"
-    },
-    {
-        "post_id": 80055,
-        "entity_id": 80055,
-        "entity": {
-            "entity_id": 80055,
-            "entity_type": "m",
-            "tmbd_id": 1187954,
-            "imdb_id": "tt5772704",
-            "title": "Vulassic Park",
-            "vote_average": 0.0,
-            "release_date": "07/04/2018",
-            "revenue": 0,
-            "runtime": 61,
-            "overview": "Entrepreneur John Hambone has brought the ancient extinct picklesaurs back to life on his tropical island. Vulassic Park is almost ready for an eager public to visit and for Hambone to make a fortune, but the park needs the approval of some experts first, including picklentologists Dr. Gallon Grunt and Dr. Bellie Tattler. Things go horribly awry on the park's tour however and soon the island is in chaos with with picklesaurs escaping their pens: the Velocigherkins, Dillophosaurus, and the might Tyrannosaurus Dill. Will the heroes escape the terror of the island (and a lawsuit from Steven Spielberg)? Find out when you journey back to a time when pickles ruled the earth!",
-            "popularity": 0.6,
-            "tagline": "When Pickles Ruled the Earth!",
-            "trailer": "https://www.youtube.com/watch?v=uNvH0RK72Sc",
-            "director": "Timothy Alan Richardson",
-            "image_key": "",
-            "poster_key": "/vhfqYWREd7mlrA6IL5t53HbFcmk.jpg",
-            "genres": [
-                {
-                    "entity_genre_id": 158989,
-                    "name": "Comedy"
-                }
-            ],
-            "actors": [
-                {
-                    "actor_id": 365075,
-                    "name": "Geoff Trowbridge"
+                    "actor_id": 1862,
+                    "name": "Sophia Lillis"
                 },
                 {
-                    "actor_id": 365076,
-                    "name": "Barb Riley"
+                    "actor_id": 1863,
+                    "name": "Jack Dylan Grazer"
                 },
                 {
-                    "actor_id": 365077,
-                    "name": "Jaison Stefaniak"
+                    "actor_id": 1864,
+                    "name": "Finn Wolfhard"
                 },
                 {
-                    "actor_id": 365078,
-                    "name": "Rodney Sciba"
-                },
-                {
-                    "actor_id": 365079,
-                    "name": "Bryce Cone"
-                }
-            ],
-            "production_companies": None,
-            "watch_providers": [],
-            "rating": None,
-            "original_language": "en"
-        },
-        "likes": 0,
-        "comments": 0,
-        "user_post_info": None,
-        "created_date": "30/03/2025"
-    },
-    {
-        "post_id": 37710,
-        "entity_id": 37710,
-        "entity": {
-            "entity_id": 37710,
-            "entity_type": "m",
-            "tmbd_id": 502308,
-            "imdb_id": "tt5001456",
-            "title": "Jurassic Predator",
-            "vote_average": 5.1,
-            "release_date": "21/06/2018",
-            "revenue": 0,
-            "runtime": 90,
-            "overview": "Scientists working at a government research facility use prehistoric DNA to resurrect a T-Rex who escapes from the lab to terrorize a nearby town.",
-            "popularity": 2.808,
-            "tagline": None,
-            "trailer": "https://www.youtube.com/watch?v=xkn1A2-QJLw",
-            "director": "Andrew Jones",
-            "image_key": "/hLKcpdVYvuvnlJ17Khiwrw2yTYe.jpg",
-            "poster_key": "/kQkx3WUH0ahWKYUJjkGpEOoK6Ep.jpg",
-            "genres": [
-                {
-                    "entity_genre_id": 87028,
-                    "name": "Action"
-                },
-                {
-                    "entity_genre_id": 87029,
-                    "name": "Adventure"
-                },
-                {
-                    "entity_genre_id": 87030,
-                    "name": "Comedy"
-                }
-            ],
-            "actors": [
-                {
-                    "actor_id": 185718,
-                    "name": "Richard Dee-Roberts"
-                },
-                {
-                    "actor_id": 185721,
-                    "name": "Derek Nelson"
-                },
-                {
-                    "actor_id": 185720,
-                    "name": "Lee Mark Jones"
-                },
-                {
-                    "actor_id": 185717,
-                    "name": "Lee Bane"
-                },
-                {
-                    "actor_id": 185719,
-                    "name": "Jason Homewood"
-                }
-            ],
-            "production_companies": None,
-            "watch_providers": [],
-            "rating": None,
-            "original_language": "en"
-        },
-        "likes": 0,
-        "comments": 0,
-        "user_post_info": None,
-        "created_date": "30/03/2025"
-    },
-    {
-        "post_id": 649,
-        "entity_id": 649,
-        "entity": {
-            "entity_id": 649,
-            "entity_type": "m",
-            "tmbd_id": 135397,
-            "imdb_id": "tt0369610",
-            "title": "Jurassic World",
-            "vote_average": 6.682,
-            "release_date": "06/06/2015",
-            "revenue": 1671537444,
-            "runtime": 124,
-            "overview": "Twenty-two years after the events of Jurassic Park, Isla Nublar now features a fully functioning dinosaur theme park, Jurassic World, as originally envisioned by John Hammond.",
-            "popularity": 54.089,
-            "tagline": "The park is open.",
-            "trailer": "https://www.youtube.com/watch?v=aJJrkyHas78",
-            "director": "Colin Trevorrow",
-            "image_key": "/dF6FjTZzRTENfB4R17HDN20jLT2.jpg",
-            "poster_key": "/A0LZHXUzo5C60Oahvt7VxvwuzHw.jpg",
-            "genres": [
-                {
-                    "entity_genre_id": 1816,
-                    "name": "Thriller"
-                },
-                {
-                    "entity_genre_id": 1813,
-                    "name": "Action"
-                },
-                {
-                    "entity_genre_id": 1814,
-                    "name": "Adventure"
-                },
-                {
-                    "entity_genre_id": 1815,
-                    "name": "Science Fiction"
-                }
-            ],
-            "actors": [
-                {
-                    "actor_id": 3236,
-                    "name": "Chris Pratt"
-                },
-                {
-                    "actor_id": 3240,
-                    "name": "Ty Simpkins"
-                },
-                {
-                    "actor_id": 3239,
-                    "name": "Vincent D'Onofrio"
-                },
-                {
-                    "actor_id": 3238,
-                    "name": "Irrfan Khan"
-                },
-                {
-                    "actor_id": 3237,
-                    "name": "Bryce Dallas Howard"
+                    "actor_id": 1865,
+                    "name": "Jeremy Ray Taylor"
                 }
             ],
             "production_companies": None,
             "watch_providers": [
                 {
-                    "watch_provider_id": 925,
+                    "watch_provider_id": 507,
                     "provider_name": "MovistarTV"
                 },
                 {
-                    "watch_provider_id": 924,
-                    "provider_name": "Amazon Prime Video"
-                },
-                {
-                    "watch_provider_id": 926,
+                    "watch_provider_id": 508,
                     "provider_name": "Max"
-                },
-                {
-                    "watch_provider_id": 923,
-                    "provider_name": "Disney Plus"
                 }
             ],
             "rating": None,
@@ -824,65 +425,74 @@ mock_posts = [
         "created_date": "30/03/2025"
     },
     {
-        "post_id": 34054,
-        "entity_id": 34054,
+        "post_id": 430,
+        "entity_id": 430,
         "entity": {
-            "entity_id": 34054,
+            "entity_id": 430,
             "entity_type": "m",
-            "tmbd_id": 438817,
-            "imdb_id": "tt6131386",
-            "title": "Jurassic School",
-            "vote_average": 5.0,
-            "release_date": "31/01/2017",
-            "revenue": 0,
-            "runtime": 85,
-            "overview": "Nerdy middle schooler Tommy is forced take care of a baby dinosaur after his cloned science fair project hatches early. He quickly begins to think of the creature not only as a pet, but also as a friend. But when the dino escapes on the day of the fair, Tommy must figure out a way to get the creature back before greedy grown-ups get to the dinosaur first.",
-            "popularity": 3.277,
-            "tagline": "This school project is a runaway hit!",
-            "trailer": "https://www.youtube.com/watch?v=CME3wBT-m4o",
-            "director": "Mark Atkins",
-            "image_key": "/73TKGtNdxymOq8WRFGQ86RibLYE.jpg",
-            "poster_key": "/qylXRxt4Uzc3QwYdPDSitH0HQz6.jpg",
+            "tmbd_id": 129,
+            "imdb_id": "tt0245429",
+            "title": "Spirited Away",
+            "vote_average": 8.539,
+            "release_date": "20/07/2001",
+            "revenue": 274925095,
+            "runtime": 125,
+            "overview": "A young girl, Chihiro, becomes trapped in a strange new world of spirits. When her parents undergo a mysterious transformation, she must call upon the courage she never knew she had to free her family.",
+            "popularity": 68.024,
+            "tagline": None,
+            "trailer": "https://www.youtube.com/watch?v=GAp2_0JJskk",
+            "director": "Hayao Miyazaki",
+            "image_key": "/Ab8mkHmkYADjU7wQiOkia9BzGvS.jpg",
+            "poster_key": "/39wmItIWsg5sZMyRUHLkWBcuVCM.jpg",
             "genres": [
                 {
-                    "entity_genre_id": 79711,
+                    "entity_genre_id": 1184,
+                    "name": "Animation"
+                },
+                {
+                    "entity_genre_id": 1185,
                     "name": "Family"
                 },
                 {
-                    "entity_genre_id": 79710,
-                    "name": "Adventure"
-                },
-                {
-                    "entity_genre_id": 79712,
-                    "name": "Science Fiction"
+                    "entity_genre_id": 1186,
+                    "name": "Fantasy"
                 }
             ],
             "actors": [
                 {
-                    "actor_id": 168085,
-                    "name": "Victoria Clare"
+                    "actor_id": 2143,
+                    "name": "Rumi Hiiragi"
                 },
                 {
-                    "actor_id": 168081,
-                    "name": "Gabriel Bennett"
+                    "actor_id": 2144,
+                    "name": "Miyu Irino"
                 },
                 {
-                    "actor_id": 168082,
-                    "name": "Amber Patino"
+                    "actor_id": 2145,
+                    "name": "Mari Natsuki"
                 },
                 {
-                    "actor_id": 168083,
-                    "name": "Jon Briddell"
+                    "actor_id": 2146,
+                    "name": "Takashi Naito"
                 },
                 {
-                    "actor_id": 168084,
-                    "name": "Jhey Castles"
+                    "actor_id": 2147,
+                    "name": "Yasuko Sawaguchi"
                 }
             ],
             "production_companies": None,
-            "watch_providers": [],
+            "watch_providers": [
+                {
+                    "watch_provider_id": 591,
+                    "provider_name": "Netflix"
+                },
+                {
+                    "watch_provider_id": 592,
+                    "provider_name": "MovistarTV"
+                }
+            ],
             "rating": None,
-            "original_language": "en"
+            "original_language": "ja"
         },
         "likes": 0,
         "comments": 0,
@@ -890,65 +500,78 @@ mock_posts = [
         "created_date": "30/03/2025"
     },
     {
-        "post_id": 21648,
-        "entity_id": 21648,
+        "post_id": 460,
+        "entity_id": 460,
         "entity": {
-            "entity_id": 21648,
+            "entity_id": 460,
             "entity_type": "m",
-            "tmbd_id": 540247,
-            "imdb_id": "tt8783146",
-            "title": "Jurassic Galaxy",
-            "vote_average": 5.06,
-            "release_date": "20/08/2018",
-            "revenue": 0,
-            "runtime": 76,
-            "overview": "In the near future, a ship of space explorers crash land on an unknown planet. They're soon met with some of their worst fears as they discover the planet is inhabited by monstrous dinosaurs.",
-            "popularity": 6.08,
-            "tagline": "Prepare for a galactic extinction.",
-            "trailer": "https://www.youtube.com/watch?v=vOGF0oCpsFk",
-            "director": "James Kondelik",
-            "image_key": "/qEIbecsWGdcdVtk06pqsWt32y56.jpg",
-            "poster_key": "/l2F4yWfLs21lrUyEh4bNOzjTEsb.jpg",
+            "tmbd_id": 496243,
+            "imdb_id": "tt6751668",
+            "title": "Parasite",
+            "vote_average": 8.515,
+            "release_date": "30/05/2019",
+            "revenue": 257591776,
+            "runtime": 133,
+            "overview": "All unemployed, Ki-taek's family takes peculiar interest in the wealthy and glamorous Parks for their livelihood until they get entangled in an unexpected incident.",
+            "popularity": 64.627,
+            "tagline": "Act like you own the place.",
+            "trailer": "https://www.youtube.com/watch?v=bM9QabAojCg",
+            "director": "Bong Joon-ho",
+            "image_key": "/hiKmpZMGZsrkA3cdce8a7Dpos1j.jpg",
+            "poster_key": "/7IiTTgloJzvGI1TAYymCfbfl3vT.jpg",
             "genres": [
                 {
-                    "entity_genre_id": 53142,
-                    "name": "Science Fiction"
+                    "entity_genre_id": 1262,
+                    "name": "Comedy"
                 },
                 {
-                    "entity_genre_id": 53143,
-                    "name": "Action"
+                    "entity_genre_id": 1263,
+                    "name": "Thriller"
                 },
                 {
-                    "entity_genre_id": 53144,
-                    "name": "Adventure"
+                    "entity_genre_id": 1264,
+                    "name": "Drama"
                 }
             ],
             "actors": [
                 {
-                    "actor_id": 107431,
-                    "name": "Jonathan Nation"
+                    "actor_id": 2292,
+                    "name": "Song Kang-ho"
                 },
                 {
-                    "actor_id": 107430,
-                    "name": "Doug Burch"
+                    "actor_id": 2293,
+                    "name": "Lee Sun-kyun"
                 },
                 {
-                    "actor_id": 107427,
-                    "name": "Eric Paul Erickson"
+                    "actor_id": 2294,
+                    "name": "Cho Yeo-jeong"
                 },
                 {
-                    "actor_id": 107428,
-                    "name": "Madison West"
+                    "actor_id": 2295,
+                    "name": "Choi Woo-shik"
                 },
                 {
-                    "actor_id": 107429,
-                    "name": "Ryan Budds"
+                    "actor_id": 2296,
+                    "name": "Park So-dam"
                 }
             ],
             "production_companies": None,
-            "watch_providers": [],
+            "watch_providers": [
+                {
+                    "watch_provider_id": 635,
+                    "provider_name": "Amazon Prime Video"
+                },
+                {
+                    "watch_provider_id": 636,
+                    "provider_name": "MovistarTV"
+                },
+                {
+                    "watch_provider_id": 637,
+                    "provider_name": "Max"
+                }
+            ],
             "rating": None,
-            "original_language": "en"
+            "original_language": "ko"
         },
         "likes": 0,
         "comments": 0,
@@ -956,55 +579,118 @@ mock_posts = [
         "created_date": "30/03/2025"
     },
     {
-        "post_id": 38847,
-        "entity_id": 38847,
+        "post_id": 977,
+        "entity_id": 977,
         "entity": {
-            "entity_id": 38847,
+            "entity_id": 977,
             "entity_type": "m",
-            "tmbd_id": 946253,
-            "imdb_id": "tt10270416",
-            "title": "Jurassic Island",
-            "vote_average": 3.1,
-            "release_date": "05/04/2022",
-            "revenue": 0,
-            "runtime": 77,
-            "overview": "Ava uncovers the whereabouts of her missing father to an unchartered Island; a mythical lost world uncovered before them by her grandfather. Joined by a group of adventurers and scientists, they arrive at Jurassic Island where it becomes clear that the previous team had run into disaster. Dinosaurs and toxic leeches mean it’s no longer a search for her father, but a battle for survival.",
-            "popularity": 2.677,
-            "tagline": "Their mission... contain and destroy.",
-            "trailer": "https://www.youtube.com/watch?v=XAmtxaxA_ng",
-            "director": "Dominic Ellis",
-            "image_key": "/A9MGQijAXD7WB9nOVJfs71GAtW6.jpg",
-            "poster_key": "/kQYyHrNtOcOP1XZc0ZCU2iMWTJO.jpg",
+            "tmbd_id": 194,
+            "imdb_id": "tt0211915",
+            "title": "Amélie",
+            "vote_average": 7.905,
+            "release_date": "25/04/2001",
+            "revenue": 173921954,
+            "runtime": 122,
+            "overview": "At a tiny Parisian café, the adorable yet painfully shy Amélie accidentally discovers a gift for helping others. Soon Amelie is spending her days as a matchmaker, guardian angel, and all-around do-gooder. But when she bumps into a handsome stranger, will she find the courage to become the star of her very own love story?",
+            "popularity": 42.494,
+            "tagline": "One person can change your life forever.",
+            "trailer": "https://www.youtube.com/watch?v=Py7cDXQae2U",
+            "director": "Jean-Pierre Jeunet",
+            "image_key": "/9TEUJy5aRP7LaM1LKTfcxVK34JK.jpg",
+            "poster_key": "/nSxDa3M9aMvGVLoItzWTepQ5h5d.jpg",
             "genres": [
                 {
-                    "entity_genre_id": 89277,
-                    "name": "Science Fiction"
+                    "entity_genre_id": 2736,
+                    "name": "Comedy"
                 },
                 {
-                    "entity_genre_id": 89276,
-                    "name": "Action"
+                    "entity_genre_id": 2737,
+                    "name": "Romance"
                 }
             ],
             "actors": [
                 {
-                    "actor_id": 191109,
-                    "name": "Sarah T. Cohen"
+                    "actor_id": 4874,
+                    "name": "Audrey Tautou"
                 },
                 {
-                    "actor_id": 191110,
-                    "name": "Alistair Stoneman"
+                    "actor_id": 4875,
+                    "name": "Mathieu Kassovitz"
                 },
                 {
-                    "actor_id": 191111,
-                    "name": "Jamila Wingett"
+                    "actor_id": 4876,
+                    "name": "Rufus"
                 },
                 {
-                    "actor_id": 191112,
-                    "name": "Ray Whelan"
+                    "actor_id": 4877,
+                    "name": "Lorella Cravotta"
                 },
                 {
-                    "actor_id": 191113,
-                    "name": "Ricardo Freitas"
+                    "actor_id": 4878,
+                    "name": "Serge Merlin"
+                }
+            ],
+            "production_companies": None,
+            "watch_providers": [
+                {
+                    "watch_provider_id": 1434,
+                    "provider_name": "MovistarTV"
+                }
+            ],
+            "rating": None,
+            "original_language": "fr"
+        },
+        "likes": 0,
+        "comments": 0,
+        "user_post_info": None,
+        "created_date": "30/03/2025"
+    },
+    {
+        "post_id": 1091,
+        "entity_id": 1091,
+        "entity": {
+            "entity_id": 1091,
+            "entity_type": "m",
+            "tmbd_id": 899082,
+            "imdb_id": "tt16116174",
+            "title": "Harry Potter 20th Anniversary: Return to Hogwarts",
+            "vote_average": 7.302,
+            "release_date": "01/01/2022",
+            "revenue": 0,
+            "runtime": 103,
+            "overview": "An enchanting making-of story told through all-new in-depth interviews and cast conversations, inviting fans on a magical first-person journey through one of the most beloved film franchises of all time.",
+            "popularity": 39.8,
+            "tagline": "Welcome back to where the magic began.",
+            "trailer": "https://www.youtube.com/watch?v=fFGS4zZWGoA",
+            "director": "Joe Pearlman",
+            "image_key": "/8rft8A9nH43IReybFtYt21ezfMK.jpg",
+            "poster_key": "/jntLBq0MLR3hrwKaTQswxACRPMs.jpg",
+            "genres": [
+                {
+                    "entity_genre_id": 3044,
+                    "name": "Documentary"
+                }
+            ],
+            "actors": [
+                {
+                    "actor_id": 5443,
+                    "name": "Daniel Radcliffe"
+                },
+                {
+                    "actor_id": 5444,
+                    "name": "Rupert Grint"
+                },
+                {
+                    "actor_id": 5445,
+                    "name": "Emma Watson"
+                },
+                {
+                    "actor_id": 5446,
+                    "name": "Bonnie Wright"
+                },
+                {
+                    "actor_id": 5447,
+                    "name": "Matthew Lewis"
                 }
             ],
             "production_companies": None,
